@@ -6,12 +6,11 @@ typedef CypherFunc = Pointer<Utf8> Function(Pointer<Utf8> input, Uint8 flag, Poi
 typedef Cypher = Pointer<Utf8> Function(Pointer<Utf8> input, int flag, Pointer<Utf8> key);
 
 class CypherFFI {
-  final DynamicLibrary _myLibrary;
+  // final DynamicLibrary _myLibrary;
   final Cypher _cypher;
 
   CypherFFI()
-      : _myLibrary = DynamicLibrary.open('libcypher.so'),
-        _cypher = DynamicLibrary.open('libcypher.so')
+      :  _cypher = DynamicLibrary.open('libcypher.so')
             .lookup<NativeFunction<CypherFunc>>('cypher')
             .asFunction<Cypher>();
 
