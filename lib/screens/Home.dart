@@ -1,84 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'new_contact.dart';  // Screen for manually creating a new contact
-import 'Mobile_contacts.dart';  // Screen to get contacts from the mobile device
-import 'Sign_in.dart';  // Import SignIn screen for logout
-import 'ContactList.dart';  // Import the new ContactList widget
-import 'package:contacts_service/contacts_service.dart';  // Import the Contact class
+
+import 'package:cypheron/models/UserModel.dart';  // The UserModel
+
+import 'package:cypheron/services/HiveService.dart';
+import 'auth/SignIn.dart';
+import 'package:cypheron/models/ContactModel.dart';
+import 'package:cypheron/widgets/ContactsList.dart';  // Import the floating action button module
+import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Import the floating action button module
+
+/*
+  ToDo:
+  after creting a new contact also save in hive
+  likewise for creating manual
+*/
 
 class Home extends StatefulWidget {
-  final String username;
+  final UserModel user;  // Accept the complete UserModel object
 
-  Home({required this.username});
+  Home({required this.user});
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  List<Contact> contactList = [];  // List to store multiple selected contacts
-  Box? contactBox;  // Hive box for storing contacts
-  late Future<void> _loadContactsFuture;  // Cached future
+  List<ContactModel> contactList = [];
+  late Future<void> _loadContactsFuture;
 
   @override
   void initState() {
     super.initState();
-    _loadContactsFuture = openHiveBox();  // Cache the future
+    _loadContactsFuture = _loadContactsByIds(widget.user.contactIds);  // Load contacts by contactIds
   }
 
-  // Open Hive box and load contacts
-  Future<void> openHiveBox() async {
-    contactBox = await Hive.openBox('contactsBox');
-    print('Opened Hive box');
-    loadContactsFromHive();  // Load contacts after opening the box
-  }
-
-  // Load contacts from Hive box (deserialize)
-  void loadContactsFromHive() {
-    try {
-      final storedContacts = contactBox?.get('contactsList') ?? [];
-      print('Contacts loaded from Hive: $storedContacts');
-
-      // Cast each contact's map to Map<String, dynamic> before deserialization
-      setState(() {
-        contactList = storedContacts.map<Contact>((contactData) {
-          return deserializeContact(Map<String, dynamic>.from(contactData));  // Explicit cast
-        }).toList();
-      });
-
-      print('Deserialized Contact List: $contactList');
-    } catch (error) {
-      print('Error loading contacts from Hive: $error');
-    }
-  }
-
-  // Save contacts to Hive box (serialize)
-  void saveContactsToHive() {
-    try {
-      final serializedContacts = contactList.map((contact) => serializeContact(contact)).toList();
-      contactBox?.put('contactsList', serializedContacts);
-      print('Contacts saved to Hive: $serializedContacts');
-    } catch (error) {
-      print('Error saving contacts to Hive: $error');
-    }
-  }
-
-  // Serialize contact to a Map for storage in Hive
-  Map<String, dynamic> serializeContact(Contact contact) {
-    return {
-      'displayName': contact.displayName,
-      'phones': contact.phones?.map((item) => item.value).toList(),
-    };
-  }
-
-  // Deserialize contact from a Map retrieved from Hive
-  Contact deserializeContact(Map<String, dynamic> contactData) {
-    return Contact(
-      displayName: contactData['displayName'],
-      phones: contactData['phones'] != null
-          ? contactData['phones'].map<Item>((phone) => Item(value: phone)).toList()
-          : [],
-    );
+  // Load the contacts from Hive using the contact IDs
+  Future<void> _loadContactsByIds(List<String> contactIds) async {
+    // List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
+    // setState(() {
+    //   contactList = loadedContacts;  // Update the contact list with loaded data
+    // });
   }
 
   @override
@@ -90,42 +50,35 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              // Sign out and navigate back to the sign-in screen
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => SignIn()),
-              );
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignIn()));
             },
           ),
         ],
       ),
       body: FutureBuilder(
-        future: _loadContactsFuture,  // Use the cached future
+        future: _loadContactsFuture,
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());  // Show loading spinner while waiting
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            // Log the error and show it in the UI
-            print('Error in FutureBuilder: ${snapshot.error}');
             return Center(child: Text('Error loading contacts: ${snapshot.error}'));
           } else {
             return Column(
               children: [
-                // Center the welcome message at the top
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Center(
                     child: Text(
-                      'Welcome, ${widget.username}!',
+                      'Welcome, ${widget.user.name}!',  // Display the user's name
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ),
                 ),
-                // Use the ContactList widget to display the selected contacts
-                if (contactList.isNotEmpty)
-                  ContactList(contactList: contactList),
-                // Show "Add or View Contacts" only if no contacts are selected
+                if (contactList.isNotEmpty) 
+                  Expanded(
+                    child: ContactList(contactList: contactList),
+                  ),
                 if (contactList.isEmpty)
                   Expanded(
                     child: Center(
@@ -140,58 +93,14 @@ class _HomeState extends State<Home> {
           }
         },
       ),
-      // Add a floating action button (+) at the bottom right corner
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Show a dialog to choose between adding a new contact or selecting one from mobile contacts
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Choose an action'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.person_add),
-                      title: Text('Create New Contact'),
-                      onTap: () {
-                        // Navigate to manually create a new contact
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => NewContact()),
-                        );
-                        Navigator.pop(context);  // Close the dialog
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.contacts),
-                      title: Text('Get Contacts from Mobile'),
-                      onTap: () async {
-                        // Navigate to MobileContacts screen and wait for the selected contact
-                        final Contact? contact = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MobileContacts()),
-                        );
-                        if (contact != null) {
-                          // Add the selected contact to the contact list
-                          setState(() {
-                            contactList.add(contact);  // Add the new contact to the list
-                          });
-                          saveContactsToHive();  // Save the updated contact list to Hive
-                        }
-                        Navigator.pop(context);  // Close the dialog
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        child: Icon(Icons.add),  // The plus icon
-        tooltip: 'Add Contact',
-      ),
+      floatingActionButton: buildFloatingActionButton(context, widget.user.userId, _addNewContact),
     );
+  }
+
+  // Function to add a new contact
+  void _addNewContact(ContactModel newContact) {
+    setState(() {
+      contactList.add(newContact);
+    });
   }
 }
