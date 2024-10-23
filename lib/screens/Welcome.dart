@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'Sign_in.dart';
-import 'Sign_up.dart';
+import 'package:cypheron/widgets/buttons/SignUpButton.dart';
+import 'package:cypheron/widgets/buttons/SignInButton.dart';
 
 class Welcome extends StatelessWidget {
   @override
@@ -20,25 +20,9 @@ class Welcome extends StatelessWidget {
                 style: TextStyle(fontSize: 24),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignIn()),
-                  );
-                },
-                child: Text('Sign In'),
-              ),
+              SignInButton(),  // Sign In button component
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUp()),
-                  );
-                },
-                child: Text('Sign Up'),
-              ),
+              SignUpButton(),  // Sign Up button component
             ],
           ),
         ),
