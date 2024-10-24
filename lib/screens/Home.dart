@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:cypheron/models/UserModel.dart';  // The UserModel
-
 import 'package:cypheron/services/HiveService.dart';
 import 'auth/SignIn.dart';
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/widgets/ContactsList.dart';  // Import the floating action button module
-import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Import the floating action button module
-
-/*
-  ToDo:
-  after creting a new contact also save in hive
-  likewise for creating manual
-*/
+import 'package:cypheron/widgets/ContactsList.dart';  
+import 'package:cypheron/widgets/buttons/addContactsButton.dart'; 
 
 class Home extends StatefulWidget {
   final UserModel user;  // Accept the complete UserModel object
@@ -25,20 +17,46 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<ContactModel> contactList = [];
-  late Future<void> _loadContactsFuture;
+  bool isSaving = false;  // To show a loading indicator during save process
 
   @override
   void initState() {
     super.initState();
-    _loadContactsFuture = _loadContactsByIds(widget.user.contactIds);  // Load contacts by contactIds
+    _loadContactsByIds(widget.user.contactIds);  // Load contacts by contactIds
   }
 
-  // Load the contacts from Hive using the contact IDs
-  Future<void> _loadContactsByIds(List<String> contactIds) async {
-    // List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
-    // setState(() {
-    //   contactList = loadedContacts;  // Update the contact list with loaded data
-    // });
+  // Load contacts from Hive using contactIds
+  void _loadContactsByIds(List<String> contactIds) async {
+    List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
+    setState(() {
+      contactList = loadedContacts;
+    });
+  }
+
+  // Add new contact and initiate async save
+  void _addNewContact(ContactModel newContact) {
+    setState(() {
+      contactList.add(newContact);  // Instant UI update
+      isSaving = true;  // Start loading indicator
+    });
+
+    // Save contact and update user contact list asynchronously
+    HiveService.saveContact(widget.user, newContact).then((success) {
+      if (success) {
+        setState(() {
+          isSaving = false;  // Stop showing the loading indicator
+        });
+      } else {
+        // Handle failure (e.g., remove contact from UI)
+        setState(() {
+          contactList.remove(newContact);  // Revert UI changes
+          isSaving = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save contact.')),
+        );
+      }
+    });
   }
 
   @override
@@ -55,52 +73,36 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: _loadContactsFuture,
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading contacts: ${snapshot.error}'));
-          } else {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Text(
-                      'Welcome, ${widget.user.name}!',  // Display the user's name
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Text(
+                'Welcome, ${widget.user.name}!',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          if (isSaving)  // Show a loading indicator when saving
+            LinearProgressIndicator(),
+          if (contactList.isNotEmpty) 
+            Expanded(
+              child: ContactList(contactList: contactList),
+            ),
+          if (contactList.isEmpty && !isSaving)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Add or View Contacts',
+                  style: TextStyle(fontSize: 18),
                 ),
-                if (contactList.isNotEmpty) 
-                  Expanded(
-                    child: ContactList(contactList: contactList),
-                  ),
-                if (contactList.isEmpty)
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'Add or View Contacts',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          }
-        },
+              ),
+            ),
+        ],
       ),
       floatingActionButton: buildFloatingActionButton(context, widget.user.userId, _addNewContact),
     );
-  }
-
-  // Function to add a new contact
-  void _addNewContact(ContactModel newContact) {
-    setState(() {
-      contactList.add(newContact);
-    });
   }
 }

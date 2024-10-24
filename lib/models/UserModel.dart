@@ -25,13 +25,14 @@ class UserModel {
 
   // Constructor
   UserModel({
-    String? userId,
-    required this.name,
-    required this.phoneNumber,
-    required this.email,
-    required this.hashedPassword,
-    this.contactIds = const [],
-  }) : userId = userId ?? Uuid().v4();
+  String? userId,
+  required this.name,
+  required this.phoneNumber,
+  required this.email,
+  required this.hashedPassword,
+  List<String>? contactIds,  // Nullable list input
+})  : userId = userId ?? Uuid().v4(),
+      contactIds = contactIds ?? [];  // Assign an empty list if null
 
   // Override toString method for easy debugging
   @override
