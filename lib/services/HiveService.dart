@@ -1,10 +1,10 @@
 import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:hive/hive.dart';
-// import 'package:cypheron/models/ContactModel.dart';  // Import ContactModel
-// import 'package:cypheron/models/MessageModel.dart';  // Import MessageModel
 // import 'package:uuid/uuid.dart';
 
 import 'package:cypheron/models/UserModel.dart'; // The UserModel
+import 'package:cypheron/models/ContactModel.dart';  // Import ContactModel
+import 'package:cypheron/models/MessageModel.dart';  // Import MessageModel
 
 class HiveService {
 
@@ -13,6 +13,9 @@ class HiveService {
 
     // Register the adapter
     Hive.registerAdapter(UserModelAdapter());
+    Hive.registerAdapter(ContactModelAdapter());
+    Hive.registerAdapter(MessageModelAdapter());
+
 
   }
 
@@ -47,88 +50,49 @@ class HiveService {
     }
   }
 
+  // Load contacts from Hive using their contact IDs
+  static Future<List<ContactModel>> loadContactsByIds(List<String> contactIds) async {
+    var box = await Hive.openBox<ContactModel>('contacts');  // Open the 'contacts' box
+
+    List<ContactModel> loadedContacts = [];  // List to store loaded contacts
+
+    // Iterate over each contact ID and load the corresponding contact from Hive
+    for (String contactId in contactIds) {
+      ContactModel? contact = box.get(contactId);  // Get the contact by its ID
+      if (contact != null) {
+        loadedContacts.add(contact);  // Add to list if it exists
+      }
+    }
+
+    return loadedContacts;  // Return the list of loaded contacts
+  }
+
+  // Function to save a contact and update the user's contact list
+  static Future<bool> saveContact(UserModel user, ContactModel newContact) async {
+    try {
+      // Open the contacts box
+      var contactBox = await Hive.openBox<ContactModel>('contacts');
+      
+      // Save the contact to Hive
+      await contactBox.put(newContact.id, newContact);
+
+      // After saving the contact, update the user's contactIds list
+      user.contactIds.add(newContact.id);
+
+      // Now, open the user box to update the user
+      var userBox = await Hive.openBox<UserModel>('users');
+      await userBox.put(user.userId, user);  // Save the updated user with the new contact ID
+
+      // Close both boxes after operation
+      await contactBox.close();
+      await userBox.close();
+
+      return true;  // Return success
+    } catch (e) {
+      print('Error saving contact or updating user: $e');
+      return false;  // Return failure in case of any error
+    }
+  }
+
 
 }
-
-
-  // // Open Hive box and load contacts
-  // static Future<void> openHiveBox() async {
-  //   contactBox = await Hive.openBox('contactsBox');
-  //   print('Opened Hive box');
-  // }
-
-  // // Load contacts from Hive box (deserialize)
-  // static List<ContactModel> loadContactsFromHive() {
-  //   try {
-  //     final storedContacts = contactBox?.get('contactsList') ?? [];
-  //     print('Contacts loaded from Hive: $storedContacts');
-
-  //     // Convert stored contacts to List<ContactModel>
-  //     List<ContactModel> contactList = storedContacts.map<ContactModel>((contactData) {
-  //       return ContactModel(
-  //         id: contactData['id'] ?? Uuid().v4(),  // Ensure id is generated if missing
-  //         name: contactData['name'] ?? 'No Name',
-  //         phoneNumber: contactData['phone'] ?? 'No Phone',
-  //         messages: (contactData['messages'] ?? []).map<MessageModel>((messageData) {
-  //           return MessageModel(
-  //             title: messageData['title'] ?? 'No Title',
-  //             body: messageData['body'] ?? 'No Body',
-  //           );
-  //         }).toList(),
-  //       );
-  //     }).toList();
-
-  //     print('Deserialized Contact List: $contactList');
-  //     return contactList;
-  //   } catch (error) {
-  //     print('Error loading contacts from Hive: $error');
-  //     return [];  // Return an empty list in case of error
-  //   }
-  // }
-
-  // // Save contacts to Hive box (serialize)
-  // static void saveContactsToHive(List<ContactModel> contactList) {
-  //   try {
-  //     final serializedContacts = contactList.map((contact) {
-  //       return {
-  //         'id': contact.id,
-  //         'name': contact.name,
-  //         'phone': contact.phoneNumber,
-  //         'messages': contact.messages.map((message) {
-  //           return {
-  //             'title': message.title,
-  //             'body': message.body,
-  //           };
-  //         }).toList(),
-  //       };
-  //     }).toList();
-  //     contactBox?.put('contactsList', serializedContacts);
-  //     print('Contacts saved to Hive: $serializedContacts');
-  //   } catch (error) {
-  //     print('Error saving contacts to Hive: $error');
-  //   }
-  // }
-
-  // // Add a new message to a contact by id
-  // static void addMessageToContact(String contactId, MessageModel newMessage) {
-  //   try {
-  //     // Load contacts from Hive
-  //     List<ContactModel> contacts = loadContactsFromHive();
-
-  //     // Find the contact by id
-  //     ContactModel contact = contacts.firstWhere(
-  //         (contact) => contact.id == contactId,
-  //         orElse: () => throw Exception('Contact not found'));
-
-  //     // Add the new message to the contact
-  //     contact.addMessage(newMessage);
-
-  //     // Save updated contacts back to Hive
-  //     saveContactsToHive(contacts);
-
-  //     print('Message added to contact: ${contact.name}');
-  //   } catch (error) {
-  //     print('Error adding message to contact: $error');
-  //   }
-  // }
-

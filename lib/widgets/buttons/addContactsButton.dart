@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:cypheron/screens/NewContact.dart';
+// import 'package:cypheron/screens/NewContact.dart';
 import 'package:cypheron/screens/MobileContacts.dart';
 import 'package:cypheron/models/ContactModel.dart';
 
@@ -48,7 +48,6 @@ FloatingActionButton buildFloatingActionButton(
                           : 'No Phone';
 
                       ContactModel newContact = ContactModel(
-                        userId: userId,  
                         name: contactName,
                         phoneNumber: contactPhone,
                       );
