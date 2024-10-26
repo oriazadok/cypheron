@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/MessageModel.dart';
+import 'package:cypheron/services/ffi_service.dart';  // Import the FFI class
+import 'package:cypheron/widgets/keywordDialog.dart';
 
 class NewMessage extends StatefulWidget {
   @override
@@ -27,21 +29,34 @@ class _NewMessageState extends State<NewMessage> {
             SizedBox(height: 10),
             TextField(
               controller: _bodyController,
-              decoration: InputDecoration(labelText: 'Body'),
+              decoration: InputDecoration(labelText: 'Text to encrypt'),
               maxLines: 5,
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_titleController.text.isNotEmpty && _bodyController.text.isNotEmpty) {
-                  final newMessage = MessageModel(
-                    title: _titleController.text,
-                    body: _bodyController.text,
-                  );
-                  Navigator.pop(context, newMessage);  // Return the new message
+
+                  String? keyword = await showKeywordDialog(context);
+                  if (keyword != null && keyword.isNotEmpty) {
+                    // Create an instance of CypherFFI and call the encryption method
+                    final cypherFFI = CypherFFI();
+                    String encryptedBody = cypherFFI.runCypher(
+                      _bodyController.text,
+                      keyword, // Replace with actual key logic if needed
+                      'e',  // Flag for encryption
+                    );
+
+                    final newMessage = MessageModel(
+                      title: _titleController.text,
+                      body: encryptedBody,
+                    );
+
+                    Navigator.pop(context, newMessage);  // Return the new encrypted message
+                  }
                 }
               },
-              child: Text('Save Message'),
+              child: Text('Encrypt Message'),
             ),
           ],
         ),
