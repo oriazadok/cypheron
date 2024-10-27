@@ -20,11 +20,13 @@ class ContactModel extends HiveObject {
 
   // Constructor to initialize the contact data
   ContactModel({
-    String? id,  // Allow the ID to be optional so it can be generated if not provided
+    String? id,
     required this.name,
     required this.phoneNumber,
-    this.messages = const [],  // Default empty list for messages
-  }) : id = id ?? Uuid().v4();  // Automatically generate a unique ID if not provided
+    List<MessageModel>? messages,
+  }) : 
+    id = id ?? Uuid().v4(),
+    messages = messages ?? [];  // Use a mutable list as the default
 
   // Method to add a new message
   void addMessage(MessageModel message) {

@@ -21,43 +21,6 @@ class _SignUpState extends State<SignUp> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  // Function to handle sign-up logic
-  void _handleSignUp() {
-    if (_formKey.currentState!.validate()) {
-      // Hash the password
-      var hashedPassword = sha256.convert(utf8.encode(_passwordController.text)).toString();
-
-      // Create a new UserModel
-      UserModel newUser = UserModel(
-        name: _nameController.text,
-        phoneNumber: _phoneController.text,
-        email: _emailController.text,
-        hashedPassword: hashedPassword,
-      );
-
-      // Store the user using Hive
-      HiveService.addUser(newUser).then((isAdded) {
-        if (isAdded) {
-          // Redirect to Home page, passing userId
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Home(user: newUser),
-            ),
-          );
-        } else {
-          // Show an error message to the user
-          print("Failed to add user.");
-        }
-      }).catchError((error) {
-        print("Error saving user: $error");
-      });
-
-      // Clear the form after successful sign-up
-      _formKey.currentState!.reset();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,15 +89,66 @@ class _SignUpState extends State<SignUp> {
               ),
               SizedBox(height: 20),
 
-              // Sign Up button
               ElevatedButton(
-                onPressed: _handleSignUp,
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    UserModel? signUpSuccessful = await _handleSignUp();
+                    print("signUpSuccessful: $signUpSuccessful");
+                    if (signUpSuccessful != null) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Home(user: signUpSuccessful),
+                        ),
+                      );
+                    } 
+                  }
+                },
                 child: Text('Sign Up'),
               ),
+
             ],
           ),
         ),
       ),
     );
   }
+
+  // Function to handle sign-up logic
+  Future<UserModel?> _handleSignUp() async {
+    // Hash the password
+    var hashedPassword = sha256.convert(utf8.encode(_passwordController.text)).toString();
+
+    // Create a new UserModel
+    UserModel newUser = UserModel(
+      name: _nameController.text,
+      phoneNumber: _phoneController.text,
+      email: _emailController.text,
+      hashedPassword: hashedPassword,
+    );
+
+    // Store the user using Hive
+    bool isAdded = await HiveService.addUser(newUser);
+
+    if (isAdded) {
+      UserModel? reloadUser = await HiveService.getUserByEmail(_emailController.text);
+      print("reloadUser: $reloadUser");
+
+      // Validate if the user exists and the hashed password matches
+      if (reloadUser != null) {
+        return reloadUser;
+      } else {
+        print("Failed to fetch user.");
+        return null;
+      }
+    } else {
+      print("Failed to add user.");
+      return null;
+    }
+
+  }
+
+
+
+  
 }

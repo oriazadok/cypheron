@@ -4,7 +4,6 @@ import 'package:cypheron/models/MessageModel.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 import 'package:cypheron/services/ffi_service.dart';  // Import the FFI class
 
-
 class ContactInfo extends StatefulWidget {
   final ContactModel contact;
 

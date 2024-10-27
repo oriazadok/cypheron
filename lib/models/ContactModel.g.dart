@@ -20,7 +20,7 @@ class ContactModelAdapter extends TypeAdapter<ContactModel> {
       id: fields[0] as String?,
       name: fields[1] as String,
       phoneNumber: fields[2] as String,
-      messages: (fields[3] as List).cast<MessageModel>(),
+      messages: (fields[3] as List?)?.cast<MessageModel>(),
     );
   }
 

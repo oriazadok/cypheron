@@ -69,6 +69,7 @@ class HiveService {
 
   // Function to save a contact and update the user's contact list
   static Future<bool> saveContact(UserModel user, ContactModel newContact) async {
+
     try {
       // Open the contacts box
       var contactBox = await Hive.openBox<ContactModel>('contacts');
@@ -82,10 +83,6 @@ class HiveService {
       // Now, open the user box to update the user
       var userBox = await Hive.openBox<UserModel>('users');
       await userBox.put(user.userId, user);  // Save the updated user with the new contact ID
-
-      // Close both boxes after operation
-      await contactBox.close();
-      await userBox.close();
 
       return true;  // Return success
     } catch (e) {
