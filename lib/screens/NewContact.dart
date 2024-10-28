@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cypheron/models/ContactModel.dart';
 
 class NewContact extends StatefulWidget {
   @override
@@ -41,7 +42,8 @@ class _NewContactState extends State<NewContact> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Contact $name added')),
                   );
-                  Navigator.pop(context);  // Return to previous screen
+                  ContactModel newContact = ContactModel(name: name, phoneNumber: phone);
+                  Navigator.pop(context, newContact);  // Return to previous screen
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Please fill in all fields')),
