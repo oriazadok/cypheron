@@ -106,7 +106,7 @@ class _HomeState extends State<Home> {
     print("decrypting");
     try {
       // Use the helper method to read the URI content as bytes
-      final fileBytes = await FileHelper.readContentUri(uriPath);
+      final fileBytes = await platform.invokeMethod('openFileAsBytes', uriPath);
       if (fileBytes == null) {
         print("Failed to read file content.");
         return;
@@ -150,16 +150,16 @@ class _HomeState extends State<Home> {
   }
 
 
-  Future<Stream<List<int>>> _openFileAsStream(Uri uri) async {
-    if (Platform.isAndroid) {
-      // Use contentResolver to handle URIs that may not directly map to file paths
-      final byteData = await platform.invokeMethod('openFileAsBytes', uri.toString());
-      return Stream.value(byteData.buffer.asUint8List());
-    } else {
-      // For iOS or platforms where URI represents a file directly
-      return File.fromUri(uri).openRead();
-    }
-  }
+  // Future<Stream<List<int>>> _openFileAsStream(Uri uri) async {
+  //   if (Platform.isAndroid) {
+  //     // Use contentResolver to handle URIs that may not directly map to file paths
+  //     final byteData = await platform.invokeMethod('openFileAsBytes', uri.toString());
+  //     return Stream.value(byteData.buffer.asUint8List());
+  //   } else {
+  //     // For iOS or platforms where URI represents a file directly
+  //     return File.fromUri(uri).openRead();
+  //   }
+  // }
 
   // Load contacts from Hive using contactIds
   void _loadContactsByIds(List<String> contactIds) async {
