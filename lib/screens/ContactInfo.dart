@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
+import 'dart:io'; 
+
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 import 'package:cypheron/services/ffi_service.dart';  // Import the FFI class
+
 
 class ContactInfo extends StatefulWidget {
   final ContactModel contact;
@@ -30,8 +36,9 @@ class _ContactInfoState extends State<ContactInfo> {
     });
   }
 
-   // Function to decrypt and display message content
+  // Function to decrypt and display message content
   void _showDecryptedMessage(BuildContext context, MessageModel message) async {
+    print("message.body: ${message.body.length}");
     String? keyword = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -103,6 +110,12 @@ class _ContactInfoState extends State<ContactInfo> {
                   onTap: () {
                     _showDecryptedMessage(context, message); // Show decrypted message dialog
                   },
+                  trailing: IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {
+                      _sendMessage(message); // Send the message when pressed
+                    },
+                  ),
                 );
               },
             )
@@ -112,4 +125,18 @@ class _ContactInfoState extends State<ContactInfo> {
       floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage),  // Use the new button
     );
   }
+
+
+  // Function to create and share a .zk file with the already encrypted message
+  Future<void> _sendMessage(MessageModel message) async {
+    // Save the encrypted message body directly to a .zk file
+    Directory tempDir = await getTemporaryDirectory();
+    String filePath = '${tempDir.path}/${message.title}.zk';
+    File zkFile = File(filePath);
+    await zkFile.writeAsString(message.body, encoding: utf8);
+
+    // Share the .zk file
+    await Share.shareFiles([zkFile.path], text: 'Encrypted message from ${widget.contact.name}');
+  }
+
 }
