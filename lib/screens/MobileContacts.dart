@@ -1,75 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:contacts_service/contacts_service.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:contacts_service/contacts_service.dart';  // Provides access to device contacts
+import 'package:permission_handler/permission_handler.dart';  // Manages permissions for accessing contacts
 
+/// Stateful widget to display and load contacts from the device
 class MobileContacts extends StatefulWidget {
   @override
   _MobileContactsState createState() => _MobileContactsState();
 }
 
 class _MobileContactsState extends State<MobileContacts> {
-  List<Contact> contacts = [];
-  ScrollController _scrollController = ScrollController();
-  int currentBatchSize = 20;
-  bool isLoadingMore = false;
+  List<Contact> contacts = [];  // List to store loaded contacts
+  ScrollController _scrollController = ScrollController();  // Controller to detect scroll position
+  int currentBatchSize = 20;  // Initial batch size for loading contacts
+  bool isLoadingMore = false;  // Indicator to show loading more contacts
 
   @override
   void initState() {
     super.initState();
-    getContacts();  // Remove batchSize parameter
+    getContacts();  // Load initial batch of contacts
 
-    // Add a listener to detect when the user scrolls to the bottom
+    // Add a listener to detect when the user scrolls to the bottom of the list
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !isLoadingMore) {
-        // Load more contacts when the user scrolls to the end
-        loadMoreContacts();
+        loadMoreContacts();  // Load more contacts when the user reaches the end of the list
       }
     });
-  }
-
-  // Fetch initial batch of contacts
-  void getContacts() async {
-    if (await Permission.contacts.request().isGranted) {
-      try {
-        Iterable<Contact> mobileContacts = await ContactsService.getContacts();
-        setState(() {
-          contacts = mobileContacts.take(currentBatchSize).toList();  // Take the first batch
-        });
-      } catch (e) {
-        print("Error fetching contacts: $e");
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Permission to access contacts denied')),
-      );
-    }
-  }
-
-  // Load more contacts when the user scrolls to the end
-  void loadMoreContacts() async {
-    setState(() {
-      isLoadingMore = true;  // Set loading to true while fetching more data
-    });
-    try {
-      Iterable<Contact> mobileContacts = await ContactsService.getContacts();
-      int nextBatchSize = currentBatchSize + 20;  // Increase the batch size
-      List<Contact> contactsToAdd = mobileContacts.take(nextBatchSize).toList();
-      setState(() {
-        contacts = contactsToAdd;
-        currentBatchSize = nextBatchSize;
-      });
-    } catch (e) {
-      print("Error fetching more contacts: $e");
-    } finally {
-      setState(() {
-        isLoadingMore = false;  // Set loading to false after data is fetched
-      });
-    }
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollController.dispose();  // Dispose the controller to free resources
     super.dispose();
   }
 
@@ -77,21 +37,21 @@ class _MobileContactsState extends State<MobileContacts> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mobile Contacts'),
+        title: Text('Mobile Contacts'),  // Title of the screen
       ),
       body: contacts.isNotEmpty
           ? Column(
               children: [
                 Expanded(
                   child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: contacts.length,
+                    controller: _scrollController,  // Attach scroll controller for infinite scrolling
+                    itemCount: contacts.length,  // Number of contacts to display
                     itemBuilder: (context, index) {
                       Contact contact = contacts[index];
-                      String displayName = contact.displayName ?? 'No Name';
+                      String displayName = contact.displayName ?? 'No Name';  // Display contact name or placeholder
                       String phoneNumber = (contact.phones?.isNotEmpty ?? false)
                           ? contact.phones!.first.value ?? 'No Phone Number'
-                          : 'No Phone Number';
+                          : 'No Phone Number';  // Display first phone number or placeholder
 
                       return ListTile(
                         title: Text(displayName),
@@ -103,7 +63,7 @@ class _MobileContactsState extends State<MobileContacts> {
                     },
                   ),
                 ),
-                if (isLoadingMore) // Show loading indicator when more contacts are being fetched
+                if (isLoadingMore) // Show loading indicator while fetching more contacts
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircularProgressIndicator(),
@@ -111,8 +71,49 @@ class _MobileContactsState extends State<MobileContacts> {
               ],
             )
           : Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(),  // Loading indicator while contacts are being loaded
             ),
     );
+  }
+
+  /// Fetch initial batch of contacts from the device
+  void getContacts() async {
+    if (await Permission.contacts.request().isGranted) {  // Check and request contact permission
+      try {
+        Iterable<Contact> mobileContacts = await ContactsService.getContacts();
+        setState(() {
+          contacts = mobileContacts.take(currentBatchSize).toList();  // Take the first batch of contacts
+        });
+      } catch (e) {
+        print("Error fetching contacts: $e");  // Log error if fetching fails
+      }
+    } else {
+      // Show permission error message if permission is denied
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Permission to access contacts denied')),
+      );
+    }
+  }
+
+  /// Load additional contacts when user scrolls to the end
+  void loadMoreContacts() async {
+    setState(() {
+      isLoadingMore = true;  // Set loading indicator to true
+    });
+    try {
+      Iterable<Contact> mobileContacts = await ContactsService.getContacts();
+      int nextBatchSize = currentBatchSize + 20;  // Increase batch size for additional contacts
+      List<Contact> contactsToAdd = mobileContacts.take(nextBatchSize).toList();
+      setState(() {
+        contacts = contactsToAdd;  // Update the contact list with new batch
+        currentBatchSize = nextBatchSize;  // Update current batch size
+      });
+    } catch (e) {
+      print("Error fetching more contacts: $e");  // Log error if fetching fails
+    } finally {
+      setState(() {
+        isLoadingMore = false;  // Reset loading indicator after data is fetched
+      });
+    }
   }
 }

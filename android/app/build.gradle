@@ -38,8 +38,8 @@ android {
         applicationId = "com.example.cypheron"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdkVersion = 21       // Set your desired minimum SDK version here
+        targetSdkVersion = 33    // Set your target SDK version here
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }

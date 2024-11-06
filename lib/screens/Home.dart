@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/models/UserModel.dart';  // The UserModel
-import 'package:cypheron/services/HiveService.dart';
-import 'auth/SignIn.dart';
-import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/widgets/ContactsList.dart';  
-import 'package:cypheron/widgets/buttons/addContactsButton.dart'; 
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'dart:io';
+import 'package:cypheron/models/UserModel.dart';  // Model for user data
 import 'package:flutter/services.dart';
-import 'package:cypheron/services/ffi_service.dart';  // Import the FFI class
-import 'dart:convert';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
-import 'package:cypheron/helpers/file_helper.dart';
-import 'dart:typed_data';
+import 'auth/SignIn.dart';  // Screen to navigate for signing in
+import 'package:cypheron/services/HiveService.dart';  // Service to manage local data storage
+import 'package:cypheron/services/ffi_service.dart';  // Service for encryption and decryption
+import 'package:cypheron/models/ContactModel.dart';  // Model for contacts
+import 'package:cypheron/widgets/ContactsList.dart';  // Widget to display contact list
+import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button widget for adding contacts
 
-
+/// Home screen that displays user's contacts and enables decryption of shared files.
 class Home extends StatefulWidget {
-  final UserModel? user;          // Make UserModel optional
-  final String? initialFilePath;  // Add an optional file path for decryption
+  final UserModel? user;          // Optional UserModel, representing the current user
+  final String? initialFilePath;  // Optional initial file path for decryption if a shared file is provided
 
   Home({this.user, this.initialFilePath});
 
@@ -27,38 +20,94 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<ContactModel> contactList = [];
-  bool isSaving = false;  // To show a loading indicator during save process
-  static const platform = MethodChannel('com.example.cypheron/share');
-  String? sharedFilePath;
+  List<ContactModel> contactList = [];  // List to store user's contacts
+  bool isSaving = false;                // Loading indicator for saving process
+  static const platform = MethodChannel('com.example.cypheron/share');  // Method channel for handling file sharing
+  String? sharedFilePath;               // Path to the shared file to decrypt
 
   @override
   void initState() {
     super.initState();
 
-    // Check for shared file path on initialization
+    // Initialize shared file handling or decrypt initial file if provided
     if (widget.initialFilePath != null) {
       _askForDecryptionKey(widget.initialFilePath!);
     } else {
-      _getSharedFile(); // Handle shared file via method channel if no initial path
+      _getSharedFile();  // Handle shared file via method channel if no initial path
     }
 
-    // Load contacts if user is available
+    // Load contacts if a user is provided
     if (widget.user != null) {
       _loadContactsByIds(widget.user!.contactIds);
     }
 
-    // Listen for files received while app is open
+    // Listen for new files shared while app is open
     platform.setMethodCallHandler((call) async {
       if (call.method == "fileReceived") {
         setState(() {
           sharedFilePath = call.arguments;
         });
-        _askForDecryptionKey(sharedFilePath!);
+        _askForDecryptionKey(sharedFilePath!);  // Ask user for decryption key
       }
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home'),
+        actions: [
+          // Logout button to navigate to SignIn screen
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignIn()));
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Display welcome message if user is signed in
+          if (widget.user != null)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Text(
+                  'Welcome, ${widget.user?.name ?? ''}!',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          if (isSaving)  // Show loading indicator when saving
+            LinearProgressIndicator(),
+          // Display list of contacts if available
+          if (contactList.isNotEmpty) 
+            Expanded(
+              child: ContactList(contactList: contactList),
+            ),
+          // Message prompting user to add contacts if list is empty
+          if (contactList.isEmpty && !isSaving)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Add or View Contacts',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+        ],
+      ),
+      // Show floating action button to add new contacts if user is signed in
+      floatingActionButton: widget.user != null
+          ? buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
+          : null,
+    );
+  }
+
+  /// Fetches a shared file from the method channel.
   Future<void> _getSharedFile() async {
     try {
       final uriPath = await platform.invokeMethod('getSharedFile');
@@ -66,13 +115,14 @@ class _HomeState extends State<Home> {
         setState(() {
           sharedFilePath = uriPath;
         });
-        _askForDecryptionKey(sharedFilePath!);
+        _askForDecryptionKey(sharedFilePath!);  // Prompt for decryption key if file is shared
       }
     } on PlatformException catch (e) {
       print("Failed to get shared file: '${e.message}'.");
     }
   }
 
+  /// Prompts the user to enter a decryption key for the shared file.
   void _askForDecryptionKey(String filePath) async {
     String? keyword = await showDialog<String>(
       context: context,
@@ -98,32 +148,34 @@ class _HomeState extends State<Home> {
     );
 
     if (keyword != null && keyword.isNotEmpty) {
-      _decryptFile(filePath, keyword);
+      _decryptFile(filePath, keyword);  // Initiate decryption if a keyword is provided
     }
   }
 
+  /// Decrypts the file using the provided key and displays the content in a dialog.
   void _decryptFile(String uriPath, String keyword) async {
     print("decrypting");
     try {
-      // Use the helper method to read the URI content as bytes
+      // Request to open the file as bytes using method channel
       final fileBytes = await platform.invokeMethod('openFileAsBytes', uriPath);
       if (fileBytes == null) {
         print("Failed to read file content.");
         return;
       }
 
-      // Convert the byte data to a string for decryption
+      // Convert byte data to a string for decryption
       final encryptedContent = String.fromCharCodes(fileBytes);
       print("encryptedContent length: ${encryptedContent.length}");
 
+      // Use FFI service for decryption
       final cypherFFI = CypherFFI();
       final decryptedContent = cypherFFI.runCypher(
         encryptedContent,
         keyword,
-        'd', // Flag for decryption
+        'd',  // Flag for decryption
       );
 
-      // Display the decrypted content
+      // Show decrypted content in an alert dialog
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -149,19 +201,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-
-  // Future<Stream<List<int>>> _openFileAsStream(Uri uri) async {
-  //   if (Platform.isAndroid) {
-  //     // Use contentResolver to handle URIs that may not directly map to file paths
-  //     final byteData = await platform.invokeMethod('openFileAsBytes', uri.toString());
-  //     return Stream.value(byteData.buffer.asUint8List());
-  //   } else {
-  //     // For iOS or platforms where URI represents a file directly
-  //     return File.fromUri(uri).openRead();
-  //   }
-  // }
-
-  // Load contacts from Hive using contactIds
+  /// Loads contacts from Hive database using provided contact IDs.
   void _loadContactsByIds(List<String> contactIds) async {
     List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
     setState(() {
@@ -169,21 +209,21 @@ class _HomeState extends State<Home> {
     });
   }
 
-  // Add new contact and initiate async save
+  /// Adds a new contact and saves it asynchronously to Hive.
   void _addNewContact(ContactModel newContact) {
     setState(() {
-      contactList.add(newContact);  // Instant UI update
-      isSaving = true;  // Start loading indicator
+      contactList.add(newContact);  // Update UI instantly
+      isSaving = true;  // Start showing loading indicator
     });
 
-    // Save contact and update user contact list asynchronously
+    // Save contact to database and update user's contact list
     HiveService.saveContact(widget.user!, newContact).then((success) {
       if (success) {
         setState(() {
-          isSaving = false;  // Stop showing the loading indicator
+          isSaving = false;  // Stop showing loading indicator on success
         });
       } else {
-        // Handle failure (e.g., remove contact from UI)
+        // If saving fails, revert UI and show error message
         setState(() {
           contactList.remove(newContact);  // Revert UI changes
           isSaving = false;
@@ -193,55 +233,5 @@ class _HomeState extends State<Home> {
         );
       }
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignIn()));
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (widget.user != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  'Welcome, ${widget.user?.name ?? ''}!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          if (isSaving)  // Show a loading indicator when saving
-            LinearProgressIndicator(),
-          if (contactList.isNotEmpty) 
-            Expanded(
-              child: ContactList(contactList: contactList),
-            ),
-          if (contactList.isEmpty && !isSaving)
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Add or View Contacts',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-        ],
-      ),
-      floatingActionButton: widget.user != null
-          ? buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
-          : null,
-    );
   }
 }

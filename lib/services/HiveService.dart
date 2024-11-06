@@ -2,94 +2,95 @@ import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:hive/hive.dart';
 // import 'package:uuid/uuid.dart';
 
-import 'package:cypheron/models/UserModel.dart'; // The UserModel
-import 'package:cypheron/models/ContactModel.dart';  // Import ContactModel
-import 'package:cypheron/models/MessageModel.dart';  // Import MessageModel
+import 'package:cypheron/models/UserModel.dart'; // Import the UserModel
+import 'package:cypheron/models/ContactModel.dart';  // Import the ContactModel
+import 'package:cypheron/models/MessageModel.dart';  // Import the MessageModel
 
+/// A service class to handle database operations using Hive.
 class HiveService {
-
+  
+  /// Initializes Hive and registers adapters for each model.
   static Future<void> init() async {
-    await Hive.initFlutter();
+    await Hive.initFlutter();  // Initialize Hive for Flutter
 
-    // Register the adapter
+    // Register adapters for each model to enable their use in Hive
     Hive.registerAdapter(UserModelAdapter());
     Hive.registerAdapter(ContactModelAdapter());
     Hive.registerAdapter(MessageModelAdapter());
-
-
   }
 
+  /// Adds a new user to the Hive 'users' box.
+  /// Returns `true` if the user is successfully added, `false` otherwise.
   static Future<bool> addUser(UserModel user) async {
     try {
-      var box = await Hive.openBox<UserModel>('users');  // Open box
-      await box.put(user.userId, user);  // Perform operation
+      var box = await Hive.openBox<UserModel>('users');  // Open the 'users' box
+      await box.put(user.userId, user);  // Add the user with userId as the key
       await box.close();  // Close the box after the operation
-      return true;  // Return true if the user was added successfully
+      return true;  // Indicate successful addition
     } catch (error) {
       print('Error adding user: $error');
-      return false;  // Return false if there was an error
+      return false;  // Indicate failure in case of error
     }
   }
 
-  // Function to retrieve a user by email asynchronously
+  /// Retrieves a user by email from the Hive 'users' box.
+  /// Returns the user if found, otherwise returns `null`.
   static Future<UserModel?> getUserByEmail(String email) async {
-    var box = await Hive.openBox<UserModel>('users');  // Open the box asynchronously
+    var box = await Hive.openBox<UserModel>('users');  // Open the 'users' box
 
     try {
-      // Find user with the matching email
+      // Search for the user with a matching email
       var user = box.values.firstWhere(
         (user) => user.email == email,
-        orElse: () => throw StateError("No user found"),  // Throw exception if not found
+        orElse: () => throw StateError("No user found"),  // Exception if not found
       );
-      
-      return user;  // Return user if found
+      return user;  // Return the found user
     } catch (e) {
-      // Print the error and return null if not found
+      // Print error message and return null if no user found
       print("Error: $e");
       return null;
     }
   }
 
-  // Load contacts from Hive using their contact IDs
+  /// Loads contacts from Hive by their IDs.
+  /// Takes a list of contact IDs and returns a list of loaded contacts.
   static Future<List<ContactModel>> loadContactsByIds(List<String> contactIds) async {
     var box = await Hive.openBox<ContactModel>('contacts');  // Open the 'contacts' box
 
-    List<ContactModel> loadedContacts = [];  // List to store loaded contacts
+    List<ContactModel> loadedContacts = [];  // Initialize list for storing loaded contacts
 
-    // Iterate over each contact ID and load the corresponding contact from Hive
+    // Load each contact from Hive based on its ID and add to list if it exists
     for (String contactId in contactIds) {
-      ContactModel? contact = box.get(contactId);  // Get the contact by its ID
+      ContactModel? contact = box.get(contactId);  // Retrieve contact by ID
       if (contact != null) {
-        loadedContacts.add(contact);  // Add to list if it exists
+        loadedContacts.add(contact);  // Add to loadedContacts if found
       }
     }
 
     return loadedContacts;  // Return the list of loaded contacts
   }
 
-  // Function to save a contact and update the user's contact list
+  /// Saves a new contact and updates the associated user's contact list.
+  /// Returns `true` if both operations succeed, `false` otherwise.
   static Future<bool> saveContact(UserModel user, ContactModel newContact) async {
-
     try {
-      // Open the contacts box
+      // Open the 'contacts' box to save the new contact
       var contactBox = await Hive.openBox<ContactModel>('contacts');
       
-      // Save the contact to Hive
+      // Save the new contact using its ID as the key
       await contactBox.put(newContact.id, newContact);
 
-      // After saving the contact, update the user's contactIds list
+      // Update the user's contactIds list by adding the new contact's ID
       user.contactIds.add(newContact.id);
 
-      // Now, open the user box to update the user
+      // Open the 'users' box to save the updated user
       var userBox = await Hive.openBox<UserModel>('users');
-      await userBox.put(user.userId, user);  // Save the updated user with the new contact ID
+      await userBox.put(user.userId, user);  // Save the updated user
 
-      return true;  // Return success
+      return true;  // Indicate success of the save operation
     } catch (e) {
       print('Error saving contact or updating user: $e');
-      return false;  // Return failure in case of any error
+      return false;  // Indicate failure in case of an error
     }
   }
-
-
 }
