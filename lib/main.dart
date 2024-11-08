@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'services/HiveService.dart';
 import 'screens/Welcome.dart';
-import 'screens/Home.dart';
+import 'screens/Decryptor.dart';
 
 // Entry point for the application.
 void main() async {
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
       ),
       // Display either Home or Welcome screen based on shared file availability.
       home: sharedFilePath != null
-          ? Home(initialFilePath: sharedFilePath) // Open Home if a shared file is provided.
+          ? Decryptor(initialFilePath: sharedFilePath) // Open Home if a shared file is provided.
           : Welcome(), // Default to Welcome screen if no file is shared.
     );
   }
