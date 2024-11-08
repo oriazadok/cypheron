@@ -154,7 +154,6 @@ class _HomeState extends State<Home> {
 
   /// Decrypts the file using the provided key and displays the content in a dialog.
   void _decryptFile(String uriPath, String keyword) async {
-    print("decrypting");
     try {
       // Request to open the file as bytes using method channel
       final fileBytes = await platform.invokeMethod('openFileAsBytes', uriPath);

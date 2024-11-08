@@ -96,7 +96,6 @@ class _SignUpState extends State<SignUp> {
                   if (_formKey.currentState!.validate()) {
                     // Calls the signup function and checks if it returns a valid user
                     UserModel? signUpSuccessful = await _handleSignUp();
-                    print("signUpSuccessful: $signUpSuccessful");
 
                     if (signUpSuccessful != null) {
                       // If signup is successful, navigate to Home screen

@@ -70,7 +70,6 @@ class _ContactInfoState extends State<ContactInfo> {
 
   /// Decrypts and displays a message in a dialog
   void _showDecryptedMessage(BuildContext context, MessageModel message) async {
-    print("message.body: ${message.body.length}");  // Log the message length for debugging
     // Ask user for decryption key using an input dialog
     String? keyword = await showDialog<String>(
       context: context,
