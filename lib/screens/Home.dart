@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome ${widget.user?.name ?? ''}!'),
+        title: Text("Cypheron"),
         actions: [
           // Logout button to navigate to SignIn screen
           IconButton(
@@ -54,20 +54,9 @@ class _HomeState extends State<Home> {
             if (isSaving)  // Show loading indicator when saving
               LinearProgressIndicator(),
             // Display list of contacts if available
-            if (contactList.isNotEmpty) 
-              Expanded(
-                child: ContactList(contactList: contactList),
-              ),
-            // Message prompting user to add contacts if list is empty
-            if (contactList.isEmpty && !isSaving)
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Add or Import Contacts',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
+            Expanded(
+              child: ContactList(contactList: contactList),
+            ),
           ],
         ),
     ),
