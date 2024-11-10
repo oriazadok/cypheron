@@ -24,74 +24,89 @@ class _SignInState extends State<SignIn> {
       appBar: AppBar(
         title: Text('Sign In'),  // Title of the SignIn screen
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),  // Add padding around the form
-        child: Form(
-          key: _formKey,  // Attach form key to enable validation
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Email input field with validation
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,  // Set input type to email
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';  // Error if email is empty
-                  }
-                  return null;  // Valid input
-                },
-              ),
-              SizedBox(height: 20),  // Add spacing
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),  // Add padding around the form
+            child: Form(
+              key: _formKey,  // Attach form key to enable validation
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
 
-              // Password input field with validation
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,  // Hide input text for privacy
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';  // Error if password is empty
-                  }
-                  return null;  // Valid input
-                },
-              ),
-              SizedBox(height: 20),  // Add spacing
+                  // Heading text for Sign In
+                  Text(
+                    'Sign In',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                  ),
+                  SizedBox(height: 30),  // Add spacing after heading
+                  // Email input field with validation
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(labelText: 'Email'),
+                    keyboardType: TextInputType.emailAddress,  // Set input type to email
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';  // Error if email is empty
+                      }
+                      return null;  // Valid input
+                    },
+                  ),
+                  SizedBox(height: 20),  // Add spacing
 
-              // Display error message if any, in red color
-              if (errorMessage.isNotEmpty)
-                Text(
-                  errorMessage,
-                  style: TextStyle(color: Colors.red),
-                ),
-              SizedBox(height: 20),  // Add spacing
+                  // Password input field with validation
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(labelText: 'Password'),
+                    obscureText: true,  // Hide input text for privacy
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';  // Error if password is empty
+                      }
+                      return null;  // Valid input
+                    },
+                  ),
+                  SizedBox(height: 20),  // Add spacing
 
-              // Sign In button to trigger the sign-in process
-              ElevatedButton(
-                onPressed: () async {
-                  // Validate the form fields
-                  if (_formKey.currentState!.validate()) {
-                    UserModel? signInSuccessful = await signInUser();  // Call sign-in logic
-                    if (signInSuccessful != null) {
-                      // If sign-in succeeds, navigate to Home screen with user data
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Home(user: signInSuccessful),
-                        ),
-                      );
-                    } else {
-                      // Set an error message if sign-in fails
-                      setState(() {
-                        errorMessage = 'Invalid email or password';
-                      });
-                    }
-                  }
-                },
-                child: Text('Sign In'),  // Button text
+                  // Display error message if any, in red color
+                  if (errorMessage.isNotEmpty)
+                    Text(
+                      errorMessage,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  SizedBox(height: 20),  // Add spacing
+
+                  // Sign In button to trigger the sign-in process
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Validate the form fields
+                      if (_formKey.currentState!.validate()) {
+                        UserModel? signInSuccessful = await signInUser();  // Call sign-in logic
+                        if (signInSuccessful != null) {
+                          // If sign-in succeeds, navigate to Home screen with user data
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Home(user: signInSuccessful),
+                            ),
+                          );
+                        } else {
+                          // Set an error message if sign-in fails
+                          setState(() {
+                            errorMessage = 'Invalid email or password';
+                          });
+                        }
+                      }
+                    },
+                    child: Text('Sign In'),  // Button text
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
