@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/widgets/buttons/SignUpButton.dart';
 import 'package:cypheron/widgets/buttons/SignInButton.dart';
 
+import 'package:cypheron/ui/bg.dart';
+
 /// Welcome screen with an improved dark-themed UI.
 class Welcome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // Dark gradient background with a sleek design.
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0D0D0D), Color(0xFF1C1C1C)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+      body: GradientBackground(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(20.0),

@@ -6,6 +6,8 @@ import 'package:cypheron/models/ContactModel.dart';  // Model for contacts
 import 'package:cypheron/widgets/ContactsList.dart';  // Widget to display contact list
 import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button widget for adding contacts
 
+import 'package:cypheron/ui/bg.dart';
+
 /// Home screen that displays user's contacts and enables decryption of shared files.
 class Home extends StatefulWidget {
   final UserModel? user;          // Optional UserModel, representing the current user
@@ -35,7 +37,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Welcome ${widget.user?.name ?? ''}!'),
         actions: [
           // Logout button to navigate to SignIn screen
           IconButton(
@@ -46,39 +48,29 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Display welcome message if user is signed in
-          if (widget.user != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  'Welcome, ${widget.user?.name ?? ''}!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+      body: GradientBackground(
+        child: Column(
+          children: [
+            if (isSaving)  // Show loading indicator when saving
+              LinearProgressIndicator(),
+            // Display list of contacts if available
+            if (contactList.isNotEmpty) 
+              Expanded(
+                child: ContactList(contactList: contactList),
+              ),
+            // Message prompting user to add contacts if list is empty
+            if (contactList.isEmpty && !isSaving)
+              Expanded(
+                child: Center(
+                  child: Text(
+                    'Add or Import Contacts',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
               ),
-            ),
-          if (isSaving)  // Show loading indicator when saving
-            LinearProgressIndicator(),
-          // Display list of contacts if available
-          if (contactList.isNotEmpty) 
-            Expanded(
-              child: ContactList(contactList: contactList),
-            ),
-          // Message prompting user to add contacts if list is empty
-          if (contactList.isEmpty && !isSaving)
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Add or View Contacts',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-        ],
-      ),
+          ],
+        ),
+    ),
       // Show floating action button to add new contacts if user is signed in
       floatingActionButton: widget.user != null
           ? buildFloatingActionButton(context, widget.user!.userId, _addNewContact)

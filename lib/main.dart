@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'services/HiveService.dart';
 import 'screens/Welcome.dart';
 import 'screens/Decryptor.dart';
+import 'ui/theme.dart';
 
 // Entry point for the application.
 void main() async {
@@ -32,6 +33,28 @@ class _MyAppState extends State<MyApp> {
     _getInitialSharedFile(); // Check if there is an initial shared file when the app starts.
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Cypheron', // App title shown on the device.
+
+      // Define a light theme (not used but required for compatibility).
+      theme: ThemeData.light(),
+
+      // Define the dark theme with your customizations.
+      darkTheme: getDarkTheme(),
+
+      // Force the app to always use the dark theme.
+      themeMode: ThemeMode.dark,
+
+      // Define the initial screen based on shared file availability.
+      home: sharedFilePath != null
+          ? Decryptor(initialFilePath: sharedFilePath)
+          : Welcome(),
+    );
+  }
+
+
   // Retrieves the shared file's path from native code, if available.
   // This allows the app to process files shared with it by other apps.
   Future<void> _getInitialSharedFile() async {
@@ -51,44 +74,4 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Cypheron', // App title shown on the device.
-      theme: ThemeData(
-        primarySwatch: Colors.blue, // Set the primary color theme.
-      ),
-      darkTheme: ThemeData.dark().copyWith(
-        primaryColor: Colors.deepPurpleAccent,
-        scaffoldBackgroundColor: Colors.black,
-        textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.grey[300]),
-          titleLarge: TextStyle(color: Colors.deepPurpleAccent),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurpleAccent,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.grey[800],
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.deepPurpleAccent),
-          ),
-        ),
-      ),
-
-      // Display either Home or Welcome screen based on shared file availability.
-      home: sharedFilePath != null
-          ? Decryptor(initialFilePath: sharedFilePath) // Open Decryptor if a shared file is provided.
-          : Welcome(), // Default to Welcome screen if no file is shared.
-    );
-  }
 }
