@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/widgets/buttons/SignUpButton.dart';
-import 'package:cypheron/widgets/buttons/SignInButton.dart';
-
+import 'package:cypheron/widgets/buttons/NavigationButton.dart';
+import 'package:cypheron/screens/auth/SignIn.dart';
+import 'package:cypheron/screens/auth/SignUp.dart';
 import 'package:cypheron/ui/bg.dart';
 
 /// Welcome screen with an improved dark-themed UI.
@@ -46,11 +46,11 @@ class Welcome extends StatelessWidget {
                 ),
                 SizedBox(height: 40),
 
-                SignInButton(),
+                NavigationButton(label: 'Sign In', destination: SignIn()),
                 SizedBox(height: 20),
 
                 // Sign Up button with similar styling.
-                SignUpButton(),
+                NavigationButton(label: 'Sign Up', destination: SignUp()),
               ],
             ),
           ),
