@@ -58,9 +58,36 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue, // Set the primary color theme.
       ),
+      darkTheme: ThemeData.dark().copyWith(
+        primaryColor: Colors.deepPurpleAccent,
+        scaffoldBackgroundColor: Colors.black,
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.grey[300]),
+          titleLarge: TextStyle(color: Colors.deepPurpleAccent),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurpleAccent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.grey[800],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.deepPurpleAccent),
+          ),
+        ),
+      ),
+
       // Display either Home or Welcome screen based on shared file availability.
       home: sharedFilePath != null
-          ? Decryptor(initialFilePath: sharedFilePath) // Open Home if a shared file is provided.
+          ? Decryptor(initialFilePath: sharedFilePath) // Open Decryptor if a shared file is provided.
           : Welcome(), // Default to Welcome screen if no file is shared.
     );
   }
