@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
+import 'package:cypheron/ui/FormUI.dart';
 
-/// Screen to create a new contact with a name and phone number
-class NewContact extends StatefulWidget {
-  @override
-  _NewContactState createState() => _NewContactState();
-}
-
-class _NewContactState extends State<NewContact> {
-  // Controllers to manage input fields for name and phone number
+/// Screen to create a new contact with a name and phone number.
+class NewContact extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
@@ -16,56 +11,52 @@ class _NewContactState extends State<NewContact> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Contact'),  // Title for the screen
+        title: Text('Create New Contact'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),  // Add padding around content
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,  // Center contents vertically
-          children: [
-            // TextField for entering the contact name
-            TextField(
-              controller: _nameController,  // Attach controller to capture input
-              decoration: InputDecoration(labelText: 'Name'),  // Label for the input field
-            ),
-            SizedBox(height: 20),  // Add vertical space
+      body: FormUI(
+        title: 'New Contact',
+        
+        // Input fields for the form
+        inputFields: [
+          TextFormField(
+            controller: _nameController,
+            decoration: InputDecoration(labelText: 'Name'),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a name';
+              }
+              return null;
+            },
+          ),
+          SizedBox(height: 20),
+          TextFormField(
+            controller: _phoneController,
+            decoration: InputDecoration(labelText: 'Phone Number'),
+            keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a phone number';
+              }
+              return null;
+            },
+          ),
+        ],
 
-            // TextField for entering the contact phone number
-            TextField(
-              controller: _phoneController,  // Attach controller to capture input
-              decoration: InputDecoration(labelText: 'Phone Number'),  // Label for the input field
-              keyboardType: TextInputType.phone,  // Display numeric keyboard for phone input
-            ),
-            SizedBox(height: 20),  // Add vertical space
+        // onSubmit callback for when the form is successfully submitted
+        onClick: () {
+          String name = _nameController.text;
+          String phone = _phoneController.text;
 
-            // Button to add the new contact
-            ElevatedButton(
-              onPressed: () {
-                String name = _nameController.text;  // Get the name from input
-                String phone = _phoneController.text;  // Get the phone number from input
+          if (name.isNotEmpty && phone.isNotEmpty) {
 
-                if (name.isNotEmpty && phone.isNotEmpty) {
-                  // If both fields are filled, proceed to add contact
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Contact $name added')),  // Confirmation message
-                  );
+            // Create new contact and return it to the previous screen
+            ContactModel newContact = ContactModel(name: name, phoneNumber: phone);
+            Navigator.pop(context, newContact);
+          }
+        },
 
-                  // Create a new ContactModel instance with provided details
-                  ContactModel newContact = ContactModel(name: name, phoneNumber: phone);
-
-                  // Return the new contact to the previous screen
-                  Navigator.pop(context, newContact);
-                } else {
-                  // Show error message if any field is left empty
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please fill in all fields')),
-                  );
-                }
-              },
-              child: Text('Add Contact'),  // Button label
-            ),
-          ],
-        ),
+        // Customize submit button text
+        buttonText: 'Add Contact',
       ),
     );
   }
