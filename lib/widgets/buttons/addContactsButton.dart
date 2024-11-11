@@ -1,77 +1,94 @@
-import 'package:cypheron/screens/NewContact.dart';
+// lib/widgets/build_floating_action_button.dart
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:cypheron/screens/NewContact.dart';
 import 'package:cypheron/screens/MobileContacts.dart';
 import 'package:cypheron/models/ContactModel.dart';
 
-/// Builds a floating action button that provides options for adding contacts.
+import 'package:cypheron/widgets/CustomDialog.dart';
+
+/// Builds a floating action button with a dark-themed menu for adding contacts.
 FloatingActionButton buildFloatingActionButton(
     BuildContext context, String userId, Function(ContactModel) onAddContact) {
   return FloatingActionButton(
-    // Action triggered when the button is pressed
+    backgroundColor: Colors.deepPurpleAccent,
+    elevation: 8,
     onPressed: () {
-      // Show a dialog with contact-adding options
-      showDialog(
+      CustomDialog.showCustomDialog(
         context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            // Title of the dialog
-            title: Text('Choose an action'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Option to create a new contact manually
-                ListTile(
-                  leading: Icon(Icons.person_add),  // Icon for new contact
-                  title: Text('Create New Contact'),
-                  onTap: () async {
-                    // Navigate to NewContact screen to create a contact
-                    final ContactModel? newContact = await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => NewContact()),
-                    );
-                    // If a new contact was created, add it to the list
-                    if (newContact != null) {
-                      onAddContact(newContact);  // Add contact using callback
-                    }
-                    Navigator.pop(context);  // Close the dialog
-                  },
-                ),
-                // Option to import a contact from the device
-                ListTile(
-                  leading: Icon(Icons.contacts),  // Icon for mobile contacts
-                  title: Text('Get Contacts from Mobile'),
-                  onTap: () async {
-                    // Navigate to MobileContacts screen to select a contact
-                    final Contact? contact = await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MobileContacts()),
-                    );
-                    // If a contact was selected, extract details and add it
-                    if (contact != null) {
-                      String contactName = contact.displayName ?? 'No Name';
-                      String contactPhone = (contact.phones != null && contact.phones!.isNotEmpty)
-                          ? contact.phones!.first.value ?? 'No Phone'
-                          : 'No Phone';
-
-                      // Create a new ContactModel with selected contact details
-                      ContactModel newContact = ContactModel(
-                        name: contactName,
-                        phoneNumber: contactPhone,
-                      );
-
-                      onAddContact(newContact);  // Add contact using callback
-                    }
-                    Navigator.pop(context);  // Close the dialog
-                  },
-                ),
-              ],
+        title: "Choose an Action",
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildMenuOption(
+              context,
+              icon: Icons.person_add_alt_1,
+              text: 'Create New Contact',
+              onTap: () async {
+                final ContactModel? newContact = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NewContact()),
+                );
+                if (newContact != null) {
+                  onAddContact(newContact);
+                }
+                Navigator.pop(context);
+              },
             ),
-          );
-        },
+            SizedBox(height: 15),
+            _buildMenuOption(
+              context,
+              icon: Icons.contacts,
+              text: 'Import from Mobile',
+              onTap: () async {
+                final Contact? contact = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MobileContacts()),
+                );
+                if (contact != null) {
+                  String contactName = contact.displayName ?? 'No Name';
+                  String contactPhone = (contact.phones?.isNotEmpty ?? false)
+                      ? contact.phones!.first.value ?? 'No Phone'
+                      : 'No Phone';
+
+                  ContactModel newContact = ContactModel(
+                    name: contactName,
+                    phoneNumber: contactPhone,
+                  );
+
+                  onAddContact(newContact);
+                }
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        actions: [],
       );
     },
-    child: Icon(Icons.add),  // Icon on the button
-    tooltip: 'Add Contact',  // Tooltip displayed on long press
+    child: Icon(Icons.add, color: Colors.white, size: 28),
+    tooltip: 'Add Contact',
+  );
+}
+
+/// Helper method to build a menu option with consistent styling.
+Widget _buildMenuOption(BuildContext context, {required IconData icon, required String text, required VoidCallback onTap}) {
+  return ListTile(
+    leading: Icon(icon, color: Colors.deepPurpleAccent, size: 28),
+    title: Text(
+      text,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.1,
+      ),
+    ),
+    contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15.0),
+    ),
+    tileColor: Color(0xFF2C2C34),
+    onTap: onTap,
   );
 }

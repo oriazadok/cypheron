@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/widgets/buttons/NavigationButton.dart';
 import 'package:cypheron/screens/auth/SignIn.dart';
 import 'package:cypheron/screens/auth/SignUp.dart';
-import 'package:cypheron/ui/bg.dart';
+import 'package:cypheron/ui/BackgroundUI.dart';
 
 /// Welcome screen with an improved dark-themed UI.
 class Welcome extends StatelessWidget {

@@ -6,7 +6,7 @@ import 'package:cypheron/models/ContactModel.dart';  // Model for contacts
 import 'package:cypheron/widgets/ContactsList.dart';  // Widget to display contact list
 import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button widget for adding contacts
 
-import 'package:cypheron/ui/bg.dart';
+import 'package:cypheron/ui/BackgroundUI.dart';
 
 /// Home screen that displays user's contacts and enables decryption of shared files.
 class Home extends StatefulWidget {
@@ -61,9 +61,7 @@ class _HomeState extends State<Home> {
         ),
     ),
       // Show floating action button to add new contacts if user is signed in
-      floatingActionButton: widget.user != null
-          ? buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
-          : null,
+      floatingActionButton: buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
     );
   }
 
