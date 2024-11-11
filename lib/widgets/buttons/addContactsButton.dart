@@ -25,6 +25,7 @@ FloatingActionButton buildFloatingActionButton(
               icon: Icons.person_add_alt_1,
               text: 'Create New Contact',
               onTap: () async {
+                Navigator.pop(context);
                 final ContactModel? newContact = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => NewContact()),
@@ -32,7 +33,6 @@ FloatingActionButton buildFloatingActionButton(
                 if (newContact != null) {
                   onAddContact(newContact);
                 }
-                Navigator.pop(context);
               },
             ),
             SizedBox(height: 15),
@@ -41,6 +41,7 @@ FloatingActionButton buildFloatingActionButton(
               icon: Icons.contacts,
               text: 'Import from Mobile',
               onTap: () async {
+                Navigator.pop(context);
                 final Contact? contact = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MobileContacts()),
@@ -58,7 +59,6 @@ FloatingActionButton buildFloatingActionButton(
 
                   onAddContact(newContact);
                 }
-                Navigator.pop(context);
               },
             ),
           ],
