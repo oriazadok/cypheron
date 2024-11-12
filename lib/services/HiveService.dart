@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:hive/hive.dart';
-// import 'package:uuid/uuid.dart';
+import 'package:contacts_service/contacts_service.dart'; // Import for contacts service
+import 'package:permission_handler/permission_handler.dart'; // Import for permission handling
+import 'dart:async';
 
 import 'package:cypheron/models/UserModel.dart'; // Import the UserModel
 import 'package:cypheron/models/ContactModel.dart';  // Import the ContactModel
@@ -93,4 +94,68 @@ class HiveService {
       return false;  // Indicate failure in case of an error
     }
   }
+
+
+
+  /// Loads contacts if needed based on the last updated timestamp.
+  static Future<void> loadContactsIfNeeded() async {
+    final contactsBox = await Hive.openBox('contactsBox');
+    DateTime now = DateTime.now();
+    DateTime? lastUpdated = contactsBox.get('lastUpdated') as DateTime?;
+
+    if (lastUpdated == null || now.difference(lastUpdated).inHours >= 24) {
+      print("Contacts are outdated or not loaded yet. Fetching contacts...");
+      await _fetchAndStoreContacts();
+    } else {
+      print("Contacts are up-to-date.");
+    }
+  }
+
+  /// Fetches and stores contacts in Hive.
+  static Future<void> _fetchAndStoreContacts() async {
+    final contactsBox = await Hive.openBox('contactsBox');
+
+    if (await Permission.contacts.request().isGranted) {
+      try {
+        Iterable<Contact> mobileContacts = await ContactsService.getContacts(withThumbnails: false);
+        List<Map<String, dynamic>> contactsList = mobileContacts.map((contact) {
+          return {
+            'displayName': contact.displayName ?? 'No Name',
+            'phoneNumber': (contact.phones?.isNotEmpty ?? false) ? contact.phones!.first.value ?? 'No Phone Number' : 'No Phone Number',
+          };
+        }).toList();
+
+        await contactsBox.put('contacts', contactsList);
+        await contactsBox.put('lastUpdated', DateTime.now());
+        print("Contacts stored in Hive: ${contactsList.length} contacts.");
+      } catch (e) {
+        print("Error fetching contacts: $e");
+      }
+    } else {
+      print("Permission denied. Unable to fetch contacts.");
+    }
+  }
+
+  /// Retrieves contacts from Hive.
+  static List<Map<String, dynamic>> getCachedContacts() {
+    final contactsBox = Hive.box('contactsBox');
+
+    // Retrieve the contacts list and cast it to List<Map<String, dynamic>>
+    final contacts = contactsBox.get('contacts', defaultValue: []);
+
+    // Ensure each item is cast to Map<String, dynamic>
+    return List<Map<String, dynamic>>.from(
+      contacts.map((item) => Map<String, dynamic>.from(item)),
+    );
+  }
+
+
+  /// Clears the cached contacts (for manual refresh).
+  static Future<void> clearCachedContacts() async {
+    final contactsBox = await Hive.openBox('contactsBox');
+    await contactsBox.delete('contacts');
+    await contactsBox.delete('lastUpdated');
+    print("Cached contacts cleared.");
+  }
+
 }
