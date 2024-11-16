@@ -28,7 +28,7 @@ class _FormUIState extends State<FormUI> {
       padding: const EdgeInsets.all(16.0),
       child: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          // padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -38,7 +38,7 @@ class _FormUIState extends State<FormUI> {
                 Text(
                   widget.title,
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.deepPurpleAccent,
                   ),
@@ -47,8 +47,7 @@ class _FormUIState extends State<FormUI> {
                 SizedBox(height: 20),
                 
                 // Input fields
-                ...widget.inputFields,
-                SizedBox(height: 20),
+                ..._buildInputFieldsWithSpacing(),
 
                 // Action button with validation check
                 ElevatedButton(
@@ -66,4 +65,17 @@ class _FormUIState extends State<FormUI> {
       ),
     );
   }
+
+  /// Helper method to interleave input fields with `SizedBox` for spacing.
+  List<Widget> _buildInputFieldsWithSpacing() {
+    List<Widget> spacedFields = [];
+    for (int i = 0; i < widget.inputFields.length; i++) {
+      spacedFields.add(widget.inputFields[i]);
+      if (i < widget.inputFields.length - 1) {
+        spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
+      }
+    }
+    return spacedFields;
+  }
+
 }
