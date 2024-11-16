@@ -4,12 +4,12 @@ import 'package:flutter/services.dart';
 import 'services/HiveService.dart';
 import 'screens/Welcome.dart';
 import 'screens/Decryptor.dart';
+
 import 'ui/theme.dart';
 
 void main() async {
-  // Initialize Hive and ensure services are ready before the app launches.
   await HiveService.init();
-  await HiveService.loadContactsIfNeeded(); // Load contacts if needed (on first run or if outdated).
+  await HiveService.loadContactsIfNeeded();
   runApp(MyApp());
 }
 
