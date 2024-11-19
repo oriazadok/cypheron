@@ -7,9 +7,11 @@ import 'dart:io';
 // import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
-import 'package:cypheron/widgets/buttons/addMessageButton.dart';
+
 import 'package:cypheron/widgets/MessageCard.dart';
 import 'package:cypheron/widgets/EmptyState.dart';
+
+import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 import 'package:cypheron/widgets/DecryptionDialog.dart';
 
 class ContactInfo extends StatefulWidget {
