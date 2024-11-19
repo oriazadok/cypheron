@@ -5,6 +5,7 @@ import 'package:cypheron/services/HiveService.dart';  // Service to manage local
 import 'package:cypheron/models/ContactModel.dart';  // Model for contacts
 import 'package:cypheron/widgets/ContactsList.dart';  // Widget to display contact list
 import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button widget for adding contacts
+import 'package:cypheron/widgets/EmptyContactState.dart';  // Button widget for adding contacts
 
 import 'package:cypheron/ui/BackgroundUI.dart';
 
@@ -55,7 +56,9 @@ class _HomeState extends State<Home> {
               LinearProgressIndicator(),
             // Display list of contacts if available
             Expanded(
-              child: ContactList(contactList: contactList),
+              child: contactList.isNotEmpty
+                  ? ContactList(contactList: contactList)
+                  : EmptyContactState(),
             ),
           ],
         ),
