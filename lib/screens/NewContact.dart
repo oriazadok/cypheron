@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/ui/FormUI.dart';
+import 'package:cypheron/widgets/GenericTextFormField.dart';
 
 /// Screen to create a new contact with a name and phone number.
 class NewContact extends StatelessWidget {
@@ -18,28 +19,14 @@ class NewContact extends StatelessWidget {
         
         // Input fields for the form
         inputFields: [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: 'Name'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a name';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 20),
-          TextFormField(
-            controller: _phoneController,
-            decoration: InputDecoration(labelText: 'Phone Number'),
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a phone number';
-              }
-              return null;
-            },
-          ),
+          GenericTextFormField.getTextFormField(
+                type: 'name',
+                controller: _nameController,
+              ),
+              GenericTextFormField.getTextFormField(
+                type: 'phone',
+                controller: _phoneController,
+              ),
         ],
 
         // onSubmit callback for when the form is successfully submitted
