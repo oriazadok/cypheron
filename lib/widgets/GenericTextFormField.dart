@@ -9,6 +9,19 @@ class GenericTextFormField {
     String labelText = '',
   }) {
     switch (type.toLowerCase()) {
+
+      case 'name':
+        return TextFormField(
+          controller: controller,
+          decoration: InputDecoration(labelText: labelText.isEmpty ? 'Name' : labelText),
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your name';
+            }
+            return null;
+          },
+        );
       case 'email':
         return TextFormField(
           controller: controller,
@@ -35,14 +48,14 @@ class GenericTextFormField {
           },
         );
 
-      case 'number':
+      case 'phone':
         return TextFormField(
           controller: controller,
-          decoration: InputDecoration(labelText: labelText.isEmpty ? 'Number' : labelText),
+          decoration: InputDecoration(labelText: labelText.isEmpty ? 'Phone' : labelText),
           keyboardType: TextInputType.number,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter a number';
+              return 'Please enter a phone number';
             }
             if (double.tryParse(value) == null) {
               return 'Please enter a valid number';

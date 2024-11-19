@@ -71,9 +71,7 @@ class _FormUIState extends State<FormUI> {
     List<Widget> spacedFields = [];
     for (int i = 0; i < widget.inputFields.length; i++) {
       spacedFields.add(widget.inputFields[i]);
-      if (i < widget.inputFields.length - 1) {
-        spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
-      }
+      spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
     }
     return spacedFields;
   }

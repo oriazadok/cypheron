@@ -46,7 +46,8 @@ class _SignInState extends State<SignIn> {
                 type: 'password',
                 controller: _passwordController,
               ),
-              ErrorMessage(message: errorMessage),
+              if (errorMessage != '')
+                ErrorMessage(message: errorMessage),
             ],
 
             onClick: () async {

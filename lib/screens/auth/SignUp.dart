@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart'; // For hashing the password
 import 'dart:convert'; // For utf8 encoding
 
+import 'package:cypheron/ui/screensUI/AuthUI.dart';
+import 'package:cypheron/ui/FormUI.dart';
+
 import 'package:cypheron/services/HiveService.dart'; // To store user data
 import 'package:cypheron/models/UserModel.dart'; // The UserModel
+import 'package:cypheron/widgets/GenericTextFormField.dart';
 import 'package:cypheron/screens/Home.dart'; // The Home screen to navigate to after signup
 
 /// SignUp screen allows new users to register by providing their information.
@@ -14,8 +18,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final _formKey = GlobalKey<FormState>();  // Form key to validate the form
-
+  
   // Controllers to handle user input for name, phone, email, and password
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
@@ -28,106 +31,46 @@ class _SignUpState extends State<SignUp> {
       appBar: AppBar(
         title: Text('Sign Up'),  // Screen title
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,  // Attach form key to validate form fields
-              child: Column(
-                children: [
+      body: AuthUI(
+        form: FormUI(
+          title: 'Sign Up',
 
-                  // Heading text for Sign In
-                  Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurpleAccent,
-                    ),
-                  ),
-                  SizedBox(height: 30),  // Add spacing after heading
-
-
-                  // Name input field with validation
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(labelText: 'Name'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),  // Spacer
-
-                  // Phone number input field with validation
-                  TextFormField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(labelText: 'Phone Number'),
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),  // Spacer
-
-                  // Email input field with validation
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),  // Spacer
-
-                  // Password input field with validation
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),  // Spacer
-
-                  // Sign Up button to trigger signup process
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        // Calls the signup function and checks if it returns a valid user
-                        UserModel? signUpSuccessful = await _handleSignUp();
-
-                        if (signUpSuccessful != null) {
-                          // If signup is successful, navigate to Home screen
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Home(user: signUpSuccessful),
-                            ),
-                          );
-                        } 
-                      }
-                    },
-                    child: Text('Sign Up'),  // Button text
-                  ),
-                ],
-              ),
+          inputFields: [
+            GenericTextFormField.getTextFormField(
+              type: 'name',
+              controller: _emailController,
             ),
-          ),
+            GenericTextFormField.getTextFormField(
+              type: 'phone',
+              controller: _passwordController,
+            ),
+            GenericTextFormField.getTextFormField(
+              type: 'email',
+              controller: _emailController,
+            ),
+            GenericTextFormField.getTextFormField(
+              type: 'password',
+              controller: _passwordController,
+            ),
+          ],
+
+          onClick: () async {
+            // Calls the signup function and checks if it returns a valid user
+            UserModel? signUpSuccessful = await _handleSignUp();
+
+            if (signUpSuccessful != null) {
+              // If signup is successful, navigate to Home screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Home(user: signUpSuccessful),
+                ),
+              );
+            } 
+          },
+
+          buttonText: 'Sign Up',
+           
         ),
       ),
     );
