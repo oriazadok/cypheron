@@ -38,11 +38,11 @@ class _SignUpState extends State<SignUp> {
           inputFields: [
             GenericTextFormField.getTextFormField(
               type: 'name',
-              controller: _emailController,
+              controller: _nameController,
             ),
             GenericTextFormField.getTextFormField(
               type: 'phone',
-              controller: _passwordController,
+              controller: _phoneController,
             ),
             GenericTextFormField.getTextFormField(
               type: 'email',
