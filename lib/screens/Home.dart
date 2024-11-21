@@ -7,7 +7,7 @@ import 'package:cypheron/widgets/ContactsList.dart';  // Widget to display conta
 import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button widget for adding contacts
 import 'package:cypheron/widgets/EmptyContactState.dart';  // Button widget for adding contacts
 
-import 'package:cypheron/ui/BackgroundUI.dart';
+import 'package:cypheron/ui/generalUI/BackgroundUI.dart';
 
 /// Home screen that displays user's contacts and enables decryption of shared files.
 class Home extends StatefulWidget {

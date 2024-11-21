@@ -5,7 +5,7 @@ import 'services/HiveService.dart';
 import 'screens/Welcome.dart';
 import 'screens/Decryptor.dart';
 
-import 'ui/theme.dart';
+import 'ui/generalUI/theme.dart';
 
 void main() async {
   await HiveService.init();

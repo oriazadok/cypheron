@@ -7,7 +7,7 @@ import 'package:cypheron/services/HiveService.dart';  // Hive service to handle 
 import 'package:cypheron/models/UserModel.dart';  // UserModel for representing the user data
 
 import 'package:cypheron/ui/screensUI/AuthUI.dart';
-import 'package:cypheron/ui/FormUI.dart';
+import 'package:cypheron/ui/widgetsUI/FormUI.dart';
 
 import 'package:cypheron/widgets/GenericTextFormField.dart';
 import 'package:cypheron/widgets/ErrorMessage.dart';

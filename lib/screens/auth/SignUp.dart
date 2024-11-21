@@ -3,7 +3,7 @@ import 'package:crypto/crypto.dart'; // For hashing the password
 import 'dart:convert'; // For utf8 encoding
 
 import 'package:cypheron/ui/screensUI/AuthUI.dart';
-import 'package:cypheron/ui/FormUI.dart';
+import 'package:cypheron/ui/widgetsUI/FormUI.dart';
 
 import 'package:cypheron/services/HiveService.dart'; // To store user data
 import 'package:cypheron/models/UserModel.dart'; // The UserModel

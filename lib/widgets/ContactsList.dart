@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/screens/ContactInfo.dart';
-import 'package:cypheron/ui/ContactCardUI.dart';
+import 'package:cypheron/ui/widgetsUI/ContactCardUI.dart';
 
 /// A widget that displays a list of contacts with a clean UI.
 class ContactList extends StatelessWidget {

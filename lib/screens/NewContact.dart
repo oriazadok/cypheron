@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/ui/FormUI.dart';
+import 'package:cypheron/ui/widgetsUI/FormUI.dart';
 import 'package:cypheron/widgets/GenericTextFormField.dart';
 
 /// Screen to create a new contact with a name and phone number.

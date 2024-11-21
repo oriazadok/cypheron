@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:cypheron/ui/BackgroundUI.dart';
+import 'package:cypheron/ui/generalUI/BackgroundUI.dart';
 
 /// Welcome screen with an improved dark-themed UI.
 class WelcomeUI extends StatelessWidget {
