@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/UserModel.dart';  // Model for user data
-import 'auth/SignIn.dart';  // Screen to navigate for signing in
+import '../auth/SignIn.dart';  // Screen to navigate for signing in
 import 'package:cypheron/services/HiveService.dart';  // Service to manage local data storage
 import 'package:cypheron/models/ContactModel.dart';  // Model for contacts
 import 'package:cypheron/widgets/cards/ContactsList.dart';  // Widget to display contact list

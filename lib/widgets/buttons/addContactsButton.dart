@@ -1,8 +1,8 @@
 // lib/widgets/build_floating_action_button.dart
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:cypheron/screens/NewContact.dart';
-import 'package:cypheron/screens/MobileContacts.dart';
+import 'package:cypheron/screens/creation/NewContact.dart';
+import 'package:cypheron/screens/creation/MobileContacts.dart';
 import 'package:cypheron/models/ContactModel.dart';
 
 import 'package:cypheron/widgets/dialogs/CustomDialog.dart';

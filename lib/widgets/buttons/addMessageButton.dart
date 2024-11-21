@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/MessageModel.dart';
-import 'package:cypheron/screens/NewMessage.dart';
+import 'package:cypheron/screens/messaging/NewMessage.dart';
 
 /// A floating action button for adding a new message.
 class AddMessageButton extends StatelessWidget {

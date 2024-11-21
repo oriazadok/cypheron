@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'services/HiveService.dart';
-import 'screens/Welcome.dart';
-import 'screens/Decryptor.dart';
+import 'screens/welcome/Welcome.dart';
+import 'screens/decrypt/Decryptor.dart';
 
 import 'ui/generalUI/theme.dart';
 
