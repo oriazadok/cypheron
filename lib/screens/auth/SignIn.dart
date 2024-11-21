@@ -9,8 +9,8 @@ import 'package:cypheron/models/UserModel.dart';  // UserModel for representing 
 import 'package:cypheron/ui/screensUI/AuthUI.dart';
 import 'package:cypheron/ui/widgetsUI/FormUI.dart';
 
-import 'package:cypheron/widgets/GenericTextFormField.dart';
-import 'package:cypheron/widgets/ErrorMessage.dart';
+import 'package:cypheron/widgets/form_elements/GenericTextFormField.dart';
+import 'package:cypheron/widgets/states/ErrorMessage.dart';
 import 'package:cypheron/screens/Home.dart';  // Home screen to navigate to on successful sign-in
 
 /// SignIn screen for user authentication, allowing users to enter their credentials.

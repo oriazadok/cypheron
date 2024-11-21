@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 
-import 'package:cypheron/widgets/LoadingCircle.dart'; // Import the new LoadingIndicator
+import 'package:cypheron/widgets/loading/LoadingCircle.dart'; // Import the new LoadingIndicator
 
 /// A wrapper for displaying content with consistent layout and background styling.
 class MobileContactsUI extends StatelessWidget {

@@ -7,7 +7,7 @@ import 'package:cypheron/ui/widgetsUI/FormUI.dart';
 
 import 'package:cypheron/services/HiveService.dart'; // To store user data
 import 'package:cypheron/models/UserModel.dart'; // The UserModel
-import 'package:cypheron/widgets/GenericTextFormField.dart';
+import 'package:cypheron/widgets/form_elements/GenericTextFormField.dart';
 import 'package:cypheron/screens/Home.dart'; // The Home screen to navigate to after signup
 
 /// SignUp screen allows new users to register by providing their information.

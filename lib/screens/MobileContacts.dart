@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:cypheron/services/HiveService.dart';
 import 'package:cypheron/ui/screensUI/MobileContactsUI.dart'; // Import the wrapper
-import 'package:cypheron/widgets/ErrorText.dart'; // Import the new LoadingIndicator
-import 'package:cypheron/widgets/MobileContactCard.dart'; // Import the new LoadingIndicator
+import 'package:cypheron/widgets/states/ErrorText.dart'; // Import the new LoadingIndicator
+import 'package:cypheron/widgets/cards/MobileContactCard.dart'; // Import the new LoadingIndicator
 
 class MobileContacts extends StatefulWidget {
   @override

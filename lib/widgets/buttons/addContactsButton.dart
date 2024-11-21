@@ -5,7 +5,7 @@ import 'package:cypheron/screens/NewContact.dart';
 import 'package:cypheron/screens/MobileContacts.dart';
 import 'package:cypheron/models/ContactModel.dart';
 
-import 'package:cypheron/widgets/CustomDialog.dart';
+import 'package:cypheron/widgets/dialogs/CustomDialog.dart';
 
 /// Builds a floating action button with a dark-themed menu for adding contacts.
 FloatingActionButton buildFloatingActionButton(
