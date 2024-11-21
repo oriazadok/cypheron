@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 /// A factory class that creates different types of `TextFormField` based on the input type.
-class GenericTextFormField {
+class GenericFormField {
   /// Returns a `TextFormField` based on the provided type string.
-  static Widget getTextFormField({
+  static Widget getFormField({
     required String type,
     required TextEditingController controller,
     String labelText = '',

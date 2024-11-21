@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/ui/widgetsUI/FormUI.dart';
-import 'package:cypheron/widgets/form_elements/GenericTextFormField.dart';
+import 'package:cypheron/widgets/form_elements/GenericFormField.dart';
 
 /// Screen to create a new contact with a name and phone number.
 class NewContact extends StatelessWidget {
@@ -19,11 +19,11 @@ class NewContact extends StatelessWidget {
         
         // Input fields for the form
         inputFields: [
-          GenericTextFormField.getTextFormField(
+          GenericFormField.getFormField(
                 type: 'name',
                 controller: _nameController,
               ),
-              GenericTextFormField.getTextFormField(
+              GenericFormField.getFormField(
                 type: 'phone',
                 controller: _phoneController,
               ),

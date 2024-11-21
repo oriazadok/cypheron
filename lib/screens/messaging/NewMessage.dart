@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/services/ffi_service.dart';  // Import the FFI class for encryption/decryption
 import 'package:cypheron/models/MessageModel.dart';    // Import the Message model
 import 'package:cypheron/widgets/dialogs/keywordDialog.dart';  // Import the dialog widget for keyword input
-import 'package:cypheron/widgets/form_elements/GenericTextFormField.dart';
+import 'package:cypheron/widgets/form_elements/GenericFormField.dart';
 import 'package:cypheron/ui/screensUI/NewMessageUI.dart';
 
 /// A screen for creating a new encrypted message
@@ -26,11 +26,11 @@ class _NewMessageState extends State<NewMessage> {
       body: NewmessageUI(
         
         inputFields: [
-          GenericTextFormField.getTextFormField(
+          GenericFormField.getFormField(
             type: 'title',
             controller: _titleController,
           ),
-          GenericTextFormField.getTextFormField(
+          GenericFormField.getFormField(
             type: 'text-box',
             controller: _bodyController,
           ),

@@ -7,7 +7,7 @@ import 'package:cypheron/ui/widgetsUI/FormUI.dart';
 
 import 'package:cypheron/services/HiveService.dart'; // To store user data
 import 'package:cypheron/models/UserModel.dart'; // The UserModel
-import 'package:cypheron/widgets/form_elements/GenericTextFormField.dart';
+import 'package:cypheron/widgets/form_elements/GenericFormField.dart';
 import 'package:cypheron/screens/home/Home.dart'; // The Home screen to navigate to after signup
 
 /// SignUp screen allows new users to register by providing their information.
@@ -36,19 +36,19 @@ class _SignUpState extends State<SignUp> {
           title: 'Sign Up',
 
           inputFields: [
-            GenericTextFormField.getTextFormField(
+            GenericFormField.getFormField(
               type: 'name',
               controller: _nameController,
             ),
-            GenericTextFormField.getTextFormField(
+            GenericFormField.getFormField(
               type: 'phone',
               controller: _phoneController,
             ),
-            GenericTextFormField.getTextFormField(
+            GenericFormField.getFormField(
               type: 'email',
               controller: _emailController,
             ),
-            GenericTextFormField.getTextFormField(
+            GenericFormField.getFormField(
               type: 'password',
               controller: _passwordController,
             ),
