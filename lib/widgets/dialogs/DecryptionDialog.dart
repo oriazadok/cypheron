@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/models/MessageModel.dart';
+import 'package:cypheron/widgets/dialogs/DisplayDialog.dart';
 
 Future<void> showDecryptionDialog(BuildContext context, MessageModel message) async {
   TextEditingController keywordController = TextEditingController();
@@ -51,33 +51,7 @@ Future<void> showDecryptionDialog(BuildContext context, MessageModel message) as
       'd',
     );
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(message.title),
-          content: SingleChildScrollView(
-            child: Text(decryptedBody),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.copy, color: Colors.deepPurpleAccent),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: decryptedBody));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Copied to clipboard')),
-                );
-              },
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
+    displaydialog(context, message.title, decryptedBody);
+
   }
 }

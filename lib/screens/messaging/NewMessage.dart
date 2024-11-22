@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cypheron/services/ffi_service.dart';  // Import the FFI class for encryption/decryption
 import 'package:cypheron/models/MessageModel.dart';    // Import the Message model
-import 'package:cypheron/widgets/dialogs/keywordDialog.dart';  // Import the dialog widget for keyword input
+import 'package:cypheron/widgets/dialogs/EncryptDialog.dart';  // Import the dialog widget for keyword input
 import 'package:cypheron/widgets/form_elements/GenericFormField.dart';
 import 'package:cypheron/ui/screensUI/NewMessageUI.dart';
 
