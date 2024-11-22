@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 /// A reusable widget for displaying a loading indicator with custom styling.
-class ErrorText extends StatelessWidget {
+class ErrorTextUI extends StatelessWidget {
   final String text;
 
-  const ErrorText({
+  const ErrorTextUI({
     required this.text, 
   });
 

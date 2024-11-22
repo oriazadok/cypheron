@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:cypheron/services/HiveService.dart';
 import 'package:cypheron/ui/screensUI/MobileContactsUI.dart'; // Import the wrapper
-import 'package:cypheron/widgets/states/ErrorText.dart'; // Import the new LoadingIndicator
+import 'package:cypheron/ui/widgetsUI/ErrorTextUI.dart'; // Import the new LoadingIndicator
 import 'package:cypheron/widgets/cards/MobileContactCard.dart'; // Import the new LoadingIndicator
 
 class MobileContacts extends StatefulWidget {
@@ -46,7 +46,7 @@ class _MobileContactsState extends State<MobileContacts> {
                   },
                 ),
               ),
-      error: ErrorText(text: 'No contacts found. Swipe down to refresh.'),
+      error: ErrorTextUI(text: 'No contacts found. Swipe down to refresh.'),
     );
   }
 
