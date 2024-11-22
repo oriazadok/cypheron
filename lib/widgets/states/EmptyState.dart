@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 
 class EmptyState extends StatelessWidget {
+
+  final Icon icon;
+  final String message;
+
+  const EmptyState({
+    required this.icon,
+    required this.message,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.mail_outline,
-            size: 80,
-            color: Colors.deepPurpleAccent,
-          ),
+          this.icon,
           SizedBox(height: 20),
           Text(
-            'No messages found.\nAdd a new message.',
+            this.message,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18, color: Colors.white70),
           ),
@@ -23,3 +28,5 @@ class EmptyState extends StatelessWidget {
     );
   }
 }
+
+

@@ -14,6 +14,9 @@ import 'package:cypheron/widgets/states/EmptyState.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 import 'package:cypheron/widgets/dialogs/DecryptionDialog.dart';
 
+import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+
+
 class ContactInfo extends StatefulWidget {
   final ContactModel contact;
 
@@ -52,7 +55,7 @@ class _ContactInfoState extends State<ContactInfo> {
                 );
               },
             )
-          : EmptyState(),
+          : EmptyState(icon: CustomIcons.buildIcon(type: "mail"),message: 'No messages found.\nAdd a new message.',),
       floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage),
     );
   }
