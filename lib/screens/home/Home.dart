@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/UserModel.dart';  // Model for user data
-import '../auth/SignIn.dart';  // Screen to navigate for signing in
 import 'package:cypheron/services/HiveService.dart';  // Service to manage local data storage
 import 'package:cypheron/models/ContactModel.dart';  // Model for contacts
 import 'package:cypheron/widgets/cards/ContactsList.dart';  // Widget to display contact list
@@ -8,6 +7,8 @@ import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button wid
 import 'package:cypheron/widgets/states/EmptyContactState.dart';  // Button widget for adding contacts
 
 import 'package:cypheron/ui/generalUI/BackgroundUI.dart';
+
+import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
 
 /// Home screen that displays user's contacts and enables decryption of shared files.
 class Home extends StatefulWidget {
@@ -40,13 +41,8 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text("Cypheron"),
         actions: [
-          // Logout button to navigate to SignIn screen
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignIn()));
-            },
-          ),
+          // // Logout button to navigate to SignIn screen
+          CustomIcons.buildIconButton(context: context, type: "logout"),
         ],
       ),
       body: GradientBackground(
@@ -64,7 +60,10 @@ class _HomeState extends State<Home> {
         ),
     ),
       // Show floating action button to add new contacts if user is signed in
-      floatingActionButton: buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
+      // floatingActionButton: buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
+      floatingActionButton: AddContactButton(
+        onAddContact: _addNewContact
+      ),
     );
   }
 
