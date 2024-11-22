@@ -10,11 +10,13 @@ import 'package:cypheron/models/MessageModel.dart';
 
 import 'package:cypheron/widgets/cards/MessageCard.dart';
 import 'package:cypheron/widgets/states/EmptyState.dart';
-
+import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
-import 'package:cypheron/widgets/dialogs/DecryptionDialog.dart';
 
 import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+
+import 'package:cypheron/widgets/dialogs/KeywordDialog.dart';
+import 'package:cypheron/widgets/dialogs/DisplayDialog.dart';
 
 
 class ContactInfo extends StatefulWidget {
@@ -50,7 +52,19 @@ class _ContactInfoState extends State<ContactInfo> {
                 final message = messages[index];
                 return MessageCard(
                   message: message,
-                  onTap: () => showDecryptionDialog(context, message),
+                  onTap: () async{
+                    String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
+                    if (keyword != null && keyword.isNotEmpty) {
+                      final cypherFFI = CypherFFI();
+                      String decryptedBody = cypherFFI.runCypher(
+                        message.body,
+                        keyword,
+                        'd',
+                      );
+
+                      displaydialog(context, message.title, decryptedBody);
+                    }
+                  },  
                   onSend: () => _sendMessage(message),
                 );
               },

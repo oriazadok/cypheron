@@ -17,10 +17,10 @@ class KeywordDialog extends StatefulWidget {
   State<KeywordDialog> createState() => _KeywordDialogState();
 
   /// Static method to show the dialog and return the entered keyword
-  static Future<String?> getKeyword(BuildContext context, 
-                                    String title, 
-                                    TextEditingController keywordController, 
-                                    String type) async {
+  static Future<String?> showKeywordDialog( BuildContext context, 
+                                            String title, 
+                                            TextEditingController keywordController, 
+                                            String type ) async {
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -28,6 +28,32 @@ class KeywordDialog extends StatefulWidget {
       },
     );
   }
+
+  static Future<String?> getKeyword(BuildContext context, String type) async {
+
+    TextEditingController keywordController = TextEditingController();
+    String? keyword;
+
+    if (type == "Encrypt") {
+      keyword = await KeywordDialog.showKeywordDialog(
+              context,
+              'Enter Decryption Key',
+              keywordController,
+              "Encrypt"
+            );
+    }
+    if (type == "Decrypt") {
+      keyword = await showKeywordDialog(
+              context,
+              'Enter Decryption Key',
+              keywordController,
+              "Decrypt"
+            );
+    }
+
+    return keyword;
+  }
+  
 }
 
 class _KeywordDialogState extends State<KeywordDialog> {

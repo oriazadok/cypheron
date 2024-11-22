@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:cypheron/services/ffi_service.dart';  // Import the FFI class for encryption/decryption
 import 'package:cypheron/models/MessageModel.dart';    // Import the Message model
-import 'package:cypheron/widgets/dialogs/EncryptDialog.dart';  // Import the dialog widget for keyword input
 import 'package:cypheron/widgets/form_elements/GenericFormField.dart';
 import 'package:cypheron/ui/screensUI/NewMessageUI.dart';
+import 'package:cypheron/widgets/dialogs/KeywordDialog.dart';
+
 
 /// A screen for creating a new encrypted message
 class NewMessage extends StatefulWidget {
@@ -40,9 +41,10 @@ class _NewMessageState extends State<NewMessage> {
         
           // Check if both title and body fields are filled
           if (_titleController.text.isNotEmpty && _bodyController.text.isNotEmpty) {
-            
+
             // Display dialog to prompt user for encryption keyword
-            String? keyword = await showKeywordDialog(context);
+            String? keyword = await KeywordDialog.getKeyword(context, "Encrypt");
+            
             if (keyword != null && keyword.isNotEmpty) {
               // Initialize FFI encryption service with the provided keyword
               final cypherFFI = CypherFFI();
