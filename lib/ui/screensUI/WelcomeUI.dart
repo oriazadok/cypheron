@@ -29,7 +29,7 @@ class WelcomeUI extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // App logo or icon with an animation effect.
+                // App logo with an animation effect.
                 this.logo,
                 SizedBox(height: 30),
 
