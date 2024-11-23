@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// A reusable CircleAvatar widget with custom styling and content.
 class LeadingUI extends StatelessWidget {
@@ -14,7 +14,7 @@ class LeadingUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       backgroundColor: Colors.deepPurpleAccent,
-      child: CustomIcons.buildIcon(type: type),
+      child: IconsUI(type: type),
     );
   }
 
@@ -23,7 +23,7 @@ class LeadingUI extends StatelessWidget {
     if(type == "avatar-person")
       return CircleAvatar(
       backgroundColor: Colors.deepPurpleAccent,
-      child: CustomIcons.buildIcon(type: type),
+      child: IconsUI(type: type),
     ); 
 
     return SizedBox.shrink();

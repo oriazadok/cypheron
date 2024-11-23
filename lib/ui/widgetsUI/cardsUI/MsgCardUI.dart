@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/MessageModel.dart';
-import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 
 class MsgCardUI extends StatelessWidget {
@@ -24,7 +24,7 @@ class MsgCardUI extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: CustomIcons.buildIcon(type: "lock"),
+        leading: IconsUI(type: "lock"),
         title: Text(
           message.title,
           style: TextStyle(fontWeight: FontWeight.bold),

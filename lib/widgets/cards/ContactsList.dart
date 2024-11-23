@@ -3,7 +3,7 @@ import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
 import 'package:cypheron/ui/widgetsUI/ContactCardUI.dart';
 import 'package:cypheron/widgets/states/EmptyState.dart';  // Button widget for adding contacts
-import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 import 'package:cypheron/ui/widgetsUI/LeadingUI.dart';
 
 
@@ -19,7 +19,7 @@ class ContactList extends StatelessWidget {
   Widget build(BuildContext context) {
 
     if (contactList.isEmpty) 
-      return EmptyState(icon: CustomIcons.buildIcon(type: "contacts_outlined"), message: 'No contacts found.\nAdd a new contact.');
+      return EmptyState(icon: IconsUI(type: "contacts_outlined"), message: 'No contacts found.\nAdd a new contact.');
 
     return  ListView.builder(
       itemCount: contactList.length,

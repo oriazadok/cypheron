@@ -7,7 +7,7 @@ import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button wid
 
 import 'package:cypheron/ui/generalUI/BackgroundUI.dart';
 
-import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// Home screen that displays user's contacts and enables decryption of shared files.
 class Home extends StatefulWidget {
@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Cypheron"),
-        actions: [ CustomIcons.buildIconButton(context: context, type: "logout") ],
+        actions: [ IconsUI(context: context, type: "logout", isButton: true) ],
       ),
       body: GradientBackground(
         child: Column(
