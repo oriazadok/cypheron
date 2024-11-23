@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 
-/// Provides the common style for contact cards in the ContactList widget.
-class ContactCardStyle {
-  static Card buildContactCard({
-    required BuildContext context,
-    required Widget leading,
-    required String title,
-    required VoidCallback onTap,
-  }) {
+/// A reusable widget for displaying contact cards with a consistent style.
+class ContactCard extends StatelessWidget {
+  final Widget leading;
+  final String title;
+  final VoidCallback onTap;
+
+  /// Constructor for the ContactCard widget.
+  const ContactCard({
+    Key? key,
+    required this.leading,
+    required this.title,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       color: const Color(0xFF1C1C1C),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

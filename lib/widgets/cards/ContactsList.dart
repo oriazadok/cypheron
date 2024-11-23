@@ -4,6 +4,7 @@ import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
 import 'package:cypheron/ui/widgetsUI/ContactCardUI.dart';
 import 'package:cypheron/widgets/states/EmptyState.dart';  // Button widget for adding contacts
 import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+import 'package:cypheron/ui/widgetsUI/LeadingUI.dart';
 
 
 /// A widget that displays a list of contacts with a clean UI.
@@ -25,15 +26,8 @@ class ContactList extends StatelessWidget {
       itemBuilder: (context, index) {
         final contact = contactList[index];
 
-        return ContactCardStyle.buildContactCard(
-          context: context,
-          leading: CircleAvatar(
-            backgroundColor: Colors.deepPurpleAccent,
-            child: Icon(
-              Icons.person,
-              color: Colors.white,
-            ),
-          ),
+        return ContactCard(
+          leading: LeadingUI(type: "person"),
           title: contact.name,
           onTap: () {
             Navigator.push(

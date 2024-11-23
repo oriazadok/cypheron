@@ -16,6 +16,9 @@ class CustomIcons {
       case 'add':
         return Icon(Icons.add, color: Colors.deepPurpleAccent, size: 28,);
 
+      case 'person':
+        return Icon(Icons.person, color: Colors.white);
+
       case 'lock':
         return Icon(Icons.lock, color: Colors.deepPurpleAccent, size: 28,);
 
