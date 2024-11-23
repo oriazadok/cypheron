@@ -3,12 +3,12 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// A reusable widget to display a contact card with custom styling.
-class Mobilecontactcard extends StatelessWidget {
+class MobilecontactcardUI extends StatelessWidget {
   final String displayName;
   final String phoneNumber;
   final Function(Contact) onTap;
 
-  const Mobilecontactcard({
+  const MobilecontactcardUI({
     required this.displayName,
     required this.phoneNumber,
     required this.onTap,

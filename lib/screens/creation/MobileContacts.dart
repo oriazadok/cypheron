@@ -7,7 +7,7 @@ import 'package:cypheron/ui/widgetsUI/AppBarUI.dart';
 import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 
-import 'package:cypheron/widgets/cards/MobileContactCard.dart'; // Import the new LoadingIndicator
+import 'package:cypheron/ui/widgetsUI/cardsUI/MobileContactCardUI.dart'; // Import the new LoadingIndicator
 
 class MobileContacts extends StatefulWidget {
   @override
@@ -45,7 +45,7 @@ class _MobileContactsState extends State<MobileContacts> {
                       String displayName = contactData['displayName'];
                       String phoneNumber = contactData['phoneNumber'];
 
-                      return Mobilecontactcard(
+                      return MobilecontactcardUI(
                         displayName: displayName,
                         phoneNumber: phoneNumber,
                         onTap: (Contact selectedContact) {
