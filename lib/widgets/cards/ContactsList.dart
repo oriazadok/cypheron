@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
 import 'package:cypheron/ui/widgetsUI/ContactCardUI.dart';
+import 'package:cypheron/widgets/states/EmptyState.dart';  // Button widget for adding contacts
+import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+
 
 /// A widget that displays a list of contacts with a clean UI.
 class ContactList extends StatelessWidget {
@@ -14,13 +17,8 @@ class ContactList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    if (contactList.isEmpty)
-      return  Center(
-          child: Text(
-            'No contacts found. Please add contacts.',
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        );
+    if (contactList.isEmpty) 
+      return EmptyState(icon: CustomIcons.buildIcon(type: "contacts_outlined"), message: 'No contacts found.\nAdd a new contact.');
 
     return  ListView.builder(
       itemCount: contactList.length,
