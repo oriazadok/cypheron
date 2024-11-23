@@ -10,7 +10,8 @@ import 'package:cypheron/ui/screensUI/AuthUI.dart';
 import 'package:cypheron/ui/widgetsUI/FormUI.dart';
 
 import 'package:cypheron/widgets/form_elements/GenericFormField.dart';
-import 'package:cypheron/ui/widgetsUI/ErrorTextUI.dart';
+import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart';
+
 
 import 'package:cypheron/screens/home/Home.dart';  // Home screen to navigate to on successful sign-in
 
@@ -48,7 +49,7 @@ class _SignInState extends State<SignIn> {
                 controller: _passwordController,
               ),
               if (errorMessage != '')
-                ErrorTextUI(text: errorMessage),
+                FittedTextUI(text: errorMessage, type: "err"),
             ],
 
             onClick: () async {
