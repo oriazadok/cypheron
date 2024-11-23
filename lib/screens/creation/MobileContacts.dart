@@ -4,6 +4,7 @@ import 'package:cypheron/services/HiveService.dart';
 import 'package:cypheron/ui/screensUI/MobileContactsUI.dart'; // Import the wrapper
 import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart';
 import 'package:cypheron/ui/widgetsUI/AppBarUI.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 
 import 'package:cypheron/widgets/cards/MobileContactCard.dart'; // Import the new LoadingIndicator
@@ -29,10 +30,7 @@ class _MobileContactsState extends State<MobileContacts> {
       appBar: AppBarUI(
         title: 'Mobile Contacts',
         actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: refreshContacts,
-          ),
+          IconsUI(context: context, type: "refresh", isButton: true, onPressed: refreshContacts), 
         ],
       ),
       body: MobileContactsUI(

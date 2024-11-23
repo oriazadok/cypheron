@@ -34,10 +34,7 @@ class MsgCardUI extends StatelessWidget {
           style: TextStyle(color: Colors.grey),
         ),
         onTap: onTap,
-        trailing: IconButton(
-          icon: Icon(Icons.send, color: Colors.deepPurpleAccent),
-          onPressed: onSend,
-        ),
+        trailing: IconsUI(context: context, type: "send", isButton: true, onPressed: onSend),
       ),
     );
   }

@@ -1,13 +1,14 @@
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 import 'package:flutter/material.dart';
 
 /// A reusable widget for displaying contact cards with a consistent style.
-class ContactCard extends StatelessWidget {
+class ContactCardUI extends StatelessWidget {
   final Widget leading;
   final String title;
   final VoidCallback onTap;
 
   /// Constructor for the ContactCard widget.
-  const ContactCard({
+  const ContactCardUI({
     Key? key,
     required this.leading,
     required this.title,
@@ -35,11 +36,7 @@ class ContactCard extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          trailing: const Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.grey,
-            size: 16,
-          ),
+          trailing: IconsUI(type: "arrow"),
         ),
       ),
     );

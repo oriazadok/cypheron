@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/widgets/dialogs/CustomDialog.dart';
 import 'package:cypheron/widgets/ContactMenu.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// A floating action button for adding a new contact.
 class AddContactButton extends StatelessWidget {
@@ -24,7 +25,8 @@ class AddContactButton extends StatelessWidget {
           actions: [],
         );
       },
-      child: Icon(Icons.add, color: Colors.white, size: 28),
+      child: IconsUI(type: "add"),
+      // Icon(Icons.add, color: Colors.white, size: 28),
       tooltip: 'Add Contact',
     );
   }

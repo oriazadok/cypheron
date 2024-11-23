@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// A reusable widget to display a contact card with custom styling.
 class Mobilecontactcard extends StatelessWidget {
@@ -26,7 +27,7 @@ class Mobilecontactcard extends StatelessWidget {
         child: ListTile(
           leading: CircleAvatar(
             backgroundColor: Colors.deepPurpleAccent,
-            child: Icon(Icons.person, color: Colors.white),
+            child: IconsUI(type: "person"),
           ),
           title: Text(
             displayName,

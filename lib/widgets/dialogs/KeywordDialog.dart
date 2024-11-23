@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 class KeywordDialog extends StatefulWidget {
 
@@ -68,13 +69,15 @@ class _KeywordDialogState extends State<KeywordDialog> {
         controller: keywordController,
         decoration: InputDecoration(
           labelText: 'Keyword',
-          suffixIcon: IconButton(
-            icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+          suffixIcon: IconsUI(
+            context: context,
+            type: obscureText ? "visibility_off" : "visibility",
+            isButton: true,
             onPressed: () {
               setState(() {
                 obscureText = !obscureText;
               });
-            },
+            }
           ),
         ),
         obscureText: obscureText,

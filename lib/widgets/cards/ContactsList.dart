@@ -26,7 +26,7 @@ class ContactList extends StatelessWidget {
       itemBuilder: (context, index) {
         final contact = contactList[index];
 
-        return ContactCard(
+        return ContactCardUI(
           leading: LeadingUI(type: "person"),
           title: contact.name,
           onTap: () {

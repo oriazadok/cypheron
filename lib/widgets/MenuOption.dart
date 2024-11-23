@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// A reusable widget for menu options with consistent styling.
 class MenuOption extends StatelessWidget {
-  final IconData icon;
+  final IconsUI icon;
   final String text;
   final VoidCallback onTap;
 
@@ -16,7 +17,7 @@ class MenuOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: Colors.deepPurpleAccent, size: 28),
+      leading: icon,
       title: Text(
         text,
         style: TextStyle(

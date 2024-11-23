@@ -4,6 +4,8 @@ import 'package:cypheron/screens/creation/NewContact.dart';
 import 'package:cypheron/screens/creation/MobileContacts.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/widgets/MenuOption.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+
 
 /// A reusable widget that displays the contact menu options.
 class ContactMenu extends StatelessWidget {
@@ -17,7 +19,7 @@ class ContactMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         MenuOption(
-          icon: Icons.person_add_alt_1,
+          icon: IconsUI(type: "person-add"),
           text: 'Create New Contact',
           onTap: () async {
             Navigator.pop(context);
@@ -32,7 +34,7 @@ class ContactMenu extends StatelessWidget {
         ),
         SizedBox(height: 15),
         MenuOption(
-          icon: Icons.contacts,
+          icon: IconsUI(type: "contacts"),
           text: 'Import from Mobile',
           onTap: () async {
             Navigator.pop(context);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 Future<void> displaydialog(BuildContext context, String title, String decryptedBody) async {
 
@@ -12,10 +13,12 @@ Future<void> displaydialog(BuildContext context, String title, String decryptedB
             child: Text(decryptedBody),
           ),
           actions: [
-            IconButton(
-              icon: Icon(Icons.copy, color: Colors.deepPurpleAccent),
+            IconsUI(
+              context: context,
+              type: "copy", // Use the "copy" type
+              isButton: true,
               onPressed: () {
-                Clipboard.setData(ClipboardData(text: decryptedBody));
+                Clipboard.setData(ClipboardData(text: decryptedBody)); // Copy to clipboard
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Copied to clipboard')),
                 );
@@ -32,5 +35,3 @@ Future<void> displaydialog(BuildContext context, String title, String decryptedB
     },
   );
 }
-
-

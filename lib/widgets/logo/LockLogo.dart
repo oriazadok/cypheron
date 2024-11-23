@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// A reusable Hero widget for the app logo with a smooth animation effect.
 class LockLogo extends StatelessWidget {
@@ -6,11 +7,7 @@ class LockLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: 'app-logo',
-      child: Icon(
-        Icons.lock_outline,
-        size: 100,
-        color: Colors.white,
-      ),
+      child: IconsUI(type: "lock-logo"),
     );
   }
 }
