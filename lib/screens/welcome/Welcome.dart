@@ -4,7 +4,7 @@ import 'package:cypheron/ui/screensUI/WelcomeUI.dart';
 
 import 'package:cypheron/widgets/logo/LockLogo.dart';
 import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart';
-import 'package:cypheron/widgets/buttons/NavigationButton.dart';
+import 'package:cypheron/ui/widgetsUI/buttonUI/NavigationButtonUI.dart';
 import 'package:cypheron/screens/auth/SignIn.dart';
 import 'package:cypheron/screens/auth/SignUp.dart';
 
@@ -16,8 +16,8 @@ class Welcome extends StatelessWidget {
     return WelcomeUI(
       logo: LockLogo(),
       text: FittedTextUI(text: 'Welcome to Cypheron!', type: "head"),
-      signIn: NavigationButton(label: 'Sign In', destination: SignIn()),
-      signUp: NavigationButton(label: 'Sign Up', destination: SignUp()),
+      signIn: NavigationButtonUI(label: 'Sign In', destination: SignIn()),
+      signUp: NavigationButtonUI(label: 'Sign Up', destination: SignUp()),
     );
   }
 }

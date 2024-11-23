@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/MessageModel.dart';
 import 'package:cypheron/screens/messaging/NewMessage.dart';
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/buttonUI/FloatBtnUI.dart';
 
 /// A floating action button for adding a new message.
 class AddMessageButton extends StatelessWidget {
@@ -13,9 +13,8 @@ class AddMessageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: Colors.deepPurpleAccent,
-      // Triggered when the button is pressed
+    return FloatBtnUI(
+
       onPressed: () async {
         // Navigate to the NewMessage screen to create a new message
         final MessageModel? newMessage = await Navigator.push(
@@ -27,7 +26,6 @@ class AddMessageButton extends StatelessWidget {
           onAddMessage(newMessage);  // Use the callback to add the message
         }
       },
-      child: IconsUI(type: "add"), // Icon displayed on the button
       tooltip: 'Add Message',  // Tooltip text displayed on long press
     );
   }
