@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 
 /// A reusable widget for menu options with consistent styling.
-class MenuOption extends StatelessWidget {
+class MenuOptionUI extends StatelessWidget {
   final IconsUI icon;
   final String text;
   final VoidCallback onTap;
 
-  const MenuOption({
+  const MenuOptionUI({
     Key? key,
     required this.icon,
     required this.text,
