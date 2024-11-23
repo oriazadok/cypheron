@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/widgets/dialogs/CustomDialog.dart';
+import 'package:cypheron/ui/widgetsUI/ContactsDialogUI.dart';
 import 'package:cypheron/widgets/ContactMenu.dart';
 import 'package:cypheron/ui/widgetsUI/buttonUI/FloatBtnUI.dart';
 
@@ -16,7 +16,7 @@ class AddContactButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatBtnUI(
             onPressed: () {
-              CustomDialog.showCustomDialog(
+              ContactsDialogUI.show(
                 context: context,
                 title: "Choose an Action",
                 content: ContactMenu(onAddContact: onAddContact), // Dynamically pass the menu content

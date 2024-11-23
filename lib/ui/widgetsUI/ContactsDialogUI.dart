@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/ui/widgetsUI/DialogUI.dart';
 
 /// Helper class for showing custom dialogs in the app.
-class CustomDialog {
+class ContactsDialogUI {
   /// Shows a custom dialog with the given title, content, and action buttons.
-  static Future<void> showCustomDialog({
+  static Future<void> show({
     required BuildContext context,
     required String title,
     required Widget content,
