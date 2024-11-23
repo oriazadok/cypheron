@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/MessageModel.dart';
+import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
 
-class MessageCard extends StatelessWidget {
+
+class MsgCardUI extends StatelessWidget {
   final MessageModel message;
   final VoidCallback onTap;
   final VoidCallback onSend;
 
-  const MessageCard({
+  const MsgCardUI({
     required this.message,
     required this.onTap,
     required this.onSend,
@@ -22,10 +24,7 @@ class MessageCard extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Icon(
-          Icons.lock,
-          color: Colors.deepPurpleAccent,
-        ),
+        leading: CustomIcons.buildIcon(type: "lock"),
         title: Text(
           message.title,
           style: TextStyle(fontWeight: FontWeight.bold),

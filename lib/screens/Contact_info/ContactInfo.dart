@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 
-import 'package:cypheron/widgets/cards/MessageCard.dart';
+import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart';
 import 'package:cypheron/widgets/states/EmptyState.dart';
 import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
@@ -50,7 +50,7 @@ class _ContactInfoState extends State<ContactInfo> {
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
-                return MessageCard(
+                return MsgCardUI(
                   message: message,
                   onTap: () async{
                     String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
