@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cypheron/services/ffi_service.dart';  // Service for encryption and decryption
+import 'package:cypheron/widgets/dialogs/KeywordDialog.dart';
+import 'package:cypheron/widgets/dialogs/DisplayDialog.dart';
+
 
 class Decryptor extends StatefulWidget {
   final String? initialFilePath;  // Optional initial file path for decryption if a shared file is provided
@@ -64,28 +67,7 @@ class _DecryptorState extends State<Decryptor> {
 
   /// Prompts the user to enter a decryption key for the shared file.
   void _askForDecryptionKey(String filePath) async {
-    String? keyword = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        TextEditingController keywordController = TextEditingController();
-        return AlertDialog(
-          title: Text('Enter Decryption Key'),
-          content: TextField(
-            controller: keywordController,
-            decoration: InputDecoration(labelText: 'Keyword'),
-            obscureText: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(keywordController.text);
-              },
-              child: Text('Decrypt'),
-            ),
-          ],
-        );
-      },
-    );
+    String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
 
     if (keyword != null && keyword.isNotEmpty) {
       _decryptFile(filePath, keyword);  // Initiate decryption if a keyword is provided
@@ -95,6 +77,7 @@ class _DecryptorState extends State<Decryptor> {
 
   /// Decrypts the file using the provided key and displays the content in a dialog.
   void _decryptFile(String uriPath, String keyword) async {
+    
     try {
       // Request to open the file as bytes using method channel
       final fileBytes = await platform.invokeMethod('openFileAsBytes', uriPath);
@@ -105,7 +88,6 @@ class _DecryptorState extends State<Decryptor> {
 
       // Convert byte data to a string for decryption
       final encryptedContent = String.fromCharCodes(fileBytes);
-      print("encryptedContent length: ${encryptedContent.length}");
 
       // Use FFI service for decryption
       final cypherFFI = CypherFFI();
@@ -115,24 +97,8 @@ class _DecryptorState extends State<Decryptor> {
         'd',  // Flag for decryption
       );
 
-      // Show decrypted content in an alert dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Decrypted Message'),
-            content: Text(decryptedContent),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
-              ),
-            ],
-          );
-        },
-      );
+      displaydialog(context, "Decrypted content", decryptedContent);
+
     } catch (e) {
       print("Failed to decrypt file: ${e.toString()}");
       ScaffoldMessenger.of(context).showSnackBar(
