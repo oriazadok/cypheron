@@ -9,7 +9,7 @@ import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 
 import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart';
-import 'package:cypheron/widgets/states/EmptyState.dart';
+import 'package:cypheron/ui/widgetsUI/EmptyStateUI.dart';
 import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 
@@ -66,7 +66,7 @@ class _ContactInfoState extends State<ContactInfo> {
                 );
               },
             )
-          : EmptyState(icon: IconsUI(type: "mail"), message: 'No messages found.\nAdd a new message.',),
+          : EmptyStateUI(icon: IconsUI(type: "mail"), message: 'No messages found.\nAdd a new message.',),
       floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage),
     );
   }

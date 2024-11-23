@@ -1,12 +1,12 @@
 import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
 import 'package:flutter/material.dart';
 
-class EmptyState extends StatelessWidget {
+class EmptyStateUI extends StatelessWidget {
 
   final IconsUI icon;
   final String message;
 
-  const EmptyState({
+  const EmptyStateUI({
     required this.icon,
     required this.message,
   });
