@@ -39,10 +39,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Cypheron"),
-        actions: [
-          // // Logout button to navigate to SignIn screen
-          CustomIcons.buildIconButton(context: context, type: "logout"),
-        ],
+        actions: [ CustomIcons.buildIconButton(context: context, type: "logout") ],
       ),
       body: GradientBackground(
         child: Column(
@@ -58,9 +55,7 @@ class _HomeState extends State<Home> {
     ),
       // Show floating action button to add new contacts if user is signed in
       // floatingActionButton: buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
-      floatingActionButton: AddContactButton(
-        onAddContact: _addNewContact
-      ),
+      floatingActionButton: AddContactButton(onAddContact: _addNewContact),
     );
   }
 

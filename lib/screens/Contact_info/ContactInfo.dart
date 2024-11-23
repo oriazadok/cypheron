@@ -14,6 +14,7 @@ import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 
 import 'package:cypheron/widgets/CustomIcons/Custom_Icons.dart';
+import 'package:cypheron/ui/widgetsUI/AppBarUI.dart';
 
 import 'package:cypheron/widgets/dialogs/KeywordDialog.dart';
 import 'package:cypheron/widgets/dialogs/DisplayDialog.dart';
@@ -40,11 +41,7 @@ class _ContactInfoState extends State<ContactInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.contact.name),
-        centerTitle: true,
-        elevation: 0,
-      ),
+      appBar: AppBarUI( title: widget.contact.name),
       body: messages.isNotEmpty
           ? ListView.builder(
               itemCount: messages.length,
