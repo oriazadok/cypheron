@@ -3,6 +3,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:cypheron/services/HiveService.dart';
 import 'package:cypheron/ui/screensUI/MobileContactsUI.dart'; // Import the wrapper
 import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart';
+import 'package:cypheron/ui/widgetsUI/AppBarUI.dart';
 
 
 import 'package:cypheron/widgets/cards/MobileContactCard.dart'; // Import the new LoadingIndicator
@@ -24,32 +25,43 @@ class _MobileContactsState extends State<MobileContacts> {
 
   @override
   Widget build(BuildContext context) {
-    return MobileContactsUI(
-      title: 'Mobile Contacts',
-      onRefresh: isFetching ? null : refreshContacts,
-      isFetching: isFetching,
-      contacts: contacts,
-      refresh: RefreshIndicator(
-                onRefresh: refreshContacts,
-                child: ListView.builder(
-                  itemCount: contacts.length,
-                  itemBuilder: (context, index) {
-                    final contactData = contacts[index];
-                    String displayName = contactData['displayName'];
-                    String phoneNumber = contactData['phoneNumber'];
+    return Scaffold(
+      appBar: AppBarUI(
+        title: 'Mobile Contacts',
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: refreshContacts,
+          ),
+        ],
+      ),
+      body: MobileContactsUI(
+        isFetching: isFetching,
+        contacts: contacts,
+        refresh: RefreshIndicator(
+                  onRefresh: refreshContacts,
+                  child: ListView.builder(
+                    itemCount: contacts.length,
+                    itemBuilder: (context, index) {
+                      final contactData = contacts[index];
+                      String displayName = contactData['displayName'];
+                      String phoneNumber = contactData['phoneNumber'];
 
-                    return Mobilecontactcard(
-                      displayName: displayName,
-                      phoneNumber: phoneNumber,
-                      onTap: (Contact selectedContact) {
-                        Navigator.pop(context, selectedContact);
-                      },
-                    );
-                  },
+                      return Mobilecontactcard(
+                        displayName: displayName,
+                        phoneNumber: phoneNumber,
+                        onTap: (Contact selectedContact) {
+                          Navigator.pop(context, selectedContact);
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-      error: FittedTextUI(text: 'No contacts found. Swipe down to refresh.', type: "err"),
+        error: FittedTextUI(text: 'No contacts found. Swipe down to refresh.', type: "err"),
+      ),
     );
+    
+    
   }
 
   /// Load contacts from Hive
