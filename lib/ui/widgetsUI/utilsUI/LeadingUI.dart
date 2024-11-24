@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 /// A reusable CircleAvatar widget with custom styling and content.
 class LeadingUI extends StatelessWidget {

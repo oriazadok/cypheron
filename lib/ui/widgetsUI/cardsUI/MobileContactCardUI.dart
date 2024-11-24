@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 /// A reusable widget to display a contact card with custom styling.
 class MobilecontactcardUI extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/ui/widgetsUI/DialogUI.dart';
+import 'package:cypheron/ui/widgetsUI/dialogsUI/DialogUI.dart';
 
 /// Helper class for showing custom dialogs in the app.
 class ContactsDialogUI {

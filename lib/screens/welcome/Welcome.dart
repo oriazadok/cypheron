@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/ui/screensUI/WelcomeUI.dart';
 
 import 'package:cypheron/widgets/logo/LockLogo.dart';
-import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart';
 import 'package:cypheron/ui/widgetsUI/buttonUI/NavigationButtonUI.dart';
 import 'package:cypheron/screens/auth/SignIn.dart';
 import 'package:cypheron/screens/auth/SignUp.dart';

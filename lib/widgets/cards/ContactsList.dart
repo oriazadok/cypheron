@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
-import 'package:cypheron/ui/widgetsUI/ContactCardUI.dart';
-import 'package:cypheron/ui/widgetsUI/EmptyStateUI.dart';  // Button widget for adding contacts
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
-import 'package:cypheron/ui/widgetsUI/LeadingUI.dart';
+import 'package:cypheron/ui/widgetsUI/cardsUI/ContactCardUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart';  // Button widget for adding contacts
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/LeadingUI.dart';
 
 
 /// A widget that displays a list of contacts with a clean UI.

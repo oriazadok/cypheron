@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 class KeywordDialog extends StatefulWidget {
 

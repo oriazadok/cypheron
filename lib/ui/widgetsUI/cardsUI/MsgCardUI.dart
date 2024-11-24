@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/MessageModel.dart';
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 
 class MsgCardUI extends StatelessWidget {

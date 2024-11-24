@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/ui/widgetsUI/ContactsDialogUI.dart';
-import 'package:cypheron/widgets/ContactMenu.dart';
+import 'package:cypheron/ui/widgetsUI/dialogsUI/ContactsDialogUI.dart';
+import 'package:cypheron/widgets/dialogs/ContactMenu.dart';
 import 'package:cypheron/ui/widgetsUI/buttonUI/FloatBtnUI.dart';
 
 /// A floating action button for adding a new contact.

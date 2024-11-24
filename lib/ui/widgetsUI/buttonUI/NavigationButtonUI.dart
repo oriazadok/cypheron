@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/ui/widgetsUI/buttonUI.dart'; // Import the common styles
+import 'package:cypheron/ui/widgetsUI/utilsUI/buttonUI.dart'; // Import the common styles
 
 /// A dark-themed button widget for navigating to the SignIn screen.
 class NavigationButtonUI extends StatelessWidget {

@@ -6,7 +6,7 @@ import 'package:cypheron/services/HiveService.dart'; // Service for managing Hiv
 import 'package:cypheron/models/UserModel.dart'; // Model class for user data
 
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI structure for authentication screens
-import 'package:cypheron/ui/widgetsUI/FormUI.dart'; // UI structure for forms
+import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // UI structure for forms
 
 import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Generic input form field widget
 import 'package:cypheron/screens/home/Home.dart'; // Home screen to navigate to after sign-up

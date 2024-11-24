@@ -1,4 +1,4 @@
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:flutter/material.dart';
 
 /// A reusable widget for displaying contact cards with a consistent style.

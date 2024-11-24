@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:cypheron/services/HiveService.dart';
 import 'package:cypheron/ui/screensUI/MobileContactsUI.dart'; // Import the wrapper
-import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart';
-import 'package:cypheron/ui/widgetsUI/AppBarUI.dart';
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart';
+import 'package:cypheron/ui/widgetsUI/app_barUI/AppBarUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 
 import 'package:cypheron/ui/widgetsUI/cardsUI/MobileContactCardUI.dart'; // Import the new LoadingIndicator

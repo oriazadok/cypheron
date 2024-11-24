@@ -8,9 +8,9 @@ import 'package:cypheron/services/ffi_service.dart'; // Service for encryption/d
 import 'package:cypheron/models/ContactModel.dart'; // Model class for contacts
 import 'package:cypheron/models/MessageModel.dart'; // Model class for messages
 
-import 'package:cypheron/ui/widgetsUI/AppBarUI.dart'; // Custom app bar widget
-import 'package:cypheron/ui/widgetsUI/IconsUI.dart'; // Custom icons widget
-import 'package:cypheron/ui/widgetsUI/EmptyStateUI.dart'; // Widget for empty states
+import 'package:cypheron/ui/widgetsUI/app_barUI/AppBarUI.dart'; // Custom app bar widget
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart'; // Custom icons widget
+import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart'; // Widget for empty states
 import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart'; // Widget for displaying message cards
 
 import 'package:cypheron/widgets/dialogs/KeywordDialog.dart'; // Dialog for entering decryption key
