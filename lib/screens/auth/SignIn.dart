@@ -1,98 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:crypto/crypto.dart'; // For hashing passwords securely
+import 'dart:convert'; // For encoding strings to UTF-8
 
-import 'package:crypto/crypto.dart';  // For hashing the password
-import 'dart:convert';  // For UTF8 encoding
+import 'package:cypheron/services/HiveService.dart'; // Service for managing Hive database
+import 'package:cypheron/models/UserModel.dart'; // Model for user data
 
-import 'package:cypheron/services/HiveService.dart';  // Hive service to handle data storage
-import 'package:cypheron/models/UserModel.dart';  // UserModel for representing the user data
+import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI structure for authentication screens
+import 'package:cypheron/ui/widgetsUI/FormUI.dart'; // UI structure for forms
+import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart'; // Widget for displaying text with a specific style
 
-import 'package:cypheron/ui/screensUI/AuthUI.dart';
-import 'package:cypheron/ui/widgetsUI/FormUI.dart';
+import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Generic form field for input
 
-import 'package:cypheron/widgets/form_elements/GenericFormField.dart';
-import 'package:cypheron/ui/widgetsUI/FittedTextUI.dart';
+import 'package:cypheron/screens/home/Home.dart'; // Home screen for navigation after signing in
 
-
-import 'package:cypheron/screens/home/Home.dart';  // Home screen to navigate to on successful sign-in
-
-/// SignIn screen for user authentication, allowing users to enter their credentials.
-/// On successful sign-in, redirects to the Home screen.
+/// The `SignIn` class defines the sign-in screen of the app. 
+/// It uses a stateful widget to manage user input and authentication.
 class SignIn extends StatefulWidget {
   @override
   _SignInState createState() => _SignInState();
 }
 
 class _SignInState extends State<SignIn> {
-  
-  TextEditingController _emailController = TextEditingController();  // Controller for email input
-  TextEditingController _passwordController = TextEditingController();  // Controller for password input
-  String errorMessage = '';  // Stores error message to display in case of sign-in failure
+  // Controllers for managing input in email and password fields
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  // String to display error messages to the user
+  String errorMessage = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign In'),  // Title of the SignIn screen
+        title: Text('Sign In'), // Title of the screen displayed in the AppBar
       ),
       body: AuthUI(
-          form: FormUI(
-            title: 'Sign In',
-            
-            // Input fields for the form
-            inputFields: [
-              GenericFormField.getFormField(
-                type: 'email',
-                controller: _emailController,
-              ),
-              GenericFormField.getFormField(
-                type: 'password',
-                controller: _passwordController,
-              ),
-              if (errorMessage != '')
-                FittedTextUI(text: errorMessage, type: "err"),
-            ],
+        // Wraps the form UI with additional authentication styling and behavior
+        form: FormUI(
+          title: 'Sign In', // Title of the form displayed at the top
 
-            onClick: () async {
+          // List of input fields and dynamic widgets
+          inputFields: [
+            // Email input field
+            GenericFormField.getFormField(
+              type: 'email',
+              controller: _emailController,
+            ),
+            // Password input field
+            GenericFormField.getFormField(
+              type: 'password',
+              controller: _passwordController,
+            ),
+            // Displays an error message if there's one
+            if (errorMessage != '')
+              FittedTextUI(text: errorMessage, type: "err"),
+          ],
 
-              UserModel? signInSuccessful = await signInUser();  // Call sign-in logic
-              if (signInSuccessful != null) {
-                // If sign-in succeeds, navigate to Home screen with user data
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Home(user: signInSuccessful),
-                  ),
-                );
-              } else {
-                // Set an error message if sign-in fails
-                setState(() {
-                  errorMessage = 'Invalid email or password';
-                });
-              }
-            },
-            buttonText: 'Sign In',  // Button text
-          ),
-        )
+          // Function executed when the "Sign In" button is clicked
+          onClick: () async {
+            UserModel? signInSuccessful = await signInUser(); // Attempt to sign in the user
+            if (signInSuccessful != null) {
+              // Navigate to the Home screen and clear the navigation stack
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Home(user: signInSuccessful)),
+                (route) => false,
+              );
+            } else {
+              // Display an error message if sign-in fails
+              setState(() {
+                errorMessage = 'Invalid email or password';
+              });
+            }
+          },
+          buttonText: 'Sign In', // Text displayed on the button
+        ),
+      ),
     );
   }
 
-  /// Attempts to authenticate the user by validating their email and password.
-  /// Returns a UserModel if the sign-in is successful, otherwise returns null.
+  /// Attempts to sign in the user by validating their credentials.
+  /// 
+  /// Returns:
+  /// - `UserModel` if the email and password match a user in the database.
+  /// - `null` if the credentials are invalid.
   Future<UserModel?> signInUser() async {
+    // Retrieve input values from the controllers
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    // Hash the password using SHA256 for secure comparison
+    // Hash the password using SHA-256 for secure comparison
     var hashedPassword = sha256.convert(utf8.encode(password)).toString();
 
-    // Retrieve the user from Hive storage based on email
+    // Fetch the user from the Hive database using their email
     UserModel? user = await HiveService.getUserByEmail(email);
 
-    // Check if user exists and if the hashed password matches
+    // Validate the hashed password
     if (user != null && user.hashedPassword == hashedPassword) {
-      return user;  // Sign-in success
+      return user; // Return the user if the credentials are valid
     } else {
-      return null;  // Sign-in failure
+      return null; // Return null if the credentials are invalid
     }
   }
 }
