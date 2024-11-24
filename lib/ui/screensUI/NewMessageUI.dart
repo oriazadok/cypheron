@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // UI structure for forms
+
+
 /// A reusable UI component that provides consistent styling for forms.
 /// It includes a form key, title, input fields, and an action button.
 class NewmessageUI extends StatefulWidget {
@@ -21,25 +24,13 @@ class __NewmessageUIState extends State<NewmessageUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Input fields
-            ..._buildInputFieldsWithSpacing(),
-
-            // Action button with validation check
-            ElevatedButton(
-              onPressed: () {
-                  widget.onClick();
-              },
-              child: Text(widget.buttonText),
-            ),
-          ],
-        ),
-      ),
+    return FormUI(
+      title: "",
+      inputFields: _buildInputFieldsWithSpacing(),
+      onClick: () {
+        widget.onClick();
+      },
+      buttonText: widget.buttonText,
     );
   }
 
