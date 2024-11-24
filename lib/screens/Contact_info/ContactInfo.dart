@@ -58,17 +58,11 @@ class _ContactInfoState extends State<ContactInfo> {
                     
                     if (keyword != null && keyword.isNotEmpty) {
                       // Decrypt the message body using the provided keyword
-                      final cypherFFI = CypherFFI();
-                      String decryptedBody = cypherFFI.runCypher(
-                        message.body, // Encrypted message body
-                        keyword, // Decryption key
-                        'd', // Flag for decryption
-                      );
+                      String decryptedBody = CypherFFI().runCypher(message.body, keyword, 'd');
                       // Display the decrypted message in a dialog
                       displaydialog(context, message.title, decryptedBody);
                     }
                   },
-
                   /// Action to send the message
                   onSend: () => _sendMessage(message),
                 );

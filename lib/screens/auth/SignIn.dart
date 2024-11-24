@@ -37,7 +37,7 @@ class _SignInState extends State<SignIn> {
       body: AuthUI(
         // Wraps the form UI with additional authentication styling and behavior
         form: FormUI(
-          title: 'Sign In', // Title of the form displayed at the top
+          title: 'Sign In', // Title of the form
 
           // List of input fields and dynamic widgets
           inputFields: [

@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/models/UserModel.dart';  // Model for user data
-import 'package:cypheron/services/HiveService.dart';  // Service to manage local data storage
-import 'package:cypheron/models/ContactModel.dart';  // Model for contacts
-import 'package:cypheron/widgets/cards/ContactsList.dart';  // Widget to display contact list
-import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Button widget for adding contacts
 
-import 'package:cypheron/ui/screensUI/HomeUI.dart';
-import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/models/UserModel.dart';  // Model representing user data.
+import 'package:cypheron/models/ContactModel.dart';  // Model representing contact data.
+import 'package:cypheron/services/HiveService.dart';  // Service for managing local data storage.
 
-/// Home screen that displays user's contacts and enables decryption of shared files.
+import 'package:cypheron/ui/screensUI/HomeUI.dart';  // UI-specific customizations for the Home screen.
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';  // Utility for building icons and icon buttons.
+
+import 'package:cypheron/widgets/cards/ContactsList.dart';  // Widget for displaying a list of contacts.
+import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Floating action button for adding contacts.
+
+/// The Home screen of the Cypheron app.
+/// Displays a list of user's contacts and provides functionality to manage them.
+/// Also handles actions like adding new contacts or logging out.
 class Home extends StatefulWidget {
-  final UserModel? user;          // Optional UserModel, representing the current user
+  /// The currently logged-in user. Optional to allow guest users.
+  final UserModel? user;
 
+  /// Constructor for the Home widget.
+  /// Accepts an optional [user] to manage their data.
   Home({this.user});
 
   @override
@@ -19,15 +26,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<ContactModel> contactList = [];  // List to store user's contacts
-  bool isSaving = false;                // Loading indicator for saving process
-  
+  /// List to store the user's contacts.
+  List<ContactModel> contactList = [];
+
+  /// Boolean to indicate whether a saving operation is in progress.
+  bool isSaving = false;
 
   @override
   void initState() {
     super.initState();
 
-    // Load contacts if a user is provided
+    // Load the user's contacts from the database if the user is provided.
     if (widget.user != null) {
       _loadContactsByIds(widget.user!.contactIds);
     }
@@ -36,49 +45,63 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar with a title and a logout button.
       appBar: AppBar(
-        title: Text("Cypheron"),
-        actions: [ IconsUI(context: context, type: "logout", isButton: true) ],
+        title: Text("Cypheron"), // App title.
+        actions: [
+          IconsUI(
+            context: context,
+            type: "logout",
+            isButton: true, // Logout button.
+          )
+        ],
       ),
+
+      // Body of the screen displaying the contacts list.
       body: HomeUI(
-        isSaving: isSaving,
-        contactList: ContactList(contactList: contactList),
+        isSaving: isSaving, // Passes the saving state to the UI.
+        contactList: ContactList(contactList: contactList), // Displays the contact list.
       ),
-      // Show floating action button to add new contacts if user is signed in
-      // floatingActionButton: buildFloatingActionButton(context, widget.user!.userId, _addNewContact)
-      floatingActionButton: AddContactButton(onAddContact: _addNewContact),
+
+      // Floating action button to add a new contact.
+      floatingActionButton: AddContactButton(
+        onAddContact: _addNewContact, // Callback function for adding a new contact.
+      ),
     );
   }
 
-  /// Loads contacts from Hive database using provided contact IDs.
+  /// Loads contacts from the Hive database using their IDs.
+  /// Updates the UI with the loaded contacts.
   void _loadContactsByIds(List<String> contactIds) async {
+    // Load contacts from Hive based on provided IDs.
     List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
     setState(() {
-      contactList = loadedContacts;
+      contactList = loadedContacts; // Update the contact list in the state.
     });
   }
 
-  /// Adds a new contact and saves it asynchronously to Hive.
+  /// Adds a new contact to the list and saves it to the Hive database.
+  /// Displays a loading indicator while saving.
   void _addNewContact(ContactModel newContact) {
     setState(() {
-      contactList.add(newContact);  // Update UI instantly
-      isSaving = true;  // Start showing loading indicator
+      contactList.add(newContact); // Optimistically update the UI.
+      isSaving = true; // Show loading indicator.
     });
 
-    // Save contact to database and update user's contact list
+    // Save the contact to Hive and update the user's contact list.
     HiveService.saveContact(widget.user!, newContact).then((success) {
       if (success) {
         setState(() {
-          isSaving = false;  // Stop showing loading indicator on success
+          isSaving = false; // Hide loading indicator on success.
         });
       } else {
-        // If saving fails, revert UI and show error message
+        // If saving fails, revert UI changes and show an error message.
         setState(() {
-          contactList.remove(newContact);  // Revert UI changes
-          isSaving = false;
+          contactList.remove(newContact); // Remove the contact from the list.
+          isSaving = false; // Hide loading indicator.
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save contact.')),
+          SnackBar(content: Text('Failed to save contact.')), // Show error feedback.
         );
       }
     });

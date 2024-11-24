@@ -35,7 +35,7 @@ class _SignUpState extends State<SignUp> {
       body: AuthUI(
         // Wraps the form UI with additional authentication styling
         form: FormUI(
-          title: 'Sign Up', // Title of the form displayed at the top
+          title: 'Sign Up', // Title of the form
 
           // List of input fields for the form
           inputFields: [
