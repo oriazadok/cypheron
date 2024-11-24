@@ -95,6 +95,23 @@ class HiveService {
     }
   }
 
+  /// Deletes a contact from Hive and updates the associated user's contact list.
+  /// Returns `true` if the deletion is successful, `false` otherwise.
+  static Future<bool> deleteContact(UserModel user, ContactModel contact) async {
+    try {
+      var contactBox = await Hive.openBox<ContactModel>('contacts'); // Open contacts box
+      await contactBox.delete(contact.id); // Delete contact by ID
+
+      user.contactIds.remove(contact.id); // Remove contact ID from user list
+      var userBox = await Hive.openBox<UserModel>('users');
+      await userBox.put(user.userId, user); // Update user data
+
+      return true; // Indicate success
+    } catch (e) {
+      print('Error deleting contact: $e');
+      return false; // Indicate failure
+    }
+  }
 
 
   /// Loads contacts if needed based on the last updated timestamp.

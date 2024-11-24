@@ -60,7 +60,12 @@ class _HomeState extends State<Home> {
       // Body of the screen displaying the contacts list.
       body: HomeUI(
         isSaving: isSaving, // Passes the saving state to the UI.
-        contactList: ContactList(contactList: contactList), // Displays the contact list.
+        contactList: ContactList(
+                        contactList: contactList,
+                        onDelete: (ContactModel contact) {
+                          _deleteContact(contact);
+                        },
+                      ), // Displays the contact list.
       ),
 
       // Floating action button to add a new contact.
@@ -116,6 +121,23 @@ class _HomeState extends State<Home> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to save contact.')), // Show error feedback.
+        );
+      }
+    });
+  }
+
+  void _deleteContact(ContactModel contactToDelete) {
+    setState(() {
+      contactList.remove(contactToDelete); // Remove contact from UI
+    });
+
+    HiveService.deleteContact(widget.user!, contactToDelete).then((success) {
+      if (!success) {
+        setState(() {
+          contactList.add(contactToDelete); // Re-add contact if deletion fails
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete contact.')),
         );
       }
     });

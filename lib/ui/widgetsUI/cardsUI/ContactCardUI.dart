@@ -6,6 +6,7 @@ class ContactCardUI extends StatelessWidget {
   final Widget leading;
   final String title;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   /// Constructor for the ContactCard widget.
   const ContactCardUI({
@@ -13,6 +14,7 @@ class ContactCardUI extends StatelessWidget {
     required this.leading,
     required this.title,
     required this.onTap,
+    required this.onLongPress,
   }) : super(key: key);
 
   @override
@@ -25,7 +27,7 @@ class ContactCardUI extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12.0),
-        onTap: onTap,
+        
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           leading: leading,
@@ -37,6 +39,8 @@ class ContactCardUI extends StatelessWidget {
             ),
           ),
           trailing: IconsUI(type: "arrow"),
+          onTap: onTap,
+          onLongPress: onLongPress,
         ),
       ),
     );
