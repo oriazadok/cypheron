@@ -83,6 +83,20 @@ class _HomeState extends State<Home> {
   /// Adds a new contact to the list and saves it to the Hive database.
   /// Displays a loading indicator while saving.
   void _addNewContact(ContactModel newContact) {
+
+    // Check if the contact already exists in the contact list
+    bool isDuplicate = contactList.any((contact) =>
+        contact.name.toLowerCase() == newContact.name.toLowerCase() &&
+        contact.phoneNumber == newContact.phoneNumber);
+
+    if (isDuplicate) {
+      // Show feedback to the user if the contact already exists
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Contact already exists.')),
+      );
+      return; // Exit the function without adding the contact
+    }
+    
     setState(() {
       contactList.add(newContact); // Optimistically update the UI.
       isSaving = true; // Show loading indicator.
