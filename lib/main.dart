@@ -9,7 +9,7 @@ import 'ui/generalUI/theme.dart';
 
 void main() async {
   await HiveService.init();
-  await HiveService.loadContactsIfNeeded();
+  // await HiveService.loadContactsIfNeeded();
   runApp(MyApp());
 }
 

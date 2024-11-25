@@ -13,6 +13,7 @@ class HiveService {
   /// Initializes Hive and registers adapters for each model.
   static Future<void> init() async {
     await Hive.initFlutter();  // Initialize Hive for Flutter
+    await Hive.openBox('contactsBox');
 
     // Register adapters for each model to enable their use in Hive
     Hive.registerAdapter(UserModelAdapter());
