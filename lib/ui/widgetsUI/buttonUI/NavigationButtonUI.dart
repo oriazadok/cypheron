@@ -12,21 +12,22 @@ class NavigationButtonUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 400),
-      width: double.infinity,
+      // duration: Duration(milliseconds: 400),
+      duration: Duration(milliseconds: 0),
+      // width: double.infinity,
       child: InkWell(
-        borderRadius: BorderRadius.circular(30.0),
+        // borderRadius: BorderRadius.circular(30.0),
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => destination),
         ),
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 18.0),
-          decoration: darkButtonDecoration(), // Use shared decoration
+          // padding: EdgeInsets.symmetric(vertical: 18.0),
+          // decoration: darkButtonDecoration(), // Use shared decoration
           child: Center(
             child: Text(
               label,
-              style: buttonTextStyle(), // Use shared text style
+              // style: buttonTextStyle(), // Use shared text style
             ),
           ),
         ),

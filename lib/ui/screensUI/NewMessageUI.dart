@@ -39,7 +39,7 @@ class __NewmessageUIState extends State<NewmessageUI> {
     List<Widget> spacedFields = [];
     for (int i = 0; i < widget.inputFields.length; i++) {
       spacedFields.add(widget.inputFields[i]);
-      spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
+      // spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
     }
     return spacedFields;
   }

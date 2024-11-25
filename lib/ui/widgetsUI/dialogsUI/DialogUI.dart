@@ -17,33 +17,34 @@ class DialogUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      backgroundColor: const Color(0xFF1E1E2C),
+      // shape: RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.circular(20.0),
+      // ),
+      // backgroundColor: const Color(0xFF1E1E2C),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(0),
+        // padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          // mainAxisSize: MainAxisSize.min,
           children: [
             // Title text with styling
             Text(
               title,
-              style: const TextStyle(
-                color: Colors.deepPurpleAccent,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
-              textAlign: TextAlign.center,
+              // style: const TextStyle(
+              //   color: Colors.deepPurpleAccent,
+              //   fontSize: 22,
+              //   fontWeight: FontWeight.bold,
+              //   letterSpacing: 1.2,
+              // ),
+              // textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
             // Content section for dialog
             content,
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
             // Action buttons row
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              // mainAxisAlignment: MainAxisAlignment.end,
               children: actions,
             ),
           ],

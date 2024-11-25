@@ -16,9 +16,9 @@ class AppBarUI extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
         title: Text(title),
-        centerTitle: true,
-        backgroundColor: Colors.deepPurpleAccent,
-        elevation: 0,
+        // centerTitle: true,
+        // backgroundColor: Colors.deepPurpleAccent,
+        // elevation: 0,
         actions: actions,
       );
   }

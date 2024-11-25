@@ -17,21 +17,21 @@ class MsgCardUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      // elevation: 5,
+      // margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      // shape: RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.circular(15),
+      // ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        // contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: IconsUI(type: "lock"),
         title: Text(
           message.title,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          // style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
           'Tap to decrypt',
-          style: TextStyle(color: Colors.grey),
+          // style: TextStyle(color: Colors.grey),
         ),
         onTap: onTap,
         trailing: IconsUI(context: context, type: "send", isButton: true, onPressed: onSend),

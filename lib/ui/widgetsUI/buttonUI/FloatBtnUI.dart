@@ -17,8 +17,8 @@ class FloatBtnUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      backgroundColor: Colors.deepPurpleAccent,
-      elevation: 8,
+      // backgroundColor: Colors.deepPurpleAccent,
+      // elevation: 8,
       onPressed: () {
           onPressed();
       },

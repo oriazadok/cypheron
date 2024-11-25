@@ -25,26 +25,27 @@ class _FormUIState extends State<FormUI> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(0),
+      // padding: const EdgeInsets.all(16.0),
       child: Center(
         child: SingleChildScrollView(
           // padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              // crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Form title
                 Text(
                   widget.title,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  textAlign: TextAlign.center,
+                  // style: TextStyle(
+                  //   fontSize: 28,
+                  //   fontWeight: FontWeight.bold,
+                  //   color: Colors.deepPurpleAccent,
+                  // ),
+                  // textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 20),
+                // SizedBox(height: 20),
                 
                 // Input fields
                 ..._buildInputFieldsWithSpacing(),
@@ -71,7 +72,7 @@ class _FormUIState extends State<FormUI> {
     List<Widget> spacedFields = [];
     for (int i = 0; i < widget.inputFields.length; i++) {
       spacedFields.add(widget.inputFields[i]);
-      spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
+      // spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
     }
     return spacedFields;
   }

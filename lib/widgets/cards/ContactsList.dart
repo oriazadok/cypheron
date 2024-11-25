@@ -62,14 +62,14 @@ class _ContactListState extends State<ContactList> {
         // Row of options displayed when a contact is selected
         if (selectedContact != null)
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+            // bottom: 0,
+            // left: 0,
+            // right: 0,
             child: Container(
-              color: Colors.grey[200],
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              // color: Colors.grey[200],
+              // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                // mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // Delete button
                   IconButton(

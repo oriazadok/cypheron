@@ -14,35 +14,35 @@ class FittedTextUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(maxWidth: 280), // Set a max width for the text.
+      // constraints: BoxConstraints(maxWidth: 280), // Set a max width for the text.
       child: FittedBox(
-        fit: BoxFit.scaleDown,
+        // fit: BoxFit.scaleDown,
         child: Text(
           text,
-          style: buildTextStyle(type)
+          // style: buildTextStyle(type)
         ),
       ),
     );
   }
 
-  TextStyle? buildTextStyle(String type) {
+  // TextStyle? buildTextStyle(String type) {
 
-    if (type == "head") {
-      return TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: 1.2,
-          );
-    }
+  //   if (type == "head") {
+  //     return TextStyle(
+  //           fontSize: 28,
+  //           fontWeight: FontWeight.bold,
+  //           color: Colors.white,
+  //           letterSpacing: 1.2,
+  //         );
+  //   }
 
-    if (type == "err") {
-      return TextStyle(
-            fontSize: 18,
-            color: Colors.redAccent,
-          );
-    }
+  //   if (type == "err") {
+  //     return TextStyle(
+  //           fontSize: 18,
+  //           color: Colors.redAccent,
+  //         );
+  //   }
 
-    return TextStyle();
-  }
+  //   return TextStyle();
+  // }
 }

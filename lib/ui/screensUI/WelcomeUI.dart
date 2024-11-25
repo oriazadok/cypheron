@@ -25,19 +25,20 @@ class WelcomeUI extends StatelessWidget {
       body: GradientBackground(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            // padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // App logo with an animation effect.
                 this.logo,
-                SizedBox(height: 30),
+                // SizedBox(height: 30),
 
                 this.text,
-                SizedBox(height: 40),
+                // SizedBox(height: 40),
 
                 this.signIn,
-                SizedBox(height: 20),
+                // SizedBox(height: 20),
 
                 // Sign Up button with similar styling.
                 this.signUp,

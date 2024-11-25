@@ -23,8 +23,8 @@ class _HomeUIState extends State<HomeUI> {
     return GradientBackground(
         child: Column(
           children: [
-            if (widget.isSaving)  // Show loading indicator when saving
-              LinearProgressIndicator(),
+            // if (widget.isSaving)  // Show loading indicator when saving
+            //   LinearProgressIndicator(),
             // Display list of contacts if available
             Expanded(
               child: widget.contactList,

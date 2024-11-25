@@ -17,32 +17,34 @@ class MobilecontactcardUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      // padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+
       child: Card(
-        color: Color(0xFF3A3A3C),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        elevation: 4,
+        // color: Color(0xFF3A3A3C),
+        // shape: RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.circular(15.0),
+        // ),
+        // elevation: 4,
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: Colors.deepPurpleAccent,
+            // backgroundColor: Colors.deepPurpleAccent,
             child: IconsUI(type: "person"),
           ),
           title: Text(
             displayName,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            // style: TextStyle(
+            //   color: Colors.white,
+            //   fontSize: 18,
+            //   fontWeight: FontWeight.w600,
+            // ),
           ),
           subtitle: Text(
             phoneNumber,
-            style: TextStyle(
-              color: Colors.grey[300],
-              fontSize: 16,
-            ),
+            // style: TextStyle(
+            //   color: Colors.grey[300],
+            //   fontSize: 16,
+            // ),
           ),
           onTap: () {
             // Convert contact data to a `Contact` object and call `onTap`

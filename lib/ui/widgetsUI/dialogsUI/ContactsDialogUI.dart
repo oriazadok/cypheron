@@ -12,7 +12,7 @@ class ContactsDialogUI {
   }) {
     return showDialog(
       context: context,
-      barrierColor: Colors.black54, // Dim background for focus effect
+      // barrierColor: Colors.black54, // Dim background for focus effect
       builder: (BuildContext context) {
         return DialogUI(
           title: title,

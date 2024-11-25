@@ -39,7 +39,7 @@ Future<void> displaydialog(
                   // Display the timer on the left
                   Text(
                     "$remainingTime s",
-                    style: TextStyle(fontSize: 14, color: Colors.redAccent),
+                    // style: TextStyle(fontSize: 14, color: Colors.redAccent),
                   ),
                   Row(
                     children: [

@@ -37,68 +37,68 @@ class IconsUI extends StatelessWidget {
   /// Builds an IconButton based on the type.
   IconButton _buildIconButton() {
     switch (type.toLowerCase()) {
-      case 'logout':
-        return IconButton(
-          icon: Icon(Icons.logout),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context!,
-              MaterialPageRoute(builder: (context) => SignIn()),
-            );
-          },
-        );
+      // case 'logout':
+      //   return IconButton(
+      //     icon: Icon(Icons.logout),
+      //     onPressed: () {
+      //       Navigator.pushReplacement(
+      //         context!,
+      //         MaterialPageRoute(builder: (context) => SignIn()),
+      //       );
+      //     },
+      //   );
       
-      case 'refresh':
-        return IconButton(
-          icon: Icon(Icons.refresh),
-          onPressed: () {
-            if (this.onPressed != null) {
-              this.onPressed!();
-            }
-          },
-        );
+      // case 'refresh':
+      //   return IconButton(
+      //     icon: Icon(Icons.refresh),
+      //     onPressed: () {
+      //       if (this.onPressed != null) {
+      //         this.onPressed!();
+      //       }
+      //     },
+      //   );
       
-      case 'send':
-        return IconButton(
-          icon: Icon(Icons.send),
-          color: Colors.deepPurpleAccent,
-          onPressed: () {
-            if (this.onPressed != null) {
-              this.onPressed!();
-            }
-          },
-        );
+      // case 'send':
+      //   return IconButton(
+      //     icon: Icon(Icons.send),
+      //     // color: Colors.deepPurpleAccent,
+      //     onPressed: () {
+      //       if (this.onPressed != null) {
+      //         this.onPressed!();
+      //       }
+      //     },
+      //   );
 
-      case 'copy':
-        return IconButton(
-          icon: Icon(Icons.copy),
-          color: Colors.deepPurpleAccent,
-          onPressed: () {
-            if (this.onPressed != null) {
-              this.onPressed!();
-            }
-          },
-        );
+      // case 'copy':
+      //   return IconButton(
+      //     icon: Icon(Icons.copy),
+      //     // color: Colors.deepPurpleAccent,
+      //     onPressed: () {
+      //       if (this.onPressed != null) {
+      //         this.onPressed!();
+      //       }
+      //     },
+      //   );
 
-      case 'visibility':
-        return IconButton(
-          icon: Icon(Icons.visibility),
-          onPressed: () {
-            if (this.onPressed != null) {
-              this.onPressed!(); // Trigger the provided callback
-            }
-          },
-        );
+      // case 'visibility':
+      //   return IconButton(
+      //     icon: Icon(Icons.visibility),
+      //     onPressed: () {
+      //       if (this.onPressed != null) {
+      //         this.onPressed!(); // Trigger the provided callback
+      //       }
+      //     },
+      //   );
 
-      case 'visibility_off':
-        return IconButton(
-          icon: Icon(Icons.visibility_off),
-          onPressed: () {
-            if (this.onPressed != null) {
-              this.onPressed!(); // Trigger the provided callback
-            }
-          },
-        );
+      // case 'visibility_off':
+      //   return IconButton(
+      //     icon: Icon(Icons.visibility_off),
+      //     onPressed: () {
+      //       if (this.onPressed != null) {
+      //         this.onPressed!(); // Trigger the provided callback
+      //       }
+      //     },
+      //   );
 
       default:
         return IconButton(
@@ -116,38 +116,38 @@ class IconsUI extends StatelessWidget {
   Icon _buildIcon() {
     switch (type.toLowerCase()) {
 
-      case 'lock-logo':
-        return Icon(Icons.lock_outline, color: Colors.white, size: 100);
+      // case 'lock-logo':
+      //   return Icon(Icons.lock_outline, color: Colors.white, size: 100);
 
-      case 'add':
-        return Icon(Icons.add, color: Colors.white, size: 28);
+      // case 'add':
+      //   return Icon(Icons.add, color: Colors.white, size: 28);
 
-      case 'person':
-        return Icon(Icons.person, color: Colors.white);
+      // case 'person':
+      //   return Icon(Icons.person, color: Colors.white);
 
-      case 'person-add':
-        return Icon(Icons.person_add_alt_1, color: Colors.deepPurpleAccent, size: 28);
+      // case 'person-add':
+      //   return Icon(Icons.person_add_alt_1, color: Colors.deepPurpleAccent, size: 28);
 
-      case 'contacts':
-        return Icon(Icons.contacts, color: Colors.deepPurpleAccent, size: 28);
+      // case 'contacts':
+      //   return Icon(Icons.contacts, color: Colors.deepPurpleAccent, size: 28);
 
-      case 'lock':
-        return Icon(Icons.lock, color: Colors.deepPurpleAccent, size: 28);
+      // case 'lock':
+      //   return Icon(Icons.lock, color: Colors.deepPurpleAccent, size: 28);
 
-      case 'contacts_outlined':
-        return Icon(Icons.contacts_outlined,
-            color: Colors.deepPurpleAccent, size: 80);
+      // case 'contacts_outlined':
+      //   return Icon(Icons.contacts_outlined,
+      //       color: Colors.deepPurpleAccent, size: 80);
 
-      case 'mail':
-        return Icon(Icons.mail_outline,
-            color: Colors.deepPurpleAccent, size: 80);
+      // case 'mail':
+      //   return Icon(Icons.mail_outline,
+      //       color: Colors.deepPurpleAccent, size: 80);
 
-      case 'arrow':
-        return Icon(Icons.arrow_forward_ios,
-            color: Colors.grey, size: 16);
+      // case 'arrow':
+      //   return Icon(Icons.arrow_forward_ios,
+      //       color: Colors.grey, size: 16);
 
       default:
-        return Icon(Icons.logout);
+        return Icon(Icons.whatshot);
     }
   }
 

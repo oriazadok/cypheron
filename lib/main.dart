@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'services/HiveService.dart';
-import 'screens/welcome/Welcome.dart';
-import 'screens/decrypt/Decryptor.dart';
 
 import 'ui/generalUI/theme.dart';
+
+import 'screens/welcome/Welcome.dart';
+import 'screens/decrypt/Decryptor.dart';
 
 void main() async {
   await HiveService.init();
@@ -33,7 +34,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Cypheron',
       theme: ThemeData.light(),
-      darkTheme: getDarkTheme(),
+      // darkTheme: getDarkTheme(),
       themeMode: ThemeMode.dark,
       home: sharedFilePath != null ? Decryptor(initialFilePath: sharedFilePath) : Welcome(),
     );

@@ -11,10 +11,10 @@ class ContactMenuUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      // mainAxisSize: MainAxisSize.min,
       children: [
         options[0],
-        SizedBox(height: 15),
+        // SizedBox(height: 15),
         options[1],
       ],
     );
