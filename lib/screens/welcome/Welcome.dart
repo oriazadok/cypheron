@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:cypheron/ui/screensUI/WelcomeUI.dart';  // Custom UI layout for the Welcome screen.
 
-import 'package:cypheron/widgets/logo/LockLogo.dart';  // Widget displaying the Cypheron logo.
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart';  // Widget for styled, adaptive text.
-import 'package:cypheron/ui/widgetsUI/buttonUI/NavigationButtonUI.dart';  // Widget for navigation buttons.
+import 'package:cypheron/ui/widgetsUI/buttonUI/NavButtonUI.dart';  // Widget for navigation buttons.
 import 'package:cypheron/screens/auth/SignIn.dart';  // Screen for user sign-in.
 import 'package:cypheron/screens/auth/SignUp.dart';  // Screen for user sign-up.
 
@@ -15,22 +15,22 @@ class Welcome extends StatelessWidget {
   Widget build(BuildContext context) {
     return WelcomeUI(
       // Displays the app's logo prominently at the top of the screen.
-      logo: LockLogo(),
+      logo: IconsUI(type: "lock-logo"),
 
       // Displays a welcome message with styled text.
       text: FittedTextUI(
         text: 'Welcome to Cypheron!', // Main welcome message.
-        type: "head", // Text type for consistent styling.
+        type: TextType.head_line, // Text type for consistent styling.
       ),
 
       // Navigation button for the "Sign In" screen.
-      signIn: NavigationButtonUI(
+      signIn: NavButtonUI(
         label: 'Sign In', // Button text.
         destination: SignIn(), // Navigates to the SignIn screen.
       ),
 
       // Navigation button for the "Sign Up" screen.
-      signUp: NavigationButtonUI(
+      signUp: NavButtonUI(
         label: 'Sign Up', // Button text.
         destination: SignUp(), // Navigates to the SignUp screen.
       ),

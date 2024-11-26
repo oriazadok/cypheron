@@ -53,7 +53,7 @@ class _SignInState extends State<SignIn> {
             ),
             // Displays an error message if there's one
             if (errorMessage != '')
-              FittedTextUI(text: errorMessage, type: "err"),
+              FittedTextUI(text: errorMessage, type: TextType.err),
           ],
 
           // Function executed when the "Sign In" button is clicked

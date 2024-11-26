@@ -116,8 +116,8 @@ class IconsUI extends StatelessWidget {
   Icon _buildIcon() {
     switch (type.toLowerCase()) {
 
-      // case 'lock-logo':
-      //   return Icon(Icons.lock_outline, color: Colors.white, size: 100);
+      case 'lock-logo':
+        return Icon(Icons.lock_outline, color: Colors.white, size: 100);
 
       // case 'add':
       //   return Icon(Icons.add, color: Colors.white, size: 28);

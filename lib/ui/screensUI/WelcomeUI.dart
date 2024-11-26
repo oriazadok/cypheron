@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:cypheron/ui/generalUI/BackgroundUI.dart';
+import 'package:cypheron/ui/generalUI/GradientBackgroundUI.dart';
 
 /// Welcome screen with an improved dark-themed UI.
 class WelcomeUI extends StatelessWidget {
@@ -22,23 +22,22 @@ class WelcomeUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // Dark gradient background with a sleek design.
-      body: GradientBackground(
+      body: GradientBackgroundUI(
         child: Center(
           child: Padding(
-            // padding: const EdgeInsets.all(20.0),
-            padding: const EdgeInsets.all(0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // App logo with an animation effect.
                 this.logo,
-                // SizedBox(height: 30),
+                SizedBox(height: 30),
 
                 this.text,
-                // SizedBox(height: 40),
+                SizedBox(height: 40),
 
                 this.signIn,
-                // SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Sign Up button with similar styling.
                 this.signUp,

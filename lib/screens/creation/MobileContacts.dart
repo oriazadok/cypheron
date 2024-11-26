@@ -72,7 +72,7 @@ class _MobileContactsState extends State<MobileContacts> {
           ),
         ),
         // Display an error message if no contacts are found.
-        error: FittedTextUI(text: 'No contacts found. Swipe down to refresh.', type: "err"),
+        error: FittedTextUI(text: 'No contacts found. Swipe down to refresh.', type: TextType.err),
       ),
     );
   }
