@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Cypheron',
       theme: ThemeData.light(),
-      // darkTheme: getDarkTheme(),
+      darkTheme: getDarkTheme(),
       themeMode: ThemeMode.dark,
       home: sharedFilePath != null ? Decryptor(initialFilePath: sharedFilePath) : Welcome(),
     );
