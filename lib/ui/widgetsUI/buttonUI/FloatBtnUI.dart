@@ -22,7 +22,7 @@ class FloatBtnUI extends StatelessWidget {
       onPressed: () {
           onPressed();
       },
-      child: IconsUI(type: "add"),
+      child: IconsUI(type: IconType.add),
       // Icon(Icons.add, color: Colors.white, size: 28),
       tooltip: this.tooltip,
     );

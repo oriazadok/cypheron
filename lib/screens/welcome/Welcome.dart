@@ -15,7 +15,7 @@ class Welcome extends StatelessWidget {
   Widget build(BuildContext context) {
     return WelcomeUI(
       // Displays the app's logo prominently at the top of the screen.
-      logo: IconsUI(type: "lock-logo"),
+      logo: IconsUI(type: IconType.lock_logo),
 
       // Displays a welcome message with styled text.
       text: FittedTextUI(

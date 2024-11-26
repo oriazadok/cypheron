@@ -3,7 +3,7 @@ import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 /// A reusable CircleAvatar widget with custom styling and content.
 class LeadingUI extends StatelessWidget {
-  final String type;
+  final IconType type;
 
   const LeadingUI({
     Key? key,

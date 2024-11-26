@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/screens/auth/SignIn.dart';
 
+enum IconType { 
+  lock_logo,
+  logout,
+  refresh,
+  mail,
+  add,
+  arrow,
+  person,
+  person_add,
+  contacts,
+  lock,
+  contacts_outlined,
+  send,
+  copy,
+  visibility,
+  visibility_off,
+}
+
 /// A reusable widget for creating custom icons and icon buttons.
 class IconsUI extends StatelessWidget {
-  final String type; // The type of icon or button to render
+  final IconType type; // The type of icon or button to render
   final bool isButton; // Determines if the widget is an IconButton
   final BuildContext? context; // Required for navigation if isButton is true
   final Function(Object?)? onReturnData; // Optional callback for IconButton
@@ -36,69 +54,69 @@ class IconsUI extends StatelessWidget {
 
   /// Builds an IconButton based on the type.
   IconButton _buildIconButton() {
-    switch (type.toLowerCase()) {
-      // case 'logout':
-      //   return IconButton(
-      //     icon: Icon(Icons.logout),
-      //     onPressed: () {
-      //       Navigator.pushReplacement(
-      //         context!,
-      //         MaterialPageRoute(builder: (context) => SignIn()),
-      //       );
-      //     },
-      //   );
+    switch (type) {
+      case IconType.logout:
+        return IconButton(
+          icon: Icon(Icons.logout),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context!,
+              MaterialPageRoute(builder: (context) => SignIn()),
+            );
+          },
+        );
       
-      // case 'refresh':
-      //   return IconButton(
-      //     icon: Icon(Icons.refresh),
-      //     onPressed: () {
-      //       if (this.onPressed != null) {
-      //         this.onPressed!();
-      //       }
-      //     },
-      //   );
+      case IconType.refresh:
+        return IconButton(
+          icon: Icon(Icons.refresh),
+          onPressed: () {
+            if (this.onPressed != null) {
+              this.onPressed!();
+            }
+          },
+        );
       
-      // case 'send':
-      //   return IconButton(
-      //     icon: Icon(Icons.send),
-      //     // color: Colors.deepPurpleAccent,
-      //     onPressed: () {
-      //       if (this.onPressed != null) {
-      //         this.onPressed!();
-      //       }
-      //     },
-      //   );
+      case IconType.send:
+        return IconButton(
+          icon: Icon(Icons.send),
+          // color: Colors.deepPurpleAccent,
+          onPressed: () {
+            if (this.onPressed != null) {
+              this.onPressed!();
+            }
+          },
+        );
 
-      // case 'copy':
-      //   return IconButton(
-      //     icon: Icon(Icons.copy),
-      //     // color: Colors.deepPurpleAccent,
-      //     onPressed: () {
-      //       if (this.onPressed != null) {
-      //         this.onPressed!();
-      //       }
-      //     },
-      //   );
+      case IconType.copy:
+        return IconButton(
+          icon: Icon(Icons.copy),
+          // color: Colors.deepPurpleAccent,
+          onPressed: () {
+            if (this.onPressed != null) {
+              this.onPressed!();
+            }
+          },
+        );
 
-      // case 'visibility':
-      //   return IconButton(
-      //     icon: Icon(Icons.visibility),
-      //     onPressed: () {
-      //       if (this.onPressed != null) {
-      //         this.onPressed!(); // Trigger the provided callback
-      //       }
-      //     },
-      //   );
+      case IconType.visibility:
+        return IconButton(
+          icon: Icon(Icons.visibility),
+          onPressed: () {
+            if (this.onPressed != null) {
+              this.onPressed!(); // Trigger the provided callback
+            }
+          },
+        );
 
-      // case 'visibility_off':
-      //   return IconButton(
-      //     icon: Icon(Icons.visibility_off),
-      //     onPressed: () {
-      //       if (this.onPressed != null) {
-      //         this.onPressed!(); // Trigger the provided callback
-      //       }
-      //     },
-      //   );
+      case IconType.visibility_off:
+        return IconButton(
+          icon: Icon(Icons.visibility_off),
+          onPressed: () {
+            if (this.onPressed != null) {
+              this.onPressed!(); // Trigger the provided callback
+            }
+          },
+        );
 
       default:
         return IconButton(
@@ -114,37 +132,37 @@ class IconsUI extends StatelessWidget {
 
   /// Builds an Icon based on the type.
   Icon _buildIcon() {
-    switch (type.toLowerCase()) {
+    switch (type) {
 
-      case 'lock-logo':
+      case IconType.lock_logo:
         return Icon(Icons.lock_outline, color: Colors.white, size: 100);
 
-      // case 'add':
-      //   return Icon(Icons.add, color: Colors.white, size: 28);
+      case IconType.mail:
+        return Icon(Icons.mail_outline,
+            color: Colors.deepPurpleAccent, size: 80);
 
-      // case 'person':
-      //   return Icon(Icons.person, color: Colors.white);
+      case IconType.add:
+        return Icon(Icons.add, color: Colors.white, size: 28);
 
-      // case 'person-add':
-      //   return Icon(Icons.person_add_alt_1, color: Colors.deepPurpleAccent, size: 28);
+      case IconType.person:
+        return Icon(Icons.person, color: Colors.white);
 
-      // case 'contacts':
-      //   return Icon(Icons.contacts, color: Colors.deepPurpleAccent, size: 28);
+      case IconType.person_add:
+        return Icon(Icons.person_add_alt_1, color: Colors.deepPurpleAccent, size: 28);
 
-      // case 'lock':
-      //   return Icon(Icons.lock, color: Colors.deepPurpleAccent, size: 28);
+      case IconType.contacts:
+        return Icon(Icons.contacts, color: Colors.deepPurpleAccent, size: 28);
 
-      // case 'contacts_outlined':
-      //   return Icon(Icons.contacts_outlined,
-      //       color: Colors.deepPurpleAccent, size: 80);
+      case IconType.lock:
+        return Icon(Icons.lock, color: Colors.deepPurpleAccent, size: 28);
 
-      // case 'mail':
-      //   return Icon(Icons.mail_outline,
-      //       color: Colors.deepPurpleAccent, size: 80);
+      case IconType.contacts_outlined:
+        return Icon(Icons.contacts_outlined,
+            color: Colors.deepPurpleAccent, size: 80);
 
-      // case 'arrow':
-      //   return Icon(Icons.arrow_forward_ios,
-      //       color: Colors.grey, size: 16);
+      case IconType.arrow:
+        return Icon(Icons.arrow_forward_ios,
+            color: Colors.grey, size: 16);
 
       default:
         return Icon(Icons.whatshot);

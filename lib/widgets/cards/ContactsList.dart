@@ -30,7 +30,7 @@ class _ContactListState extends State<ContactList> {
   Widget build(BuildContext context) {
 
     if (widget.contactList.isEmpty) 
-      return EmptyStateUI(icon: IconsUI(type: "contacts_outlined"), message: 'No contacts found.\nAdd a new contact.');
+      return EmptyStateUI(icon: IconsUI(type: IconType.contacts_outlined), message: 'No contacts found.\nAdd a new contact.');
 
     return Stack(
       children: [
@@ -40,7 +40,7 @@ class _ContactListState extends State<ContactList> {
             final contact = widget.contactList[index];
 
             return ContactCardUI(
-              leading: LeadingUI(type: "person"),
+              leading: LeadingUI(type: IconType.person),
               title: contact.name,
               onTap: () {
                 Navigator.push(

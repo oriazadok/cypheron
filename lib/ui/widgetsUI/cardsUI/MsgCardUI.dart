@@ -24,7 +24,7 @@ class MsgCardUI extends StatelessWidget {
       // ),
       child: ListTile(
         // contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: IconsUI(type: "lock"),
+        leading: IconsUI(type: IconType.lock),
         title: Text(
           message.title,
           // style: TextStyle(fontWeight: FontWeight.bold),
@@ -34,7 +34,7 @@ class MsgCardUI extends StatelessWidget {
           // style: TextStyle(color: Colors.grey),
         ),
         onTap: onTap,
-        trailing: IconsUI(context: context, type: "send", isButton: true, onPressed: onSend),
+        trailing: IconsUI(context: context, type: IconType.send, isButton: true, onPressed: onSend),
       ),
     );
   }

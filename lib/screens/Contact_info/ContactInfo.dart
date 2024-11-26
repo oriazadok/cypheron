@@ -69,7 +69,7 @@ class _ContactInfoState extends State<ContactInfo> {
               },
             )
           : EmptyStateUI(
-              icon: IconsUI(type: "mail"), // Icon for the empty state
+              icon: IconsUI(type: IconType.mail), // Icon for the empty state
               message: 'No messages found.\nAdd a new message.', // Message for the empty state
             ),
       floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage), // Button to add a new message

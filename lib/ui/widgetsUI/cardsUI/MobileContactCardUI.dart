@@ -29,7 +29,7 @@ class MobilecontactcardUI extends StatelessWidget {
         child: ListTile(
           leading: CircleAvatar(
             // backgroundColor: Colors.deepPurpleAccent,
-            child: IconsUI(type: "person"),
+            child: IconsUI(type: IconType.person),
           ),
           title: Text(
             displayName,

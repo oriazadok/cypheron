@@ -48,10 +48,11 @@ class _HomeState extends State<Home> {
       // AppBar with a title and a logout button.
       appBar: AppBar(
         title: Text("Cypheron"), // App title.
+        // centerTitle: true,
         actions: [
           IconsUI(
             context: context,
-            type: "logout",
+            type: IconType.logout,
             isButton: true, // Logout button.
           )
         ],

@@ -71,7 +71,7 @@ class _KeywordDialogState extends State<KeywordDialog> {
           labelText: 'Keyword',
           suffixIcon: IconsUI(
             context: context,
-            type: obscureText ? "visibility_off" : "visibility",
+            type: obscureText ? IconType.visibility_off : IconType.visibility,
             isButton: true,
             onPressed: () {
               setState(() {

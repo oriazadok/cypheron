@@ -38,7 +38,7 @@ class ContactCardUI extends StatelessWidget {
             //   fontWeight: FontWeight.w600,
             // ),
           ),
-          trailing: IconsUI(type: "arrow"),
+          trailing: IconsUI(type: IconType.arrow),
           onTap: onTap,
           onLongPress: onLongPress,
         ),

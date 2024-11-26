@@ -46,7 +46,7 @@ Future<void> displaydialog(
                       // Copy button
                       IconsUI(
                         context: context,
-                        type: "copy",
+                        type: IconType.copy,
                         isButton: true,
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: decryptedBody)); // Copy to clipboard

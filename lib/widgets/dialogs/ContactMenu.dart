@@ -19,7 +19,7 @@ class ContactMenu extends StatelessWidget {
     return ContactMenuUI(
       options: [
         MenuOptionUI(
-          icon: IconsUI(type: "person-add"),
+          icon: IconsUI(type: IconType.person_add),
           text: 'Create New Contact',
           onTap: () async {
             Navigator.pop(context);
@@ -33,7 +33,7 @@ class ContactMenu extends StatelessWidget {
           },
         ),
         MenuOptionUI(
-          icon: IconsUI(type: "contacts"),
+          icon: IconsUI(type: IconType.contacts),
           text: 'Import from Mobile',
           onTap: () async {
             Navigator.pop(context);
