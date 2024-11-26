@@ -31,6 +31,7 @@ class _HomeState extends State<Home> {
 
   /// Boolean to indicate whether a saving operation is in progress.
   bool isSaving = false;
+  bool onLongPress = false;
 
   @override
   void initState() {
@@ -62,17 +63,22 @@ class _HomeState extends State<Home> {
       body: HomeUI(
         isSaving: isSaving, // Passes the saving state to the UI.
         contactList: ContactList(
-                        contactList: contactList,
-                        onDelete: (ContactModel contact) {
-                          _deleteContact(contact);
-                        },
-                      ), // Displays the contact list.
+          contactList: contactList,
+          onDelete: (ContactModel contact) {
+            _deleteContact(contact);
+          },
+          onLongPress: () {
+            setState(() {
+              onLongPress = ! onLongPress;
+            });
+          },
+        ), // Displays the contact list.
       ),
 
       // Floating action button to add a new contact.
-      floatingActionButton: AddContactButton(
-        onAddContact: _addNewContact, // Callback function for adding a new contact.
-      ),
+      floatingActionButton: ! onLongPress
+          ? AddContactButton( onAddContact: _addNewContact )
+          : null,
     );
   }
 

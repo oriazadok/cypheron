@@ -11,11 +11,13 @@ import 'package:cypheron/ui/widgetsUI/utilsUI/LeadingUI.dart';
 class ContactList extends StatefulWidget {
   final List<ContactModel> contactList; // List of contacts to display
   final Function(ContactModel) onDelete; // Callback to delete a contact
+  final Function() onLongPress; // Callback to update long-press state externally
 
   const ContactList({
     Key? key,
     required this.contactList,
     required this.onDelete,
+    required this.onLongPress,
   }) : super(key: key);
 
   @override
@@ -53,6 +55,7 @@ class _ContactListState extends State<ContactList> {
               onLongPress: () {
                 setState(() {
                   selectedContact = contact; // Set the selected contact
+                  widget.onLongPress();
                 });
               },
             );
@@ -62,14 +65,14 @@ class _ContactListState extends State<ContactList> {
         // Row of options displayed when a contact is selected
         if (selectedContact != null)
           Positioned(
-            // bottom: 0,
-            // left: 0,
-            // right: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
             child: Container(
-              // color: Colors.grey[200],
-              // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              color: Colors.grey[200],
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Row(
-                // mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // Delete button
                   IconButton(
@@ -87,6 +90,7 @@ class _ContactListState extends State<ContactList> {
                     onPressed: () {
                       setState(() {
                         selectedContact = null; // Reset selection
+                        widget.onLongPress();
                       });
                     },
                   ),
