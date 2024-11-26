@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
-import 'package:cypheron/ui/widgetsUI/cardsUI/ContactCardUI.dart';
+
 import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart';  // Button widget for adding contacts
+import 'package:cypheron/ui/widgetsUI/cardsUI/ContactCardUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/LeadingUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/OpsRowUI.dart';
+
+import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
 
 
 /// A widget that displays a list of contacts with a clean UI.
@@ -53,10 +57,12 @@ class _ContactListState extends State<ContactList> {
                 );
               },
               onLongPress: () {
-                setState(() {
-                  selectedContact = contact; // Set the selected contact
-                  widget.onLongPress();
-                });
+                if(selectedContact == null) {
+                  setState(() {
+                    selectedContact = contact; // Set the selected contact
+                    widget.onLongPress();
+                  });
+                }
               },
             );
           },
@@ -64,44 +70,33 @@ class _ContactListState extends State<ContactList> {
 
         // Row of options displayed when a contact is selected
         if (selectedContact != null)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: Colors.grey[200],
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Delete button
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      widget.onDelete(selectedContact!); // Trigger delete callback
-                      setState(() {
-                        selectedContact = null; // Reset selection
-                      });
-                    },
-                  ),
-                  // Cancel button to close the options row
-                  IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey),
-                    onPressed: () {
-                      setState(() {
-                        selectedContact = null; // Reset selection
-                        widget.onLongPress();
-                      });
-                    },
-                  ),
-                ],
+          OpsRowUI(
+            options: [
+              IconsUI(
+                context: context, 
+                type: IconType.delete,
+                isButton: true,
+                onPressed: () {
+                  widget.onDelete(selectedContact!); // Trigger delete action
+                  setState(() {
+                    selectedContact = null; // Reset selection
+                    widget.onLongPress();
+                  });
+                },
               ),
-            ),
+              
+              IconButton(
+                icon: Icon(Icons.close, color: Colors.grey),
+                onPressed: () {
+                  setState(() {
+                    selectedContact = null; // Reset selection
+                  });
+                  widget.onLongPress();
+                },
+              ),
+            ],
           ),
       ],
     );
-    
-    
-    
   }
 }

@@ -7,7 +7,7 @@ import 'package:cypheron/services/HiveService.dart';  // Service for managing lo
 import 'package:cypheron/ui/screensUI/HomeUI.dart';  // UI-specific customizations for the Home screen.
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';  // Utility for building icons and icon buttons.
 
-import 'package:cypheron/widgets/cards/ContactsList.dart';  // Widget for displaying a list of contacts.
+import 'package:cypheron/widgets/lists/ContactsList.dart';  // Widget for displaying a list of contacts.
 import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Floating action button for adding contacts.
 
 /// The Home screen of the Cypheron app.

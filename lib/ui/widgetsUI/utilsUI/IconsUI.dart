@@ -17,6 +17,7 @@ enum IconType {
   copy,
   visibility,
   visibility_off,
+  delete,
 }
 
 /// A reusable widget for creating custom icons and icon buttons.
@@ -118,6 +119,16 @@ class IconsUI extends StatelessWidget {
           },
         );
 
+      case IconType.delete:
+        return IconButton(
+          icon: Icon(Icons.delete_outline_outlined),
+          onPressed: () {
+            if (this.onPressed != null) {
+              this.onPressed!(); // Trigger the provided callback
+            }
+          },
+        );
+
       default:
         return IconButton(
           icon: Icon(Icons.help_outline),
@@ -163,6 +174,9 @@ class IconsUI extends StatelessWidget {
       case IconType.arrow:
         return Icon(Icons.arrow_forward_ios,
             color: Colors.grey, size: 16);
+      
+      case IconType.delete:
+        return Icon(Icons.delete_outline_outlined);
 
       default:
         return Icon(Icons.whatshot);
