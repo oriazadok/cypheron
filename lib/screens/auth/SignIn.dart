@@ -8,6 +8,7 @@ import 'package:cypheron/models/UserModel.dart'; // Model for user data
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI structure for authentication screens
 import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // UI structure for forms
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Widget for displaying text with a specific style
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
 
 import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Generic form field for input
 

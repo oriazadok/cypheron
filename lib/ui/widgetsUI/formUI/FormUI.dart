@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Widget for displaying text with a specific style
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
+
 
 /// A reusable UI component that provides consistent styling for forms.
 /// It includes a form key, title, input fields, and an action button.

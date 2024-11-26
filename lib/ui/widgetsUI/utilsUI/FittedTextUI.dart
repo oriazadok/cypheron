@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-/// Enum to represent different text styles
-enum TextType { head_line, title, button, empty_state, err, normal }
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
 
 /// A reusable widget for displaying text with a fitted box.
 class FittedTextUI extends StatelessWidget {
@@ -22,51 +20,9 @@ class FittedTextUI extends StatelessWidget {
         fit: BoxFit.scaleDown,
         child: Text(
           text,
-          style: buildTextStyle(type)
+          style: GenericTextStyleUI.getTextStyle(type),
         ),
       ),
     );
-  }
-
-  TextStyle? buildTextStyle(TextType type) {
-    switch (type) {
-      case TextType.head_line:
-        return TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 1.2,
-            );
-      
-      case TextType.button:
-        return TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Colors.purple[300], // Lighter text color for better contrast
-          letterSpacing: 1.2,
-        );
-      
-      case TextType.title:
-        return TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: Colors.deepPurpleAccent,
-        );
-      
-      case TextType.empty_state:
-        return TextStyle(
-          fontSize: 18,
-          color: Colors.white70,
-        );
-
-      case TextType.err:
-        return TextStyle(
-            fontSize: 18,
-            color: Colors.redAccent,
-          );
-      
-      default:
-        return TextStyle();
-    }
   }
 }

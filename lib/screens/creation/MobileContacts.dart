@@ -8,6 +8,8 @@ import 'package:cypheron/ui/screensUI/MobileContactsUI.dart';
 import 'package:cypheron/ui/widgetsUI/cardsUI/MobileContactCardUI.dart'; 
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
+
 
 /// A screen that displays mobile contacts using a cached data source (Hive).
 /// Users can refresh the contact list or navigate back after selecting a contact.

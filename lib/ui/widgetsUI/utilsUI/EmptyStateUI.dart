@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Widget for displaying text with a specific style
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
+
 
 
 class EmptyStateUI extends StatelessWidget {

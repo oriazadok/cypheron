@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/ui/widgetsUI/buttonUI/darkButtonUI.dart'; // Import the common styles
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Import the common styles
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
+
 
 
 /// A dark-themed button widget for navigating to the SignIn screen.

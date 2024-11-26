@@ -7,6 +7,8 @@ import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart';  // Widget for
 import 'package:cypheron/ui/widgetsUI/buttonUI/NavButtonUI.dart';  // Widget for navigation buttons.
 import 'package:cypheron/screens/auth/SignIn.dart';  // Screen for user sign-in.
 import 'package:cypheron/screens/auth/SignUp.dart';  // Screen for user sign-up.
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
+
 
 /// The Welcome screen for the Cypheron app.
 /// Provides users with initial options to sign in or sign up.
