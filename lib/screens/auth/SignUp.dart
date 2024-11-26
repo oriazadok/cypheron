@@ -29,9 +29,6 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign Up'), // Title displayed in the app bar
-      ),
       body: AuthUI(
         // Wraps the form UI with additional authentication styling
         form: FormUI(
