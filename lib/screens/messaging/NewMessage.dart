@@ -21,11 +21,6 @@ class _NewMessageState extends State<NewMessage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar with the screen title.
-      appBar: AppBar(
-        title: Text('Create New Message'),
-      ),
-
       // Body of the screen, structured using the `NewMessageUI` layout.
       body: NewmessageUI(
         // Input fields for message title and body.
