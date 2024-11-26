@@ -10,6 +10,7 @@ enum IconType {
   arrow,
   person,
   person_add,
+  person_add_alt_1_outlined,
   contacts,
   lock,
   contacts_outlined,
@@ -160,6 +161,9 @@ class IconsUI extends StatelessWidget {
 
       case IconType.person_add:
         return Icon(Icons.person_add_alt_1, color: Colors.deepPurpleAccent, size: 28);
+
+      case IconType.person_add_alt_1_outlined:
+        return Icon(Icons.person_add_alt_1_outlined, color: Colors.white, size: 28);
 
       case IconType.contacts:
         return Icon(Icons.contacts, color: Colors.deepPurpleAccent, size: 28);

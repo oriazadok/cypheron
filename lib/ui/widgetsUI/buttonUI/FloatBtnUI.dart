@@ -17,12 +17,12 @@ class FloatBtnUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      // backgroundColor: Colors.deepPurpleAccent,
-      // elevation: 8,
+      backgroundColor: Colors.deepPurpleAccent,
+      elevation: 8,
       onPressed: () {
           onPressed();
       },
-      child: IconsUI(type: IconType.person_add),
+      child: IconsUI(type: IconType.person_add_alt_1_outlined),
       // Icon(Icons.add, color: Colors.white, size: 28),
       tooltip: this.tooltip,
     );
