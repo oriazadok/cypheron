@@ -1,5 +1,7 @@
-import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:flutter/material.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Widget for displaying text with a specific style
+
 
 class EmptyStateUI extends StatelessWidget {
 
@@ -15,14 +17,13 @@ class EmptyStateUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           this.icon,
-          // SizedBox(height: 20),
-          Text(
-            this.message,
-            // textAlign: TextAlign.center,
-            // style: TextStyle(fontSize: 18, color: Colors.white70),
+          SizedBox(height: 20),
+          FittedTextUI(
+            text: this.message,
+            type: TextType.empty_state,
           ),
         ],
       ),

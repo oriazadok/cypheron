@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Enum to represent different text styles
-enum TextType { head_line, title, button, err, normal }
+enum TextType { head_line, title, button, empty_state, err, normal }
 
 /// A reusable widget for displaying text with a fitted box.
 class FittedTextUI extends StatelessWidget {
@@ -51,6 +51,12 @@ class FittedTextUI extends StatelessWidget {
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: Colors.deepPurpleAccent,
+        );
+      
+      case TextType.empty_state:
+        return TextStyle(
+          fontSize: 18,
+          color: Colors.white70,
         );
 
       case TextType.err:
