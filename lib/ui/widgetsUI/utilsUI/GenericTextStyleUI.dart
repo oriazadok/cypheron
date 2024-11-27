@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Enum to represent different text styles
-enum TextType { head_line, title, button, empty_state, contact_card, err, normal }
+enum TextType { head_line, title, button, empty_state, dialog_title, dialog_option, contact_card, err, normal }
 
 /// A factory class that creates different types of `TextFormField` based on the input type.
 class GenericTextStyleUI {
@@ -35,6 +35,22 @@ class GenericTextStyleUI {
         return TextStyle(
           fontSize: 18,
           color: Colors.white70,
+        );
+      
+      case TextType.dialog_title:
+        return const TextStyle(
+          color: Colors.deepPurpleAccent,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        );
+      
+      case TextType.dialog_option:
+        return TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.1,
         );
       
       case TextType.contact_card:

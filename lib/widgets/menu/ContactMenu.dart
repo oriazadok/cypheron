@@ -3,9 +3,9 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:cypheron/screens/creation/NewContact.dart';
 import 'package:cypheron/screens/creation/MobileContacts.dart';
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/ui/widgetsUI/dialogsUI/MenuOptionUI.dart';
+import 'package:cypheron/ui/menuUI/MenuOptionUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
-import 'package:cypheron/ui/widgetsUI/dialogsUI/ContactMenuUI.dart';
+import 'package:cypheron/ui/menuUI/ContactMenuUI.dart';
 
 
 /// A reusable widget that displays the contact menu options.

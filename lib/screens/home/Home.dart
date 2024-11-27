@@ -8,7 +8,7 @@ import 'package:cypheron/ui/screensUI/HomeUI.dart'; // Custom UI for the Home sc
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart'; // Utility for creating icons and icon buttons.
 
 import 'package:cypheron/widgets/lists/ContactsList.dart'; // Widget for displaying a list of contacts.
-import 'package:cypheron/widgets/buttons/addContactsButton.dart'; // Floating action button for adding contacts.
+import 'package:cypheron/widgets/buttons/AddContactsButton.dart'; // Floating action button for adding contacts.
 
 import 'package:cypheron/screens/auth/SignIn.dart'; // Sign-in screen for navigation after logout.
 

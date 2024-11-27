@@ -1,5 +1,5 @@
-import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:flutter/material.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 /// A floating action button for adding a new contact.
 class FloatButtonUI extends StatelessWidget {
@@ -25,7 +25,6 @@ class FloatButtonUI extends StatelessWidget {
           onPressed();
       },
       child: icon,
-      // Icon(Icons.add, color: Colors.white, size: 28),
       tooltip: this.tooltip,
     );
   }

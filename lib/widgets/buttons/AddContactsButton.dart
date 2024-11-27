@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/ui/widgetsUI/dialogsUI/ContactsDialogUI.dart';
-import 'package:cypheron/widgets/dialogs/ContactMenu.dart';
+import 'package:cypheron/widgets/menu/ContactMenu.dart';
 import 'package:cypheron/ui/widgetsUI/buttonUI/FloatButtonUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/dialogsUI/DialogUI.dart';
 
 
 /// A floating action button for adding a new contact.
@@ -18,11 +18,14 @@ class AddContactButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatButtonUI(
       onPressed: () {
-        ContactsDialogUI.show(
+        showDialog(
           context: context,
-          title: "Choose an Action",
-          content: ContactMenu(onAddContact: onAddContact), // Dynamically pass the menu content
-          actions: [],
+          builder: (BuildContext context) {
+            return DialogUI(
+              title: "Choose an Action",
+              content: ContactMenu(onAddContact: onAddContact),
+            );
+          },
         );
       },
       icon: IconsUI(type: IconType.person_add_alt_1_outlined),
