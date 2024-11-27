@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:cypheron/ui/screensUI/WelcomeUI.dart';  // Custom UI layout for the Welcome screen.
-
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart';  // Widget for styled, adaptive text.
 import 'package:cypheron/ui/widgetsUI/buttonUI/NavButtonUI.dart';  // Widget for navigation buttons.
+
 import 'package:cypheron/screens/auth/SignIn.dart';  // Screen for user sign-in.
 import 'package:cypheron/screens/auth/SignUp.dart';  // Screen for user sign-up.
-import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
 
 
 /// The Welcome screen for the Cypheron app.
