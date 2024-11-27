@@ -70,9 +70,7 @@ class _KeywordDialogState extends State<KeywordDialog> {
         decoration: InputDecoration(
           labelText: 'Keyword',
           suffixIcon: IconsUI(
-            context: context,
             type: obscureText ? IconType.visibility_off : IconType.visibility,
-            isButton: true,
             onPressed: () {
               setState(() {
                 obscureText = !obscureText;

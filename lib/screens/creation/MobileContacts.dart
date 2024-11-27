@@ -40,7 +40,7 @@ class _MobileContactsState extends State<MobileContacts> {
         title: 'Mobile Contacts',
         actions: [
           // Refresh button to manually reload contacts.
-          IconsUI(context: context, type: IconType.refresh, isButton: true, onPressed: refreshContacts), 
+          IconsUI(type: IconType.refresh, onPressed: refreshContacts), 
         ],
       ),
       // Main body of the screen.

@@ -10,6 +10,8 @@ import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';  // Utility for bui
 import 'package:cypheron/widgets/lists/ContactsList.dart';  // Widget for displaying a list of contacts.
 import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Floating action button for adding contacts.
 
+import 'package:cypheron/screens/auth/SignIn.dart';
+
 /// The Home screen of the Cypheron app.
 /// Displays a list of user's contacts and provides functionality to manage them.
 /// Also handles actions like adding new contacts or logging out.
@@ -19,7 +21,7 @@ class Home extends StatefulWidget {
 
   /// Constructor for the Home widget.
   /// Accepts an optional [user] to manage their data.
-  Home({this.user});
+  Home({required this.user});
 
   @override
   _HomeState createState() => _HomeState();
@@ -31,7 +33,7 @@ class _HomeState extends State<Home> {
 
   /// Boolean to indicate whether a saving operation is in progress.
   bool isSaving = false;
-  bool onLongPress = false;
+  bool isOnLongPress = false;
 
   @override
   void initState() {
@@ -52,9 +54,14 @@ class _HomeState extends State<Home> {
         // centerTitle: true,
         actions: [
           IconsUI(
-            context: context,
+            // context: context,
             type: IconType.logout,
-            isButton: true, // Logout button.
+            onPressed: () {
+              Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => SignIn()),
+            );
+            },
           )
         ],
       ),
@@ -69,14 +76,14 @@ class _HomeState extends State<Home> {
           },
           onLongPress: () {
             setState(() {
-              onLongPress = ! onLongPress;
+              isOnLongPress = ! isOnLongPress;
             });
           },
         ), // Displays the contact list.
       ),
 
       // Floating action button to add a new contact.
-      floatingActionButton: ! onLongPress
+      floatingActionButton: ! isOnLongPress
           ? AddContactButton( onAddContact: _addNewContact )
           : null,
     );

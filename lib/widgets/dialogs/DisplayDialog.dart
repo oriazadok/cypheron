@@ -45,9 +45,7 @@ Future<void> displaydialog(
                     children: [
                       // Copy button
                       IconsUI(
-                        context: context,
                         type: IconType.copy,
-                        isButton: true,
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: decryptedBody)); // Copy to clipboard
                           ScaffoldMessenger.of(context).showSnackBar(

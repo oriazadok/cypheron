@@ -73,9 +73,7 @@ class _ContactListState extends State<ContactList> {
           OpsRowUI(
             options: [
               IconsUI(
-                context: context, 
                 type: IconType.delete,
-                isButton: true,
                 onPressed: () {
                   widget.onDelete(selectedContact!); // Trigger delete action
                   setState(() {
