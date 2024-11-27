@@ -9,6 +9,7 @@ import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI structure for authenti
 import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // UI structure for forms
 
 import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Generic input form field widget
+
 import 'package:cypheron/screens/home/Home.dart'; // Home screen to navigate to after sign-up
 
 /// The `SignUp` class represents the user registration screen of the app.
