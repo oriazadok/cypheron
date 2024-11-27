@@ -29,14 +29,16 @@ class NewContact extends StatelessWidget {
         // Input fields for the form (Name and Phone).
         inputFields: [
           // Reusable form field for name input.
-          GenericFormField.getFormField(
-            type: 'name', // Field type (e.g., name input styling and validation).
-            controller: _nameController, // Binds the controller to the field.
+          GenericFormField(
+            fieldType: FieldType.name,
+            controller: _nameController,
+            // labelText: 'Enter your email',
           ),
           // Reusable form field for phone input.
-          GenericFormField.getFormField(
-            type: 'phone', // Field type (e.g., phone input styling and validation).
-            controller: _phoneController, // Binds the controller to the field.
+          GenericFormField(
+            fieldType: FieldType.phone,
+            controller: _phoneController,
+            // labelText: 'Enter your email',
           ),
         ],
         

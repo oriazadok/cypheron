@@ -37,23 +37,24 @@ class _SignUpState extends State<SignUp> {
           // List of input fields for the form
           inputFields: [
             // Input field for the user's name
-            GenericFormField.getFormField(
-              type: 'name',
+            GenericFormField(
+              fieldType: FieldType.name,
               controller: _nameController,
             ),
             // Input field for the user's phone number
-            GenericFormField.getFormField(
-              type: 'phone',
+            GenericFormField(
+              fieldType: FieldType.phone,
               controller: _phoneController,
             ),
             // Input field for the user's email
-            GenericFormField.getFormField(
-              type: 'email',
+            GenericFormField(
+              fieldType: FieldType.email,
               controller: _emailController,
             ),
-            // Input field for the user's password
-            GenericFormField.getFormField(
-              type: 'password',
+            
+            // Password input field
+            GenericFormField(
+              fieldType: FieldType.password,
               controller: _passwordController,
             ),
           ],

@@ -39,14 +39,16 @@ class _SignInState extends State<SignIn> {
 
           // List of input fields and dynamic widgets
           inputFields: [
+
             // Email input field
-            GenericFormField.getFormField(
-              type: 'email',
+            GenericFormField(
+              fieldType: FieldType.email,
               controller: _emailController,
             ),
+            
             // Password input field
-            GenericFormField.getFormField(
-              type: 'password',
+            GenericFormField(
+              fieldType: FieldType.password,
               controller: _passwordController,
             ),
             // Displays an error message if there's one

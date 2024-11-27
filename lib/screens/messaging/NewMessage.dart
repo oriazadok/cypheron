@@ -26,14 +26,16 @@ class _NewMessageState extends State<NewMessage> {
         // Input fields for message title and body.
         inputFields: [
           // Title input field.
-          GenericFormField.getFormField(
-            type: 'title',
+          GenericFormField(
+            fieldType: FieldType.title,
             controller: _titleController,
+            // labelText: 'Enter your email',
           ),
           // Body input field, using a larger text box.
-          GenericFormField.getFormField(
-            type: 'text-box',
+          GenericFormField(
+            fieldType: FieldType.textBox,
             controller: _bodyController,
+            // labelText: 'Enter your email',
           ),
         ],
 
