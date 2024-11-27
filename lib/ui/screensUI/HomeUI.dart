@@ -24,7 +24,10 @@ class _HomeUIState extends State<HomeUI> {
         child: Column(
           children: [
             if (widget.isSaving)  // Show loading indicator when saving
-              LinearProgressIndicator(),
+              LinearProgressIndicator(
+                backgroundColor: Colors.grey[300], // Background of the indicator
+                color: Colors.deepPurpleAccent,   // Active progress bar color
+              ),
             // Display list of contacts if available
             Expanded(
               child: widget.contactList,

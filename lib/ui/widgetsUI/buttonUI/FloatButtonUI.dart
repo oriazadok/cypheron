@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:flutter/material.dart';
 
 /// A floating action button for adding a new contact.
-class FloatBtnUI extends StatelessWidget {
+class FloatButtonUI extends StatelessWidget {
   /// Callback function to handle adding the new contact.
+  final IconsUI icon;
   final VoidCallback onPressed;
   final String tooltip;
 
   /// Constructor with a required callback to handle the new contact.
-  const FloatBtnUI({
+  const FloatButtonUI({
+    required this.icon,
     required this.onPressed,
     required this.tooltip,
 
@@ -22,7 +24,7 @@ class FloatBtnUI extends StatelessWidget {
       onPressed: () {
           onPressed();
       },
-      child: IconsUI(type: IconType.person_add_alt_1_outlined),
+      child: icon,
       // Icon(Icons.add, color: Colors.white, size: 28),
       tooltip: this.tooltip,
     );

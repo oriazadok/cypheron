@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
 
-import 'package:cypheron/models/UserModel.dart';  // Model representing user data.
-import 'package:cypheron/models/ContactModel.dart';  // Model representing contact data.
-import 'package:cypheron/services/HiveService.dart';  // Service for managing local data storage.
+import 'package:cypheron/models/UserModel.dart'; // Model for representing user data.
+import 'package:cypheron/models/ContactModel.dart'; // Model for representing contact data.
+import 'package:cypheron/services/HiveService.dart'; // Service for managing local data storage.
 
-import 'package:cypheron/ui/screensUI/HomeUI.dart';  // UI-specific customizations for the Home screen.
-import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';  // Utility for building icons and icon buttons.
+import 'package:cypheron/ui/screensUI/HomeUI.dart'; // Custom UI for the Home screen.
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart'; // Utility for creating icons and icon buttons.
 
-import 'package:cypheron/widgets/lists/ContactsList.dart';  // Widget for displaying a list of contacts.
-import 'package:cypheron/widgets/buttons/addContactsButton.dart';  // Floating action button for adding contacts.
+import 'package:cypheron/widgets/lists/ContactsList.dart'; // Widget for displaying a list of contacts.
+import 'package:cypheron/widgets/buttons/addContactsButton.dart'; // Floating action button for adding contacts.
 
-import 'package:cypheron/screens/auth/SignIn.dart';
+import 'package:cypheron/screens/auth/SignIn.dart'; // Sign-in screen for navigation after logout.
 
-/// The Home screen of the Cypheron app.
-/// Displays a list of user's contacts and provides functionality to manage them.
-/// Also handles actions like adding new contacts or logging out.
+/// Home screen of the Cypheron app.
+/// Displays a list of the user's contacts and handles operations like adding or deleting contacts.
+/// Allows logging out and transitioning to the sign-in screen.
 class Home extends StatefulWidget {
-  /// The currently logged-in user. Optional to allow guest users.
+  /// Represents the currently logged-in user. Can be null for guest users.
   final UserModel? user;
 
-  /// Constructor for the Home widget.
-  /// Accepts an optional [user] to manage their data.
+  /// Constructor for the Home screen, requiring a [user].
   Home({required this.user});
 
   @override
@@ -28,18 +27,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  /// List to store the user's contacts.
+  /// Stores the user's contacts.
   List<ContactModel> contactList = [];
 
-  /// Boolean to indicate whether a saving operation is in progress.
+  /// Tracks if a saving operation is in progress.
   bool isSaving = false;
+
+  /// Tracks if a long press has occurred on a contact.
   bool isOnLongPress = false;
 
   @override
   void initState() {
     super.initState();
 
-    // Load the user's contacts from the database if the user is provided.
+    // Load contacts if the user is provided.
     if (widget.user != null) {
       _loadContactsByIds(widget.user!.contactIds);
     }
@@ -48,107 +49,104 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar with a title and a logout button.
+      // AppBar with title and logout button.
       appBar: AppBar(
-        title: Text("Cypheron"), // App title.
-        // centerTitle: true,
+        title: Text("Cypheron"), // Display app title.
         actions: [
           IconsUI(
-            // context: context,
-            type: IconType.logout,
+            type: IconType.logout, // Logout icon.
             onPressed: () {
+              // Navigate to the SignIn screen and replace the current route.
               Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => SignIn()),
-            );
+                context,
+                MaterialPageRoute(builder: (context) => SignIn()),
+              );
             },
-          )
+          ),
         ],
       ),
 
-      // Body of the screen displaying the contacts list.
+      // Body contains the main content of the Home screen.
       body: HomeUI(
-        isSaving: isSaving, // Passes the saving state to the UI.
+        isSaving: isSaving, // Pass saving state to UI for displaying a loading indicator.
         contactList: ContactList(
-          contactList: contactList,
+          contactList: contactList, // Pass the contact list to display.
           onDelete: (ContactModel contact) {
-            _deleteContact(contact);
+            _deleteContact(contact); // Handle contact deletion.
           },
           onLongPress: () {
             setState(() {
-              isOnLongPress = ! isOnLongPress;
+              isOnLongPress = !isOnLongPress; // Toggle the long press state.
             });
           },
-        ), // Displays the contact list.
+        ),
       ),
 
-      // Floating action button to add a new contact.
-      floatingActionButton: ! isOnLongPress
-          ? AddContactButton( onAddContact: _addNewContact )
+      // Floating action button for adding contacts, visible only when not in long press mode.
+      floatingActionButton: !isOnLongPress
+          ? AddContactButton(onAddContact: _addNewContact)
           : null,
     );
   }
 
-  /// Loads contacts from the Hive database using their IDs.
-  /// Updates the UI with the loaded contacts.
+  /// Loads contacts from Hive by their IDs.
+  /// Updates the contact list in the state.
   void _loadContactsByIds(List<String> contactIds) async {
-    // Load contacts from Hive based on provided IDs.
     List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
     setState(() {
-      contactList = loadedContacts; // Update the contact list in the state.
+      contactList = loadedContacts;
     });
   }
 
-  /// Adds a new contact to the list and saves it to the Hive database.
-  /// Displays a loading indicator while saving.
+  /// Adds a new contact to the list and saves it to Hive.
+  /// Shows a loading indicator during the save operation.
   void _addNewContact(ContactModel newContact) {
-
-    // Check if the contact already exists in the contact list
+    // Check for duplicate contacts.
     bool isDuplicate = contactList.any((contact) =>
         contact.name.toLowerCase() == newContact.name.toLowerCase() &&
         contact.phoneNumber == newContact.phoneNumber);
 
     if (isDuplicate) {
-      // Show feedback to the user if the contact already exists
+      // Show feedback if contact already exists.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Contact already exists.')),
       );
-      return; // Exit the function without adding the contact
+      return;
     }
-    
+
     setState(() {
-      contactList.add(newContact); // Optimistically update the UI.
+      contactList.add(newContact); // Add contact optimistically to the UI.
       isSaving = true; // Show loading indicator.
     });
 
-    // Save the contact to Hive and update the user's contact list.
+    // Save contact to Hive.
     HiveService.saveContact(widget.user!, newContact).then((success) {
       if (success) {
         setState(() {
           isSaving = false; // Hide loading indicator on success.
         });
       } else {
-        // If saving fails, revert UI changes and show an error message.
         setState(() {
-          contactList.remove(newContact); // Remove the contact from the list.
-          isSaving = false; // Hide loading indicator.
+          contactList.remove(newContact); // Revert changes on failure.
+          isSaving = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save contact.')), // Show error feedback.
+          SnackBar(content: Text('Failed to save contact.')),
         );
       }
     });
   }
 
+  /// Deletes a contact from the list and Hive.
   void _deleteContact(ContactModel contactToDelete) {
     setState(() {
-      contactList.remove(contactToDelete); // Remove contact from UI
+      contactList.remove(contactToDelete); // Remove contact from the UI.
     });
 
     HiveService.deleteContact(widget.user!, contactToDelete).then((success) {
       if (!success) {
         setState(() {
-          contactList.add(contactToDelete); // Re-add contact if deletion fails
+          contactList.add(contactToDelete); // Revert changes on failure.
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to delete contact.')),
