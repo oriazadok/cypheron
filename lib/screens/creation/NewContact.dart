@@ -18,10 +18,6 @@ class NewContact extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // App bar with a title for the screen.
-      appBar: AppBar(
-        title: Text('Create New Contact'),
-      ),
       // Main body of the screen wrapped in a reusable `FormUI` widget.
       body: FormUI(
         title: 'New Contact', // Title displayed at the top of the form.
@@ -32,13 +28,11 @@ class NewContact extends StatelessWidget {
           GenericFormField(
             fieldType: FieldType.name,
             controller: _nameController,
-            // labelText: 'Enter your email',
           ),
           // Reusable form field for phone input.
           GenericFormField(
             fieldType: FieldType.phone,
             controller: _phoneController,
-            // labelText: 'Enter your email',
           ),
         ],
         
