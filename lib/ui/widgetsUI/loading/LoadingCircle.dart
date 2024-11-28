@@ -9,7 +9,7 @@ class LoadingCircle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      // child: CircularProgressIndicator(color: color),
+      child: CircularProgressIndicator(color: color),
     );
   }
 }

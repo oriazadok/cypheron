@@ -45,36 +45,32 @@ class _MobileContactsState extends State<MobileContacts> {
       ),
       // Main body of the screen.
       body: MobileContactsUI(
-        // Display loading indicator when fetching contacts.
-        isFetching: isFetching,
-        // Pass the current list of contacts to the UI component.
-        contacts: contacts,
-        // Provide a RefreshIndicator widget for pull-to-refresh functionality.
-        refresh: RefreshIndicator(
-          onRefresh: refreshContacts,
-          child: ListView.builder(
-            // Number of contacts to display.
-            itemCount: contacts.length,
-            itemBuilder: (context, index) {
-              // Extract contact data for the current index.
-              final contactData = contacts[index];
-              String displayName = contactData['displayName'];
-              String phoneNumber = contactData['phoneNumber'];
 
-              // Display each contact using a reusable UI card.
-              return MobilecontactcardUI(
-                displayName: displayName,
-                phoneNumber: phoneNumber,
-                onTap: (Contact selectedContact) {
-                  // Navigate back with the selected contact as a result.
-                  Navigator.pop(context, selectedContact);
-                },
-              );
-            },
-          ),
-        ),
-        // Display an error message if no contacts are found.
-        error: FittedTextUI(text: 'No contacts found. Swipe down to refresh.', type: TextType.err),
+        isFetching: isFetching,
+
+        child: contacts.isNotEmpty
+          ? RefreshIndicator(
+            onRefresh: refreshContacts,
+            child: ListView.builder(
+              // Number of contacts to display.
+              itemCount: contacts.length,
+              itemBuilder: (context, index) {
+                // Extract contact data for the current index.
+                final contactData = contacts[index];
+
+                // Display each contact using a reusable UI card.
+                return MobilecontactcardUI(
+                  displayName: contactData['displayName'],
+                  phoneNumber: contactData['phoneNumber'],
+                  onTap: (Contact selectedContact) {
+                    // Navigate back with the selected contact as a result.
+                    Navigator.pop(context, selectedContact);
+                  },
+                );
+              },
+            ),
+          )
+          : FittedTextUI(text: 'No contacts found. Swipe down to refresh.', type: TextType.err),
       ),
     );
   }

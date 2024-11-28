@@ -12,21 +12,18 @@ class LeadingUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      // backgroundColor: Colors.deepPurpleAccent,
-      child: IconsUI(type: type),
-    );
+    return buildLeading(type);
   }
 
-  // Widget buildLeading(String type) {
+  Widget buildLeading(IconType type) {
 
-  //   if(type == "avatar-person")
-  //     return CircleAvatar(
-  //     backgroundColor: Colors.deepPurpleAccent,
-  //     child: IconsUI(type: type),
-  //   ); 
+    if(type == IconType.person)
+      return CircleAvatar(
+      backgroundColor: Colors.deepPurpleAccent,
+      child: IconsUI(type: IconType.person),
+    ); 
 
-  //   return SizedBox.shrink();
-  // }
+    return SizedBox.shrink();
+  }
 
 }
