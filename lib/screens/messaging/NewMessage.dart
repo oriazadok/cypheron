@@ -29,13 +29,11 @@ class _NewMessageState extends State<NewMessage> {
           GenericFormField(
             fieldType: FieldType.title,
             controller: _titleController,
-            // labelText: 'Enter your email',
           ),
           // Body input field, using a larger text box.
           GenericFormField(
             fieldType: FieldType.textBox,
             controller: _bodyController,
-            // labelText: 'Enter your email',
           ),
         ],
 
@@ -48,15 +46,8 @@ class _NewMessageState extends State<NewMessage> {
 
             // If a valid keyword is entered, proceed with encryption.
             if (keyword != null && keyword.isNotEmpty) {
-              // Initialize the FFI encryption service.
-              final cypherFFI = CypherFFI();
-              
               // Encrypt the message body using the provided keyword.
-              String encryptedBody = cypherFFI.runCypher(
-                _bodyController.text,  // Original message body.
-                keyword,  // User-entered encryption key.
-                'e',  // Flag indicating encryption ('e' for encryption, 'd' for decryption).
-              );
+              String encryptedBody = CypherFFI().runCypher(_bodyController.text, keyword, 'e');
 
               // Create a new `MessageModel` with the encrypted content.
               final newMessage = MessageModel(

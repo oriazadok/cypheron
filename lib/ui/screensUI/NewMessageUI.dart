@@ -26,22 +26,12 @@ class __NewmessageUIState extends State<NewmessageUI> {
   Widget build(BuildContext context) {
     return FormUI(
       title: "New Message",
-      inputFields: _buildInputFieldsWithSpacing(),
+      inputFields: widget.inputFields,
       onClick: () {
         widget.onClick();
       },
       buttonText: widget.buttonText,
     );
-  }
-
-  /// Helper method to interleave input fields with `SizedBox` for spacing.
-  List<Widget> _buildInputFieldsWithSpacing() {
-    List<Widget> spacedFields = [];
-    for (int i = 0; i < widget.inputFields.length; i++) {
-      spacedFields.add(widget.inputFields[i]);
-      spacedFields.add(SizedBox(height: 20)); // Add spacing between input fields
-    }
-    return spacedFields;
   }
 
 }
