@@ -13,9 +13,11 @@ enum IconType {
   lock,
   contacts_outlined,
   send,
+  share,
   copy,
   visibility,
   visibility_off,
+  add,
   delete,
 }
 
@@ -99,8 +101,14 @@ class IconsUI extends StatelessWidget {
       case IconType.send:
         return Icon(Icons.send);
       
+      case IconType.share:
+        return Icon(Icons.share);
+      
       case IconType.delete:
         return Icon(Icons.delete_outline_outlined);
+
+      case IconType.add:
+        return Icon(Icons.add);
 
       default:
         return Icon(Icons.whatshot);

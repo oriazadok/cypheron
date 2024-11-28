@@ -28,7 +28,7 @@ class AddMessageButton extends StatelessWidget {
           onAddMessage(newMessage);  // Use the callback to add the message
         }
       },
-      icon: IconsUI(type: IconType.person_add_alt_1_outlined),
+      icon: IconsUI(type: IconType.add),
       tooltip: 'Add Message',  // Tooltip text displayed on long press
     );
   }

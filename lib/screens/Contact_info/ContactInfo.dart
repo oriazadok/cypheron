@@ -50,6 +50,7 @@ class _ContactInfoState extends State<ContactInfo> {
                 final message = messages[index]; // Current message
                 return MsgCardUI(
                   message: message, // Display the message using a custom card UI
+                  subtitle: "Tap to decrypt",
                   
                   /// Action when the message card is tapped
                   onTap: () async {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 /// Enum to represent different text styles
-enum TextType { head_line, title, button, empty_state, dialog_title, dialog_option, contact_card, sub_title_contact_card, err, normal }
+enum TextType { head_line, title, button, empty_state, dialog_title, dialog_option, contact_card, sub_title_contact_card, msg_title, err, normal }
 
 /// A factory class that creates different types of `TextFormField` based on the input type.
 class GenericTextStyleUI {
   /// Returns a `TextFormField` based on the provided type string.
-  static TextStyle getTextStyle( TextType type ) {
+  static TextStyle getTextStyle( TextType? type ) {
     switch (type) {
       case TextType.head_line:
         return TextStyle(
@@ -66,6 +66,16 @@ class GenericTextStyleUI {
           fontSize: 16,
         );
 
+      case TextType.msg_title:
+        return TextStyle(
+          fontWeight: FontWeight.bold
+        );
+      
+      case TextType.normal:
+        return TextStyle(
+          color: Colors.grey
+        );
+
       case TextType.err:
         return TextStyle(
             fontSize: 18,
@@ -73,7 +83,7 @@ class GenericTextStyleUI {
           );
       
       default:
-        return TextStyle();
+        return TextStyle(color: Colors.grey);
     }
   }
 }
