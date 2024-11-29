@@ -7,6 +7,9 @@ import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import android.database.Cursor
+import android.provider.OpenableColumns
+
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.example.cypheron/share"
@@ -29,6 +32,15 @@ class MainActivity: FlutterActivity() {
                         }
                     } catch (e: Exception) {
                         result.error("ERROR", e.message, null)
+                    }
+                }
+                "getFileName" -> {
+                    val uri = call.arguments as? String
+                    if (uri != null) {
+                        val fileName = getFileName(uri)
+                        result.success(fileName)
+                    } else {
+                        result.error("INVALID_ARGUMENT", "URI is null", null)
                     }
                 }
                 else -> result.notImplemented()
@@ -62,6 +74,20 @@ class MainActivity: FlutterActivity() {
     // Helper function to get the shared file path if requested from Flutter
     private fun getSharedFilePath(): String? {
         return intent?.data?.toString()
+    }
+
+    private fun getFileName(contentUri: String): String? {
+        val uri = Uri.parse(contentUri)
+        var fileName: String? = null
+        if (uri.scheme == "content") {
+            val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    fileName = it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                }
+            }
+        }
+        return fileName ?: uri.path?.substringAfterLast('/')
     }
 
     @Throws(Exception::class)

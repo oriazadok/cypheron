@@ -23,29 +23,33 @@ class _DecryptorState extends State<Decryptor> {
   static const platform = MethodChannel('com.example.cypheron/share'); 
 
   /// The path to a shared file that needs to be decrypted.
-  String? sharedFilePath;               
+  String? sharedFilePath;  
+
+  /// Stores the file name.
+  String? fileName;             
 
   @override
   void initState() {
     super.initState();
+    _initializeDecryptor();
+  }
 
-    // Check if an initial file path is provided, and ask for the decryption key if it exists.
+
+/// Initializes the decryptor by retrieving and displaying the file name and content.
+  Future<void> _initializeDecryptor() async {
     if (widget.initialFilePath != null) {
-      _askForDecryptionKey(widget.initialFilePath!);
-    } else {
-      // Otherwise, retrieve a shared file via the platform channel.
-      _getSharedFile(); 
-    }
+      sharedFilePath = widget.initialFilePath;
+      fileName = await _getFileName(sharedFilePath!);
 
-    // Listen for file-sharing events from the platform.
-    platform.setMethodCallHandler((call) async {
-      if (call.method == "fileReceived") {
-        setState(() {
-          sharedFilePath = call.arguments; // Update the shared file path.
-        });
-        _askForDecryptionKey(sharedFilePath!); // Prompt the user for a decryption key.
+      print("File Name: $fileName");
+      print("File Path: $sharedFilePath");
+
+      if (sharedFilePath != null) {
+        _displayFile(sharedFilePath!);
       }
-    });
+    } else {
+      print("No initial file path provided.");
+    }
   }
 
   @override
@@ -58,63 +62,62 @@ class _DecryptorState extends State<Decryptor> {
     );
   }
 
-  /// Retrieves a shared file's path from the platform channel.
-  Future<void> _getSharedFile() async {
+  /// Retrieves the file name from the platform.
+  Future<String?> _getFileName(String contentUri) async {
     try {
-      // Invoke the method to get the shared file.
-      final uriPath = await platform.invokeMethod('getSharedFile');
-      if (uriPath != null) {
-        setState(() {
-          sharedFilePath = uriPath; // Save the shared file path.
-        });
-        _askForDecryptionKey(sharedFilePath!); // Prompt the user for a decryption key.
-      }
+      final fileName = await platform.invokeMethod<String>('getFileName', contentUri);
+      return fileName;
     } on PlatformException catch (e) {
-      print("Failed to get shared file: '${e.message}'."); // Log any errors.
+      print("Failed to get file name: '${e.message}'.");
+      return null;
     }
   }
 
-  /// Prompts the user to enter a decryption key for the given file path.
-  void _askForDecryptionKey(String filePath) async {
-    // Show a dialog for the user to enter a decryption key.
-    String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
 
-    // If a valid key is entered, proceed with decryption.
-    if (keyword != null && keyword.isNotEmpty) {
-      _decryptFile(filePath, keyword);
-    }
-  }
-
-  /// Decrypts the file content using the provided key and displays the result.
-  void _decryptFile(String uriPath, String keyword) async {
+   /// Displays the content of the file after decryption.
+  void _displayFile(String filePath) async {
     try {
-      // Request to open the file as bytes using the platform channel.
-      final fileBytes = await platform.invokeMethod('openFileAsBytes', uriPath);
-      if (fileBytes == null) {
-        print("Failed to read file content."); // Log error if file bytes are null.
-        return;
+      final encryptedContent = await _getFileContent(filePath);
+      if (encryptedContent.isNotEmpty) {
+        _decrypt(encryptedContent);
+      } else {
+        print("Encrypted content is empty.");
       }
-
-      // Convert the byte data to a string representation.
-      final encryptedContent = String.fromCharCodes(fileBytes);
-
-      // Use the FFI service for decryption with the provided key.
-      final cypherFFI = CypherFFI();
-      final decryptedContent = cypherFFI.runCypher(
-        encryptedContent,
-        keyword,
-        'd', // Specify the "decrypt" operation.
-      );
-
-      // Display the decrypted content in a dialog.
-      displaydialog(context, "Decrypted content", decryptedContent);
-
     } catch (e) {
-      // Handle any errors during the decryption process.
-      print("Failed to decrypt file: ${e.toString()}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to decrypt file')), // Show an error message.
-      );
+      print("Error displaying file: ${e.toString()}");
     }
   }
+
+
+  /// Retrieves the content of the file as a string.
+  Future<String> _getFileContent(String uriPath) async {
+    try {
+      final fileBytes = await platform.invokeMethod<List<int>>('openFileAsBytes', uriPath);
+      if (fileBytes != null) {
+        return String.fromCharCodes(fileBytes);
+      } else {
+        throw Exception("Failed to retrieve file bytes.");
+      }
+    } catch (e) {
+      print("Error retrieving file content: ${e.toString()}");
+      return "";
+    }
+  }
+  
+  /// Decrypts the given encrypted content using a user-provided keyword.
+  void _decrypt(String encryptedContent) async {
+    final keyword = await KeywordDialog.getKeyword(context, "Decrypt");
+    if (keyword != null && keyword.isNotEmpty) {
+      try {
+        final decryptedContent = CypherFFI().runCypher(encryptedContent, keyword, 'd');
+        displaydialog(context, "Decrypted content", decryptedContent);
+      } catch (e) {
+        print("Error during decryption: ${e.toString()}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to decrypt content.')),
+        );
+      }
+    }
+  }
+
 }
