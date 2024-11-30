@@ -39,27 +39,37 @@ class _NewMessageState extends State<NewMessage> {
 
         // Button action for encrypting the message.
         onClick: () async {
-          // Ensure that both title and body fields are not empty.
-          if (_titleController.text.isNotEmpty && _bodyController.text.isNotEmpty) {
+          // Trim whitespace from the title and body text
+          String trimmedTitle = _titleController.text.trim();
+          String trimmedBody = _bodyController.text.trim();
+
+          // Ensure that both title and body fields are not empty after trimming.
+          if (trimmedTitle.isNotEmpty && trimmedBody.isNotEmpty) {
             // Prompt the user to enter an encryption keyword.
             String? keyword = await KeywordDialog.getKeyword(context, "Encrypt");
 
             // If a valid keyword is entered, proceed with encryption.
             if (keyword != null && keyword.isNotEmpty) {
-              // Encrypt the message body using the provided keyword.
-              String encryptedBody = CypherFFI().runCypher(_bodyController.text, keyword, 'e');
+              // Encrypt the trimmed message body using the provided keyword.
+              String encryptedBody = CypherFFI().runCypher(trimmedBody, keyword, 'e');
 
-              // Create a new `MessageModel` with the encrypted content.
+              // Create a new `MessageModel` with the trimmed and encrypted content.
               final newMessage = MessageModel(
-                title: _titleController.text,  // Title entered by the user.
-                body: encryptedBody,  // Encrypted message body.
+                title: trimmedTitle,  // Trimmed title.
+                body: encryptedBody,  // Encrypted trimmed message body.
               );
 
               // Return the encrypted message to the previous screen.
               Navigator.pop(context, newMessage);
             }
+          } else {
+            // Show an error if either field is empty after trimming.
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Both title and body are required.")),
+            );
           }
         },
+
 
         // Label for the encryption button.
         buttonText: "Encrypt Message",
