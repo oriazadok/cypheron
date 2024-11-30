@@ -42,5 +42,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Ignore the jniLibs folder
+android/app/src/main/jniLibs/
 
 /toDo
