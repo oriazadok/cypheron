@@ -27,10 +27,3 @@ class GradientBackgroundUI extends StatelessWidget {
     );
   }
 }
-
-
-
-
-// Container(
-//         
-//         )

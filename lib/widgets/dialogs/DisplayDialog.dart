@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
 
 Future<void> displaydialog(
   BuildContext context,
@@ -41,6 +42,7 @@ Future<void> displaydialog(
                     // Display the timer on the left
                     Text(
                       "$remainingTime s",
+                      style: GenericTextStyleUI.getTextStyle(TextType.time),
                     ),
                     Row(
                       children: [
