@@ -39,27 +39,23 @@ class _DecryptorState extends State<Decryptor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Basic app bar with a title.
       appBar: AppBar(
         title: Text('Decryptor'),
       ),
       body: message == null
           ? Center(
-              child: CircularProgressIndicator(), // Show a loading indicator while `message` is null.
+              child: CircularProgressIndicator(), // Show loading while message is null
             )
           : MsgCardUI(
-              message: message!, // Safely use `!` because `message` is null-checked.
+              message: message!, // Safely use the `message` object
               subtitle: "Tap to decrypt",
-
-              /// Action when the message card is tapped
               onTap: () async {
                 // Show dialog to get the decryption keyword
                 String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
 
                 if (keyword != null && keyword.isNotEmpty) {
                   // Decrypt the message body using the provided keyword
-                  String decryptedBody =
-                      CypherFFI().runCypher(message!.body, keyword, 'd');
+                  String decryptedBody = CypherFFI().runCypher(message!.body, keyword, 'd');
                   // Display the decrypted message in a dialog
                   displaydialog(context, message!.title, decryptedBody);
                 }
@@ -67,8 +63,6 @@ class _DecryptorState extends State<Decryptor> {
             ),
     );
   }
-
-
 
   /// Initializes the decryptor by retrieving and displaying the file name and content.
   Future<void> _initializeDecryptor() async {
@@ -80,16 +74,11 @@ class _DecryptorState extends State<Decryptor> {
       if (fileName != null && encryptedContent.isNotEmpty) {
         setState(() {
           this.message = MessageModel(
-            title: fileName,
+            title: fileName.split(".")[0],
             body: encryptedContent,
           );
         });
       }
-
-
-      print("File Name: $fileName");
-      print("File Path: $sharedFilePath");
-
     } else {
       print("No initial file path provided.");
     }
@@ -121,20 +110,6 @@ class _DecryptorState extends State<Decryptor> {
     }
   }
 
-  /// Decrypts the given encrypted content using a user-provided keyword.
-  void _decrypt(String encryptedContent) async {
-    final keyword = await KeywordDialog.getKeyword(context, "Decrypt");
-    if (keyword != null && keyword.isNotEmpty) {
-      try {
-        final decryptedContent = CypherFFI().runCypher(encryptedContent, keyword, 'd');
-        displaydialog(context, "Decrypted content", decryptedContent);
-      } catch (e) {
-        print("Error during decryption: ${e.toString()}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to decrypt content.')),
-        );
-      }
-    }
-  }
+
 
 }
