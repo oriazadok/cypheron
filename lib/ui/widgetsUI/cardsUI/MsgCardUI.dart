@@ -11,13 +11,13 @@ class MsgCardUI extends StatelessWidget {
   final MessageModel message;
   final String subtitle;
   final VoidCallback onTap;
-  final VoidCallback onSend;
+  final VoidCallback? onSend;
 
   const MsgCardUI({
     required this.message,
     required this.subtitle,
     required this.onTap,
-    required this.onSend,
+    this.onSend,
   });
 
   @override
@@ -40,7 +40,9 @@ class MsgCardUI extends StatelessWidget {
           style: GenericTextStyleUI.getTextStyle(TextType.normal),
         ),
         onTap: onTap,
-        trailing: IconsUI(type: IconType.share, onPressed: onSend),
+        trailing: onSend != null
+            ? IconsUI(type: IconType.share, onPressed: onSend)
+            : null, // Show nothing if `onSend` is null
       ),
     );
   }
