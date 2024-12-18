@@ -48,45 +48,71 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // AppBar with title and logout button.
-      appBar: AppBar(
-        title: Text("Cypheron"), // Display app title.
-        actions: [
-          IconsUI(
-            type: IconType.logout, // Logout icon.
-            onPressed: () {
-              // Navigate to the SignIn screen and replace the current route.
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => SignIn()),
-              );
+    return WillPopScope(
+      onWillPop: _onWillPop, // Attach the custom logic
+      child: Scaffold(
+        // AppBar with title and logout button.
+        appBar: AppBar(
+          title: Text("Cypheron"), // Display app title.
+          actions: [
+            IconsUI(
+              type: IconType.logout, // Logout icon.
+              onPressed: () {
+                // Navigate to the SignIn screen and replace the current route.
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignIn()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Body contains the main content of the Home screen.
+        body: HomeUI(
+          isSaving: isSaving, // Pass saving state to UI for displaying a loading indicator.
+          contactList: ContactList(
+            contactList: contactList, // Pass the contact list to display.
+            onDelete: (ContactModel contact) {
+              _deleteContact(contact); // Handle contact deletion.
             },
+            onLongPress: () {
+              setState(() {
+                isOnLongPress = !isOnLongPress; // Toggle the long press state.
+              });
+            },
+          ),
+        ),
+
+        // Floating action button for adding contacts, visible only when not in long press mode.
+        floatingActionButton: !isOnLongPress
+            ? AddContactButton(onAddContact: _addNewContact)
+            : null,
+      )
+    );
+  }
+
+
+  // This will handle the back button behavior
+  Future<bool> _onWillPop() async {
+    final shouldPop = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Are you sure?'),
+        content: Text('Do you want to leave the app?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // Stay on screen
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true), // Leave screen
+            child: Text('Yes'),
           ),
         ],
       ),
-
-      // Body contains the main content of the Home screen.
-      body: HomeUI(
-        isSaving: isSaving, // Pass saving state to UI for displaying a loading indicator.
-        contactList: ContactList(
-          contactList: contactList, // Pass the contact list to display.
-          onDelete: (ContactModel contact) {
-            _deleteContact(contact); // Handle contact deletion.
-          },
-          onLongPress: () {
-            setState(() {
-              isOnLongPress = !isOnLongPress; // Toggle the long press state.
-            });
-          },
-        ),
-      ),
-
-      // Floating action button for adding contacts, visible only when not in long press mode.
-      floatingActionButton: !isOnLongPress
-          ? AddContactButton(onAddContact: _addNewContact)
-          : null,
     );
+    return shouldPop ?? false; // Return true to exit, false to stay
   }
 
   /// Loads contacts from Hive by their IDs.
