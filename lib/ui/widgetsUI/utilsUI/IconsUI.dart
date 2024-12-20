@@ -19,6 +19,7 @@ enum IconType {
   visibility_off,
   add,
   delete,
+  search,
 }
 
 /// A reusable widget for creating custom icons and icon buttons.
@@ -106,6 +107,9 @@ class IconsUI extends StatelessWidget {
       
       case IconType.delete:
         return Icon(Icons.delete_outline_outlined);
+
+      case IconType.search:
+        return Icon(Icons.search);
 
       case IconType.add:
         return Icon(Icons.add);

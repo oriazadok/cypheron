@@ -42,7 +42,7 @@ class _ContactInfoState extends State<ContactInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarUI(title: widget.contact.name), // Custom app bar displaying the contact's name
+      appBar: AppBarUI(title: Text(widget.contact.name)), // Custom app bar displaying the contact's name
       body: messages.isNotEmpty
           ? ListView.builder(
               itemCount: messages.length, // Number of messages to display
