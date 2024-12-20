@@ -28,13 +28,20 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   /// Stores the user's contacts.
-  List<ContactModel> contactList = [];
+  List<ContactModel> allContacts = [];
+  List<ContactModel> filteredContacts = [];
 
   /// Tracks if a saving operation is in progress.
   bool isSaving = false;
 
   /// Tracks if a long press has occurred on a contact.
   bool isOnLongPress = false;
+
+  /// Search bar visibility.
+  bool isSearchBarVisible = false;
+
+  /// Controller for the search input field.
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -44,6 +51,17 @@ class _HomeState extends State<Home> {
     if (widget.user != null) {
       _loadContactsByIds(widget.user!.contactIds);
     }
+
+    // Listen to search input changes.
+    searchController.addListener(() {
+      filterContacts(searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -51,28 +69,69 @@ class _HomeState extends State<Home> {
     return WillPopScope(
       onWillPop: _onWillPop, // Attach the custom logic
       child: Scaffold(
-        // AppBar with title and logout button.
+        // AppBar with search and logout functionality.
         appBar: AppBar(
-          title: Text("Cypheron"), // Display app title.
-          actions: [
-            IconsUI(
-              type: IconType.logout, // Logout icon.
-              onPressed: () {
-                // Navigate to the SignIn screen and replace the current route.
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignIn()),
-                );
-              },
-            ),
-          ],
+          automaticallyImplyLeading: !isSearchBarVisible,
+          title: isSearchBarVisible
+              ? TextField(
+                  controller: searchController,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Search Contacts',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 16,
+                    ),
+                  ),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                )
+              : const Text("Cypheron"), // Display app title.
+          backgroundColor: isSearchBarVisible
+              ? Colors.deepPurple.shade700
+              : Colors.deepPurpleAccent.shade700,
+          actions: isSearchBarVisible
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      setState(() {
+                        isSearchBarVisible = false;
+                        searchController.clear();
+                        filteredContacts = allContacts; // Reset to original list
+                      });
+                    },
+                  ),
+                ]
+              : [
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () {
+                      setState(() {
+                        isSearchBarVisible = true;
+                      });
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignIn()),
+                      );
+                    },
+                  ),
+                ],
         ),
 
         // Body contains the main content of the Home screen.
         body: HomeUI(
           isSaving: isSaving, // Pass saving state to UI for displaying a loading indicator.
           contactList: ContactList(
-            contactList: contactList, // Pass the contact list to display.
+            contactList: filteredContacts, // Use the filtered list for display.
             onDelete: (ContactModel contact) {
               _deleteContact(contact); // Handle contact deletion.
             },
@@ -88,10 +147,9 @@ class _HomeState extends State<Home> {
         floatingActionButton: !isOnLongPress
             ? AddContactButton(onAddContact: _addNewContact)
             : null,
-      )
+      ),
     );
   }
-
 
   // This will handle the back button behavior
   Future<bool> _onWillPop() async {
@@ -120,7 +178,24 @@ class _HomeState extends State<Home> {
   void _loadContactsByIds(List<String> contactIds) async {
     List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
     setState(() {
-      contactList = loadedContacts;
+      allContacts = loadedContacts;
+      filteredContacts = loadedContacts; // Initialize filtered contacts.
+    });
+  }
+
+  /// Filter contacts based on the search query.
+  void filterContacts(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredContacts = allContacts; // Show all contacts if query is empty.
+      } else {
+        filteredContacts = allContacts.where((contact) {
+          final name = contact.name.toLowerCase();
+          final number = contact.phoneNumber.toLowerCase();
+          return name.contains(query.toLowerCase()) ||
+              number.contains(query.toLowerCase());
+        }).toList();
+      }
     });
   }
 
@@ -128,7 +203,7 @@ class _HomeState extends State<Home> {
   /// Shows a loading indicator during the save operation.
   void _addNewContact(ContactModel newContact) {
     // Check for duplicate contacts.
-    bool isDuplicate = contactList.any((contact) =>
+    bool isDuplicate = allContacts.any((contact) =>
         contact.name.toLowerCase() == newContact.name.toLowerCase() &&
         contact.phoneNumber == newContact.phoneNumber);
 
@@ -141,7 +216,8 @@ class _HomeState extends State<Home> {
     }
 
     setState(() {
-      contactList.add(newContact); // Add contact optimistically to the UI.
+      allContacts.add(newContact); // Add contact to the original list.
+      filteredContacts = allContacts; // Update the filtered list.
       isSaving = true; // Show loading indicator.
     });
 
@@ -153,7 +229,8 @@ class _HomeState extends State<Home> {
         });
       } else {
         setState(() {
-          contactList.remove(newContact); // Revert changes on failure.
+          allContacts.remove(newContact); // Revert changes on failure.
+          filteredContacts = allContacts;
           isSaving = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
@@ -166,13 +243,15 @@ class _HomeState extends State<Home> {
   /// Deletes a contact from the list and Hive.
   void _deleteContact(ContactModel contactToDelete) {
     setState(() {
-      contactList.remove(contactToDelete); // Remove contact from the UI.
+      allContacts.remove(contactToDelete); // Remove contact from the original list.
+      filteredContacts = allContacts; // Update the filtered list.
     });
 
     HiveService.deleteContact(widget.user!, contactToDelete).then((success) {
       if (!success) {
         setState(() {
-          contactList.add(contactToDelete); // Revert changes on failure.
+          allContacts.add(contactToDelete); // Revert changes on failure.
+          filteredContacts = allContacts;
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to delete contact.')),
@@ -180,4 +259,6 @@ class _HomeState extends State<Home> {
       }
     });
   }
+
+
 }
