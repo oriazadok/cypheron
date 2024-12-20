@@ -1,27 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart'; // For sharing files and content
-import 'package:path_provider/path_provider.dart'; // For accessing the temporary directory
-import 'dart:convert'; // For encoding and decoding data
-import 'dart:io'; // For file handling
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
+import 'dart:io';
 
-import 'package:cypheron/services/ffi_service.dart'; // Service for encryption/decryption using FFI
-import 'package:cypheron/models/ContactModel.dart'; // Model class for contacts
-import 'package:cypheron/models/MessageModel.dart'; // Model class for messages
+import 'package:cypheron/services/ffi_service.dart';
+import 'package:cypheron/models/ContactModel.dart';
+import 'package:cypheron/models/MessageModel.dart';
 
-import 'package:cypheron/ui/widgetsUI/app_barUI/AppBarUI.dart'; // Custom app bar widget
-import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart'; // Custom icons widget
-import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart'; // Widget for empty states
-import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart'; // Widget for displaying message cards
+import 'package:cypheron/ui/widgetsUI/app_barUI/AppBarUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart';
+import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart';
 
-import 'package:cypheron/widgets/dialogs/KeywordDialog.dart'; // Dialog for entering decryption key
-import 'package:cypheron/widgets/dialogs/DisplayDialog.dart'; // Dialog for displaying decrypted content
+import 'package:cypheron/widgets/dialogs/KeywordDialog.dart';
+import 'package:cypheron/widgets/dialogs/DisplayDialog.dart';
+import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 
-import 'package:cypheron/widgets/buttons/addMessageButton.dart'; // Floating action button for adding messages
-
-/// `ContactInfo` is a screen that displays information about a specific contact
-/// and their associated messages.
 class ContactInfo extends StatefulWidget {
-  final ContactModel contact; // The contact whose information is displayed
+  final ContactModel contact;
 
   ContactInfo({required this.contact});
 
@@ -29,78 +26,141 @@ class ContactInfo extends StatefulWidget {
   _ContactInfoState createState() => _ContactInfoState();
 }
 
-/// State class for the `ContactInfo` screen
 class _ContactInfoState extends State<ContactInfo> {
-  List<MessageModel> messages = []; // List of messages associated with the contact
+  List<MessageModel> allMessages = [];
+  List<MessageModel> filteredMessages = [];
+  final TextEditingController searchController = TextEditingController();
+  bool isSearching = false;
 
   @override
   void initState() {
     super.initState();
-    messages = widget.contact.messages; // Initialize messages from the contact model
+    allMessages = widget.contact.messages;
+    filteredMessages = allMessages;
+
+    searchController.addListener(() {
+      filterMessages(searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarUI(title: Text(widget.contact.name)), // Custom app bar displaying the contact's name
-      body: messages.isNotEmpty
+      appBar: AppBar(
+        backgroundColor: Colors.deepPurpleAccent,
+        elevation: 4,
+        automaticallyImplyLeading: !isSearching, // Hide the back button when searching
+        title: isSearching
+            ? TextField(
+                controller: searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search Messages',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 18,
+                  ),
+                ),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              )
+            : Text(widget.contact.name),
+        actions: isSearching
+            ? [
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.white),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = false;
+                      searchController.clear();
+                      filteredMessages = allMessages;
+                    });
+                  },
+                ),
+              ]
+            : [
+                IconButton(
+                  icon: Icon(Icons.search, color: Colors.white),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = true;
+                    });
+                  },
+                ),
+              ],
+      ),
+      body: filteredMessages.isNotEmpty
           ? ListView.builder(
-              itemCount: messages.length, // Number of messages to display
+              itemCount: filteredMessages.length,
               itemBuilder: (context, index) {
-                final message = messages[index]; // Current message
+                final message = filteredMessages[index];
                 return MsgCardUI(
-                  message: message, // Display the message using a custom card UI
+                  message: message,
                   subtitle: "Tap to decrypt",
-                  
-                  /// Action when the message card is tapped
                   onTap: () async {
-                    // Show dialog to get the decryption keyword
-                    String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
-                    
+                    String? keyword =
+                        await KeywordDialog.getKeyword(context, "Decrypt");
                     if (keyword != null && keyword.isNotEmpty) {
-                      // Decrypt the message body using the provided keyword
-                      String decryptedBody = CypherFFI().runCypher(message.body, keyword, 'd');
-                      // Display the decrypted message in a dialog
+                      String decryptedBody =
+                          CypherFFI().runCypher(message.body, keyword, 'd');
                       displaydialog(context, message.title, decryptedBody);
                     }
                   },
-                  /// Action to send the message
                   onSend: () => _sendMessage(message),
                 );
               },
             )
           : EmptyStateUI(
-              icon: IconsUI(type: IconType.mail), // Icon for the empty state
-              message: 'No messages found.\nAdd a new message.', // Message for the empty state
+              icon: IconsUI(type: IconType.mail),
+              message: 'No messages found.\nAdd a new message.',
             ),
-      floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage), // Button to add a new message
+      floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage),
     );
   }
 
-  /// Adds a new message to the contact's list of messages and saves it.
-  void _addNewMessage(MessageModel newMessage) {
+  void filterMessages(String query) {
     setState(() {
-      widget.contact.addMessage(newMessage); // Add the message to the contact
-      widget.contact.save(); // Save the updated contact data
+      if (query.isEmpty) {
+        filteredMessages = allMessages;
+      } else {
+        filteredMessages = allMessages.where((message) {
+          final title = message.title.toLowerCase();
+          final body = message.body.toLowerCase();
+          return title.contains(query.toLowerCase()) ||
+              body.contains(query.toLowerCase());
+        }).toList();
+      }
     });
   }
 
-  /// Sends a message by creating a `.zk` file and sharing it.
+  void _addNewMessage(MessageModel newMessage) {
+    setState(() {
+      widget.contact.addMessage(newMessage);
+      widget.contact.save();
+
+      allMessages = widget.contact.messages;
+      filteredMessages = allMessages;
+    });
+  }
+
   Future<void> _sendMessage(MessageModel message) async {
-    // Get the temporary directory for storing the file
     Directory tempDir = await getTemporaryDirectory();
-    
-    // Create a file path with the message title as the name
     String filePath = '${tempDir.path}/${message.title}.zk';
-    
-    // Write the message body to the file in UTF-8 encoding
     File zkFile = File(filePath);
     await zkFile.writeAsString(message.body, encoding: utf8);
 
-    // Share the file using the `share_plus` package
     await Share.shareFiles(
       [zkFile.path],
-      text: 'Encrypted message from ${widget.contact.name}', // Optional text accompanying the shared file
+      text: 'Encrypted message from ${widget.contact.name}',
     );
   }
 }
