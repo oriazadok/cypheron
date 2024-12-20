@@ -32,30 +32,38 @@ class _ContactInfoState extends State<ContactInfo> {
   final TextEditingController searchController = TextEditingController();
   bool isSearching = false;
 
+  final ScrollController _scrollController = ScrollController(); // Add ScrollController
+
   @override
   void initState() {
     super.initState();
-    allMessages = widget.contact.messages;
+    allMessages = widget.contact.messages
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Explicit sort
     filteredMessages = allMessages;
 
     searchController.addListener(() {
       filterMessages(searchController.text);
+    });
+
+    // Scroll to the top to show the latest message
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
     });
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.deepPurpleAccent,
-        elevation: 4,
-        automaticallyImplyLeading: !isSearching, // Hide the back button when searching
+      appBar: AppBarUI(
         title: isSearching
             ? TextField(
                 controller: searchController,
@@ -74,50 +82,56 @@ class _ContactInfoState extends State<ContactInfo> {
                 ),
               )
             : Text(widget.contact.name),
-        actions: isSearching
-            ? [
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      isSearching = false;
-                      searchController.clear();
-                      filteredMessages = allMessages;
-                    });
-                  },
-                ),
-              ]
-            : [
-                IconButton(
-                  icon: Icon(Icons.search, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      isSearching = true;
-                    });
-                  },
-                ),
-              ],
+        actions: [
+          if (isSearching)
+            IconButton(
+              icon: Icon(Icons.close),
+              onPressed: () {
+                setState(() {
+                  isSearching = false;
+                  searchController.clear();
+                  filteredMessages = allMessages;
+                });
+              },
+            )
+          else
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                setState(() {
+                  isSearching = true;
+                });
+              },
+            ),
+        ],
       ),
       body: filteredMessages.isNotEmpty
-          ? ListView.builder(
-              itemCount: filteredMessages.length,
-              itemBuilder: (context, index) {
-                final message = filteredMessages[index];
-                return MsgCardUI(
-                  message: message,
-                  subtitle: "Tap to decrypt",
-                  onTap: () async {
-                    String? keyword =
-                        await KeywordDialog.getKeyword(context, "Decrypt");
-                    if (keyword != null && keyword.isNotEmpty) {
-                      String decryptedBody =
-                          CypherFFI().runCypher(message.body, keyword, 'd');
-                      displaydialog(context, message.title, decryptedBody);
-                    }
-                  },
-                  onSend: () => _sendMessage(message),
-                );
-              },
+          ? MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: ListView.builder(
+                controller: _scrollController, // Attach the ScrollController
+                reverse: true, // Most recent message at the top
+                shrinkWrap: true,
+                itemCount: filteredMessages.length,
+                itemBuilder: (context, index) {
+                  final message = filteredMessages[index];
+                  return MsgCardUI(
+                    message: message,
+                    subtitle: "Tap to decrypt",
+                    onTap: () async {
+                      String? keyword =
+                          await KeywordDialog.getKeyword(context, "Decrypt");
+                      if (keyword != null && keyword.isNotEmpty) {
+                        String decryptedBody =
+                            CypherFFI().runCypher(message.body, keyword, 'd');
+                        displaydialog(context, message.title, decryptedBody);
+                      }
+                    },
+                    onSend: () => _sendMessage(message),
+                  );
+                },
+              ),
             )
           : EmptyStateUI(
               icon: IconsUI(type: IconType.mail),
@@ -147,8 +161,15 @@ class _ContactInfoState extends State<ContactInfo> {
       widget.contact.addMessage(newMessage);
       widget.contact.save();
 
-      allMessages = widget.contact.messages;
+      allMessages = widget.contact.messages.reversed.toList(); // Refresh and reverse
       filteredMessages = allMessages;
+
+      // Scroll to the top to show the latest message
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
+      });
     });
   }
 

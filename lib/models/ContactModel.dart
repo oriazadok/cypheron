@@ -29,9 +29,10 @@ class ContactModel extends HiveObject {
     messages = messages ?? [];  // Use a mutable list as the default
 
   // Method to add a new message
-  void addMessage(MessageModel message) {
-    messages.add(message);
-    save();  // Automatically save after modifying the contact
+  void addMessage(MessageModel newMessage) {
+    messages.add(newMessage);
+    messages.sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Sort by timestamp descending
+    save();
   }
 
   // Override the toString method for printing the contact details
