@@ -23,7 +23,7 @@ class Decryptor extends StatefulWidget {
 
 class _DecryptorState extends State<Decryptor> {
   /// A platform channel for handling file sharing and communication with native code.
-  static const platform = MethodChannel('com.example.cypheron/share'); 
+  static const platform = MethodChannel('com.klidok.cypheron/share'); 
 
   /// The path to a shared file that needs to be decrypted.
   String? sharedFilePath;  

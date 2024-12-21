@@ -12,7 +12,7 @@ import android.provider.OpenableColumns
 
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "com.example.cypheron/share"
+    private val CHANNEL = "com.klidok.cypheron/share"
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
