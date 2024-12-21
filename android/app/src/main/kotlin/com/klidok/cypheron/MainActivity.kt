@@ -1,4 +1,4 @@
-package com.example.cypheron
+package com.klidok.cypheron
 
 import android.content.Intent
 import android.net.Uri
