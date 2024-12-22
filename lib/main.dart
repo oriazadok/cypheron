@@ -1,81 +1,65 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:firebase_core/firebase_core.dart'; // Firebase Core
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore
+import 'package:flutter/material.dart'; // Import Flutter's Material Design library for UI components
+import 'package:flutter/services.dart'; // Import to use MethodChannel for platform-specific communication
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase core for initialization
 
-import 'services/HiveService.dart';
-import 'ui/generalUI/theme.dart';
-import 'screens/welcome/Welcome.dart';
-import 'screens/decrypt/Decryptor.dart';
+import 'services/HiveService.dart'; // Import a local service for managing the Hive database
+
+import 'ui/generalUI/theme.dart'; // Import theme configuration for the app's general UI
+
+import 'screens/welcome/Welcome.dart'; // Import the Welcome screen
+import 'screens/decrypt/Decryptor.dart'; // Import the Decryptor screen
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure proper bindings
-  // await Firebase.initializeApp(); // Initialize Firebase
-  try {
-    await Firebase.initializeApp();
-    print('Firebase initialized successfully!');
-  } catch (e) {
-    print('Error initializing Firebase: $e');
-  }
-  await HiveService.init();
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure that Flutter is properly initialized before any bindings
+  await Firebase.initializeApp(); // Initialize Firebase for the app
+
+  await HiveService.init(); // Initialize Hive (a lightweight and fast local database)
+  runApp(MyApp()); // Launch the app by running MyApp
 }
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState(); // Create the state for the MyApp widget
 }
 
 class _MyAppState extends State<MyApp> {
-  static const platform = MethodChannel('com.klidok.cypheron/share');
-  String? sharedFilePath;
+  static const platform = MethodChannel('com.klidok.cypheron/share'); 
+  // Define a platform channel to communicate with native code for shared files
+  String? sharedFilePath; // Store the path of a shared file (if any)
 
   @override
   void initState() {
     super.initState();
-    _getInitialSharedFile();
-    _createFirestoreCollection(); // Create a Firestore collection
+    _getInitialSharedFile(); // Check if there is a shared file on app start
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cypheron',
-      theme: ThemeData.light(),
-      darkTheme: getDarkTheme(),
-      themeMode: ThemeMode.dark,
-      home: sharedFilePath != null ? Decryptor(initialFilePath: sharedFilePath) : Welcome(),
+      title: 'Cypheron', // App title
+      theme: ThemeData.light(), // Default light theme
+      darkTheme: getDarkTheme(), // Custom dark theme
+      themeMode: ThemeMode.dark, // Set the app to use dark mode
+      home: sharedFilePath != null 
+          ? Decryptor(initialFilePath: sharedFilePath) 
+          : Welcome(), 
+      // Show the Decryptor screen if a shared file exists; otherwise, show the Welcome screen
     );
   }
 
+  // Method to retrieve the initial shared file path (if the app was opened with a shared file)
   Future<void> _getInitialSharedFile() async {
     try {
-      final path = await platform.invokeMethod('getSharedFile');
+      final path = await platform.invokeMethod('getSharedFile'); 
+      // Invoke a native method to get the shared file path
       if (path != null) {
         setState(() {
-          sharedFilePath = path;
+          sharedFilePath = path; // Update the shared file path state if it's not null
         });
       }
     } on PlatformException catch (e) {
-      print("Failed to get shared file: '${e.message}'.");
-    }
-  }
-
-  Future<void> _createFirestoreCollection() async {
-    try {
-      // Get a Firestore instance
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Create a new document in a collection
-      await firestore.collection('testCollection').add({
-        'name': 'Example User',
-        'age': 30,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      print('Document added successfully!');
-    } catch (e) {
-      print("Error creating Firestore document: $e");
+      print("Failed to get shared file: '${e.message}'."); 
+      // Handle and log any errors that occur during platform channel communication
     }
   }
 }
