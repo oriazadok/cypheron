@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:crypto/crypto.dart'; // For hashing passwords securely
-import 'dart:convert'; // For encoding strings to UTF-8
+
+import 'package:firebase_auth/firebase_auth.dart'; // Firestore
 
 import 'package:cypheron/services/HiveService.dart'; // Service for managing Hive database
 import 'package:cypheron/models/UserModel.dart'; // Model for user data
@@ -85,21 +85,63 @@ class _SignInState extends State<SignIn> {
   /// - `UserModel` if the email and password match a user in the database.
   /// - `null` if the credentials are invalid.
   Future<UserModel?> signInUser() async {
-    // Retrieve input values from the controllers
-    String email = _emailController.text;
-    String password = _passwordController.text;
 
-    // Hash the password using SHA-256 for secure comparison
-    var hashedPassword = sha256.convert(utf8.encode(password)).toString();
+    UserCredential? userCredential = await _signInWithEmailAndPassword();
 
-    // Fetch the user from the Hive database using their email
-    UserModel? user = await HiveService.getUserByEmail(email);
+    if (userCredential != null) {
+      print('Signed in as: ${userCredential.user?.email}');
 
-    // Validate the hashed password
-    if (user != null && user.hashedPassword == hashedPassword) {
-      return user; // Return the user if the credentials are valid
+      UserModel? user = await HiveService.getUserByUid(userCredential.user?.uid);
+
+      // Validate the hashed password
+      if (user != null) {
+        return user; // Return the user if the credentials are valid
+      } else {
+        return null; // Return null if the credentials are invalid
+      }
+     
     } else {
-      return null; // Return null if the credentials are invalid
+      print('Sign-in failed');
+    }
+
+  return null;
+    
+  }
+
+  Future<UserCredential?> _signInWithEmailAndPassword() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    try {
+      // Sign in the user and return the UserCredential
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential; // Return the UserCredential object
+
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Incorrect password provided.';
+      } else {
+        errorMessage = 'Error: ${e.message}';
+      }
+
+      // Show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+      return null; // Return null in case of an error
+    } catch (e) {
+      // Handle other errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+      return null; // Return null in case of an error
     }
   }
+
 }

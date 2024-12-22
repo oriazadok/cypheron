@@ -37,13 +37,13 @@ class HiveService {
 
   /// Retrieves a user by email from the Hive 'users' box.
   /// Returns the user if found, otherwise returns `null`.
-  static Future<UserModel?> getUserByEmail(String email) async {
+  static Future<UserModel?> getUserByUid(String? uid) async {
     var box = await Hive.openBox<UserModel>('users');  // Open the 'users' box
 
     try {
       // Search for the user with a matching email
       var user = box.values.firstWhere(
-        (user) => user.email == email,
+        (user) => user.userId == uid,
         orElse: () => throw StateError("No user found"),  // Exception if not found
       );
       return user;  // Return the found user
