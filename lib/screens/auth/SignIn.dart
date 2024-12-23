@@ -1,147 +1,142 @@
 import 'package:flutter/material.dart';
 
-import 'package:firebase_auth/firebase_auth.dart'; // Firestore
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication for user sign-in
 
-import 'package:cypheron/services/HiveService.dart'; // Service for managing Hive database
-import 'package:cypheron/models/UserModel.dart'; // Model for user data
+import 'package:cypheron/services/HiveService.dart'; // Service for managing Hive-based local database
+import 'package:cypheron/models/UserModel.dart'; // User model for handling user data structure
 
-import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI structure for authentication screens
-import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // UI structure for forms
-import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Widget for displaying text with a specific style
-import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart';
+import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI wrapper for authentication screens
+import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // Form UI widget structure
+import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Custom widget for styled text
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart'; // Generic text styles for consistency
 
-import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Generic form field for input
+import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Input field widget for forms
 
-import 'package:cypheron/screens/home/Home.dart'; // Home screen for navigation after signing in
+import 'package:cypheron/screens/home/Home.dart'; // Home screen to navigate to after successful sign-in
 
-/// The `SignIn` class defines the sign-in screen of the app. 
-/// It uses a stateful widget to manage user input and authentication.
+/// The `SignIn` class represents the user sign-in screen.
+/// This screen allows users to log in using their email and password.
 class SignIn extends StatefulWidget {
   @override
   _SignInState createState() => _SignInState();
 }
 
+/// The state class for the `SignIn` screen
 class _SignInState extends State<SignIn> {
-  // Controllers for managing input in email and password fields
+  // Controllers for capturing and managing the text entered in email and password fields
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  // String to display error messages to the user
+  // Variable to store error messages, displayed to the user on invalid input
   String errorMessage = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AuthUI(
-        // Wraps the form UI with additional authentication styling and behavior
+        // Wraps the form UI with a consistent structure for authentication screens
         form: FormUI(
-          title: 'Sign In', // Title of the form
+          title: 'Sign In', // Title displayed at the top of the form
 
-          // List of input fields and dynamic widgets
+          // List of widgets to capture user input and display feedback
           inputFields: [
-
             // Email input field
             GenericFormField(
-              fieldType: FieldType.email,
-              controller: _emailController,
+              fieldType: FieldType.email, // Specifies this field is for email input
+              controller: _emailController, // Controller to manage email input
             ),
-            
+
             // Password input field
             GenericFormField(
-              fieldType: FieldType.password,
-              controller: _passwordController,
+              fieldType: FieldType.password, // Specifies this field is for password input
+              controller: _passwordController, // Controller to manage password input
             ),
-            // Displays an error message if there's one
+
+            // Displays an error message if `errorMessage` is not empty
             if (errorMessage != '')
               FittedTextUI(text: errorMessage, type: TextType.err),
           ],
 
-          // Function executed when the "Sign In" button is clicked
+          // Callback executed when the "Sign In" button is pressed
           onClick: () async {
-            UserModel? signInSuccessful = await signInUser(); // Attempt to sign in the user
-            if (signInSuccessful != null) {
-              // Navigate to the Home screen and clear the navigation stack
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => Home(user: signInSuccessful)),
-                (route) => false,
-              );
-            } else {
-              // Display an error message if sign-in fails
-              setState(() {
-                errorMessage = 'Invalid email or password';
-              });
+            String? uid = await _signInFB(); // Attempt to sign in the user
+            if (uid != null) {
+              // Validate the user's credentials in the local Hive database
+              UserModel? signInSuccessful = await signInHive(uid);
+              if (signInSuccessful != null) {
+                // Navigate to the home screen if the sign-in is successful
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => Home(user: signInSuccessful)),
+                  (route) => false, // Remove all previous routes from the navigation stack
+                );
+              } else {
+                // Set an error message if the sign-in fails
+                setState(() {
+                  errorMessage = 'Invalid email or password';
+                });
+              }
             }
           },
-          buttonText: 'Sign In', // Text displayed on the button
+          buttonText: 'Sign In', // Text displayed on the sign-in button
         ),
       ),
     );
   }
 
-  /// Attempts to sign in the user by validating their credentials.
-  /// 
-  /// Returns:
-  /// - `UserModel` if the email and password match a user in the database.
-  /// - `null` if the credentials are invalid.
-  Future<UserModel?> signInUser() async {
-
-    UserCredential? userCredential = await _signInWithEmailAndPassword();
-
-    if (userCredential != null) {
-      print('Signed in as: ${userCredential.user?.email}');
-
-      UserModel? user = await HiveService.getUserByUid(userCredential.user?.uid);
-
-      // Validate the hashed password
-      if (user != null) {
-        return user; // Return the user if the credentials are valid
-      } else {
-        return null; // Return null if the credentials are invalid
-      }
-     
-    } else {
-      print('Sign-in failed');
-    }
-
-  return null;
-    
-  }
-
-  Future<UserCredential?> _signInWithEmailAndPassword() async {
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
+  /// Function to handle Firebase sign-in
+  /// Returns the UID of the authenticated user if successful, or null if an error occurs
+  Future<String?> _signInFB() async {
+    String email = _emailController.text.trim(); // Get the email from the input field
+    String password = _passwordController.text.trim(); // Get the password from the input field
 
     try {
-      // Sign in the user and return the UserCredential
+      // Attempt to sign in the user using Firebase Authentication
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return userCredential; // Return the UserCredential object
+      return userCredential.user!.uid; // Return the UID of the signed-in user
 
     } on FirebaseAuthException catch (e) {
-      String errorMessage;
+      // Handle specific Firebase Authentication errors
       if (e.code == 'user-not-found') {
-        errorMessage = 'No user found for that email.';
+        setState(() {
+          errorMessage = 'No user found for that email.'; // Email not registered
+        });
       } else if (e.code == 'wrong-password') {
-        errorMessage = 'Incorrect password provided.';
+        setState(() {
+          errorMessage = 'Incorrect password provided.'; // Password mismatch
+        });
+      } else if (e.code == 'invalid-credential') {
+        setState(() {
+          errorMessage = 'Invalid credentials. Please check your input.'; // Invalid email format
+        });
       } else {
-        errorMessage = 'Error: ${e.message}';
+        setState(() {
+          errorMessage = 'Unexpected error: ${e.message}'; // Other unexpected errors
+        });
       }
-
-      // Show an error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-      return null; // Return null in case of an error
+      return null; // Return null if an error occurs
     } catch (e) {
-      // Handle other errors
+      // Handle non-Firebase-specific errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text('Error: $e')), // Display a generic error message
       );
-      return null; // Return null in case of an error
+      return null; // Return null for generic errors
     }
   }
 
+  /// Function to validate the user's credentials against the local Hive database
+  /// Returns a `UserModel` if the user is found and authenticated successfully, or null otherwise
+  Future<UserModel?> signInHive(String? uid) async {
+    // Retrieve the user from the Hive database using their UID
+    UserModel? user = await HiveService.getUserByUid(uid);
+
+    if (user != null) {
+      return user; // Return the user if the credentials are valid
+    } else {
+      return null; // Return null if the user is not found or invalid
+    }
+  }
 }
