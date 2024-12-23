@@ -1,167 +1,162 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Firestore
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore database
 
-import 'package:cypheron/services/HiveService.dart'; // Service for managing Hive database
-import 'package:cypheron/models/UserModel.dart'; // Model class for user data
+import 'package:cypheron/services/HiveService.dart'; // Hive database service for local storage
+import 'package:cypheron/models/UserModel.dart'; // User model for structuring user data
 
-import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI structure for authentication screens
-import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // UI structure for forms
+import 'package:cypheron/ui/screensUI/AuthUI.dart'; // Custom UI for authentication screens
+import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // Custom UI for form layouts
+import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Custom widget for styled text
+import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart'; // Custom utility for text styles
 
-import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Generic input form field widget
+import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Generic input field widget
 
-import 'package:cypheron/screens/home/Home.dart'; // Home screen to navigate to after sign-up
+import 'package:cypheron/screens/home/Home.dart'; // Home screen to navigate after sign-up
 
 /// The `SignUp` class represents the user registration screen of the app.
-/// It is a `StatefulWidget` because it needs to manage input fields and user state.
+/// It is a `StatefulWidget` because it manages input fields and dynamic state.
 class SignUp extends StatefulWidget {
   @override
   _SignUpState createState() => _SignUpState();
 }
 
-/// State class for the `SignUp` screen
+/// The state class for the `SignUp` screen.
 class _SignUpState extends State<SignUp> {
   // Controllers for handling user input
-  TextEditingController _emailController = TextEditingController(); // For the user's email
-  TextEditingController _passwordController = TextEditingController(); // For the user's password
+  TextEditingController _emailController = TextEditingController(); // Controller for email input
+  TextEditingController _passwordController = TextEditingController(); // Controller for password input
+
+  // Variable to display error messages on the UI
+  String errorMessage = '';
+
+  // Enum-like type to define the type of error message (e.g., warning or error)
+  late TextType typeMessage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // UI for the authentication process
       body: AuthUI(
-        // Wraps the form UI with additional authentication styling
         form: FormUI(
-          title: 'Sign Up', // Title of the form
-
-          // List of input fields for the form
+          title: 'Sign Up', // Title displayed at the top of the form
           inputFields: [
-
-            // Input field for the user's email
+            // Email input field
             GenericFormField(
               fieldType: FieldType.email,
               controller: _emailController,
             ),
-            
             // Password input field
             GenericFormField(
               fieldType: FieldType.password,
               controller: _passwordController,
             ),
+            // Display error message if there is one
+            if (errorMessage != '')
+              FittedTextUI(
+                text: errorMessage,
+                type: typeMessage,
+              ),
           ],
-
-          // Callback for the "Sign Up" button
+          // Action triggered when the user presses the "Sign Up" button
           onClick: () async {
-            UserModel? signUpSuccessful = await _handleSignUp(); // Handles user registration
-
-            if (signUpSuccessful != null) {
-              // If registration is successful, navigate to the Home screen
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Home(user: signUpSuccessful),
-                ),
-              );
+            String? uid = await _signUpFB(); // Perform sign-up via Firebase
+            if (uid != null) {
+              // If sign-up is successful, save data to Hive local storage
+              UserModel? signUpSuccessful = await _signUpHive(uid);
+              if (signUpSuccessful != null) {
+                // Navigate to the Home screen with the signed-up user data
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Home(user: signUpSuccessful),
+                  ),
+                );
+              }
             }
           },
-
-          buttonText: 'Sign Up', // Text displayed on the button
+          buttonText: 'Sign Up', // Text displayed on the submit button
         ),
       ),
     );
   }
 
-  /// Handles the user sign-up process.
-  /// - Hashes the password.
-  /// - Creates a `UserModel` object with the provided input.
-  /// - Adds the user to the Hive database.
-  /// - Returns the `UserModel` if registration is successful, otherwise `null`.
-  Future<UserModel?> _handleSignUp() async {
-
-    String? uid = await _signUpAndSaveUserData();
-    if (uid != null) {
-
-      // Create a new user model with the provided input
-      UserModel newUser = UserModel(
-        userId: uid,
-        email: _emailController.text,
-      );
-
-      // Attempt to add the user to the database
-      bool isAdded = await HiveService.addUser(newUser);
-
-      if (isAdded) {
-        // Fetch the user again from the database to verify
-        UserModel? reloadUser = await HiveService.getUserByUid(uid);
-
-        if (reloadUser != null) {
-          return reloadUser; // Return the user if found
-        } else {
-          print("Failed to fetch user."); // Debug message for failure
-          return null;
-        }
-      } else {
-        print("Failed to add user."); // Debug message for failure
-        return null;
-      }
-        
-    }
-
-    return null;
-  }
-
-  Future<String?> _signUpAndSaveUserData() async {
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
+  /// Function to handle Firebase sign-up and data storage
+  Future<String?> _signUpFB() async {
+    String email = _emailController.text.trim(); // Get trimmed email input
+    String password = _passwordController.text.trim(); // Get trimmed password input
 
     try {
-      // Create a new user in Firebase Auth
+      // Create a new user in Firebase Authentication
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Get the UID of the created user
+      // Extract the UID from the user credential
       String uid = userCredential.user!.uid;
 
-      // Save user data in Firestore
+      // Save the user data to Firestore
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         "uid": uid,
         "email": email,
         "signUpDate": DateTime.now().toIso8601String(),
-        "analyticsData": {"totalTimeSpent": 0},
+        "analyticsData": {"totalTimeSpent": 0}, // Initial analytics data
       });
 
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-Up Successful!')),
-      );
-
-      // Return the UID
+      // Return the UID if sign-up is successful
       return uid;
 
     } on FirebaseAuthException catch (e) {
-      // Handle errors during sign-up
-      String errorMessage;
+      // Handle Firebase-specific exceptions
+      print(e); // Debugging
       if (e.code == 'weak-password') {
-        errorMessage = 'The password provided is too weak.';
+        // Display a specific message for weak passwords
+        setState(() {
+          errorMessage = 'The password provided is too weak.\nPassword should be at least 6 characters.';
+          typeMessage = TextType.warning; // Indicate it's a warning
+        });
       } else if (e.code == 'email-already-in-use') {
-        errorMessage = 'The account already exists for that email.';
+        // Display a specific message if the email is already used
+        setState(() {
+          errorMessage = 'The account already exists for that email.';
+          typeMessage = TextType.err; // Indicate it's an error
+        });
       } else {
-        errorMessage = 'Error: ${e.message}';
+        // General error message
+        setState(() {
+          errorMessage = 'Error: ${e.message}';
+          typeMessage = TextType.err;
+        });
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
     } catch (e) {
-      // Handle other errors
+      // Handle unexpected errors
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
     }
 
-    // Return null if an error occurred
+    // Return null if there was an error
     return null;
   }
 
+  /// Function to save the user data locally in Hive
+  Future<UserModel?> _signUpHive(String? uid) async {
+    // Create a new UserModel instance
+    UserModel newUser = UserModel(
+      userId: uid!,
+      email: _emailController.text,
+    );
 
+    // Add the new user to the Hive database
+    bool isAdded = await HiveService.addUser(newUser);
+
+    // Return the user model if successfully added
+    if (isAdded) {
+      return newUser;
+    } else {
+      // Return null if adding the user failed
+      return null;
+    }
+  }
 }
