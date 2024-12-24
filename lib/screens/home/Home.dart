@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore database
 
 import 'package:cypheron/models/UserModel.dart';
 import 'package:cypheron/models/ContactModel.dart';
@@ -19,15 +20,16 @@ import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
 
 /// The main Home screen for the app, displaying user contacts.
 class Home extends StatefulWidget {
+  final String uid;
   final UserModel? user; // Represents the currently logged-in user.
 
-  Home({required this.user});
+  Home({required this.uid, required this.user});
 
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home>  with WidgetsBindingObserver{
   List<ContactModel> contactList = []; // Stores all contacts.
   List<ContactModel> filteredContactList = []; // Stores filtered contacts based on search.
   bool isSaving = false; // Tracks if a save operation is in progress.
@@ -35,11 +37,32 @@ class _HomeState extends State<Home> {
   bool isSearching = false; // Tracks if the user is in search mode.
   String searchQuery = ''; // Stores the current search query.
 
+  DateTime? _sessionStartTime; // Tracks the session start time.
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this); // Start observing lifecycle changes.
+    _sessionStartTime = DateTime.now(); // Start the session timer.
+
     if (widget.user != null) {
       _loadContactsByIds(widget.user!.contactIds); // Load contacts for the logged-in user.
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Stop observing lifecycle changes.
+    _updateAnalyticsData(); // Ensure analytics data is updated on exit.
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _updateAnalyticsData(); // Update analytics when the app is paused or inactive.
+    } else if (state == AppLifecycleState.resumed) {
+      _sessionStartTime = DateTime.now(); // Restart the session timer on resume.
     }
   }
 
@@ -145,6 +168,46 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
+  void _updateAnalyticsData() async {
+    if (_sessionStartTime == null) return;
+
+    final sessionEndTime = DateTime.now(); // End of the current session
+    final durationInSeconds = sessionEndTime.difference(_sessionStartTime!).inSeconds;
+
+    // Calculate the duration in minutes as a fractional value
+    final durationInMinutes = durationInSeconds / 60.0;
+
+    // Reference the user's Firestore document
+    final doc = FirebaseFirestore.instance.collection('users').doc(widget.uid);
+    final snapshot = await doc.get();
+
+    if (snapshot.exists) {
+      final currentTotal = snapshot.data()?['analyticsData']['totalTimeSpent'] ?? 0.0; // Default to 0.0 minutes
+      final sessions = snapshot.data()?['analyticsData']['sessions'] ?? [];
+
+      // Add the new session details (without endTime)
+      final updatedSessions = [
+        ...sessions,
+        {
+          "startTime": _sessionStartTime!.toIso8601String(),
+          "duration": durationInMinutes
+        }
+      ];
+
+      // Update Firestore with the total time spent, last active time, and session details
+      await doc.update({
+        "analyticsData.totalTimeSpent": currentTotal + durationInMinutes,
+        "analyticsData.lastActive": sessionEndTime.toIso8601String(),
+        "analyticsData.sessions": updatedSessions,
+      });
+    }
+
+    // Reset session start time
+    _sessionStartTime = null;
+  }
+
+
 
   /// Handles back button to cancel deletion mode, exit search, or show logout dialog.
   Future<bool> _handleBackButton() async {

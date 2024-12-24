@@ -62,7 +62,7 @@ class _SignUpState extends State<SignUp> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Home(user: signUpSuccessful),
+                        builder: (context) => Home(uid: uid, user: signUpSuccessful),
                       ),
                     );
                   } else {
@@ -114,7 +114,11 @@ class _SignUpState extends State<SignUp> {
         "uid": uid,
         "email": email,
         "signUpDate": DateTime.now().toIso8601String(),
-        "analyticsData": {"totalTimeSpent": 0},
+        "analyticsData": {
+          "totalTimeSpent": 0, // No time spent yet
+          "lastActive": null,  // User has not been active yet
+          "sessions": []       // No sessions recorded yet
+        },
       });
 
       return uid; // Return UID if successful
