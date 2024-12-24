@@ -8,7 +8,6 @@ import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 
-import 'package:cypheron/ui/widgetsUI/app_barUI/AppBarUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart';
 import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart';
@@ -16,6 +15,7 @@ import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart';
 import 'package:cypheron/widgets/dialogs/KeywordDialog.dart';
 import 'package:cypheron/widgets/dialogs/DisplayDialog.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
+import 'package:cypheron/widgets/search/SearchField.dart';
 
 class ContactInfo extends StatefulWidget {
   final ContactModel contact;
@@ -29,23 +29,18 @@ class ContactInfo extends StatefulWidget {
 class _ContactInfoState extends State<ContactInfo> {
   List<MessageModel> allMessages = [];
   List<MessageModel> filteredMessages = [];
-  final TextEditingController searchController = TextEditingController();
-  bool isSearching = false;
-
   final ScrollController _scrollController = ScrollController(); // Add ScrollController
+  bool isSearching = false;
 
   @override
   void initState() {
     super.initState();
+    // Initialize all messages and sort them
     allMessages = widget.contact.messages
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Explicit sort
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     filteredMessages = allMessages;
 
-    searchController.addListener(() {
-      filterMessages(searchController.text);
-    });
-
-    // Scroll to the top to show the latest message
+    // Scroll to the latest message on initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -55,7 +50,6 @@ class _ContactInfoState extends State<ContactInfo> {
 
   @override
   void dispose() {
-    searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -63,23 +57,14 @@ class _ContactInfoState extends State<ContactInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarUI(
+      appBar: AppBar(
+        automaticallyImplyLeading: !isSearching,
         title: isSearching
-            ? TextField(
-                controller: searchController,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: 'Search Messages',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 18,
-                  ),
-                ),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
+            ? SearchField(
+                onChanged: (query) {
+                  _filterMessages(query); // Filter messages on query
+                },
+                hintText: 'Search Messages',
               )
             : Text(widget.contact.name),
         actions: [
@@ -89,8 +74,7 @@ class _ContactInfoState extends State<ContactInfo> {
               onPressed: () {
                 setState(() {
                   isSearching = false;
-                  searchController.clear();
-                  filteredMessages = allMessages;
+                  filteredMessages = allMessages; // Reset messages
                 });
               },
             )
@@ -99,7 +83,7 @@ class _ContactInfoState extends State<ContactInfo> {
               icon: Icon(Icons.search),
               onPressed: () {
                 setState(() {
-                  isSearching = true;
+                  isSearching = true; // Enable search mode
                 });
               },
             ),
@@ -110,8 +94,8 @@ class _ContactInfoState extends State<ContactInfo> {
               context: context,
               removeTop: true,
               child: ListView.builder(
-                controller: _scrollController, // Attach the ScrollController
-                reverse: true, // Most recent message at the top
+                controller: _scrollController, // Attach ScrollController
+                reverse: true, // Show most recent message first
                 shrinkWrap: true,
                 itemCount: filteredMessages.length,
                 itemBuilder: (context, index) {
@@ -141,10 +125,11 @@ class _ContactInfoState extends State<ContactInfo> {
     );
   }
 
-  void filterMessages(String query) {
+  /// Filters messages based on the search query
+  void _filterMessages(String query) {
     setState(() {
       if (query.isEmpty) {
-        filteredMessages = allMessages;
+        filteredMessages = allMessages; // Reset messages if query is empty
       } else {
         filteredMessages = allMessages.where((message) {
           final title = message.title.toLowerCase();
@@ -156,11 +141,11 @@ class _ContactInfoState extends State<ContactInfo> {
     });
   }
 
+  /// Adds a new message and refreshes the UI
   void _addNewMessage(MessageModel newMessage) {
     setState(() {
       widget.contact.addMessage(newMessage);
       widget.contact.save();
-
       allMessages = widget.contact.messages.reversed.toList(); // Refresh and reverse
       filteredMessages = allMessages;
 
@@ -173,6 +158,7 @@ class _ContactInfoState extends State<ContactInfo> {
     });
   }
 
+  /// Sends a message file using the share_plus package
   Future<void> _sendMessage(MessageModel message) async {
     // Get a temporary directory
     Directory tempDir = await getTemporaryDirectory();
@@ -189,5 +175,4 @@ class _ContactInfoState extends State<ContactInfo> {
       text: 'Encrypted message from ${widget.contact.name}', // Additional text
     );
   }
-
 }
