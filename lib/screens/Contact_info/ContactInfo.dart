@@ -17,8 +17,9 @@ import 'package:cypheron/widgets/dialogs/DisplayDialog.dart';
 import 'package:cypheron/widgets/buttons/addMessageButton.dart';
 import 'package:cypheron/widgets/search/SearchField.dart';
 
+/// Screen that displays detailed information about a contact
 class ContactInfo extends StatefulWidget {
-  final ContactModel contact;
+  final ContactModel contact; // The contact to display
 
   ContactInfo({required this.contact});
 
@@ -26,21 +27,22 @@ class ContactInfo extends StatefulWidget {
   _ContactInfoState createState() => _ContactInfoState();
 }
 
+/// State management for the ContactInfo screen
 class _ContactInfoState extends State<ContactInfo> {
-  List<MessageModel> allMessages = [];
-  List<MessageModel> filteredMessages = [];
-  final ScrollController _scrollController = ScrollController(); // Add ScrollController
-  bool isSearching = false;
+  List<MessageModel> allMessages = []; // List of all messages for the contact
+  List<MessageModel> filteredMessages = []; // Messages filtered based on search
+  final ScrollController _scrollController = ScrollController(); // For controlling scrolling
+  bool isSearching = false; // Indicates if search mode is active
 
   @override
   void initState() {
     super.initState();
-    // Initialize all messages and sort them
+    // Initialize all messages and sort them by timestamp (newest first)
     allMessages = widget.contact.messages
       ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     filteredMessages = allMessages;
 
-    // Scroll to the latest message on initialization
+    // Automatically scroll to the most recent message
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -50,6 +52,7 @@ class _ContactInfoState extends State<ContactInfo> {
 
   @override
   void dispose() {
+    // Dispose controllers to free resources
     _scrollController.dispose();
     super.dispose();
   }
@@ -57,23 +60,24 @@ class _ContactInfoState extends State<ContactInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // App bar with dynamic title and search functionality
       appBar: AppBar(
-        automaticallyImplyLeading: !isSearching,
+        automaticallyImplyLeading: !isSearching, // Show default back button if not searching
         title: isSearching
             ? SearchField(
                 onChanged: (query) {
-                  _filterMessages(query); // Filter messages on query
+                  _filterMessages(query); // Filter messages as the user types
                 },
-                hintText: 'Search Messages',
+                hintText: 'Search Messages', // Placeholder text for the search field
               )
-            : Text(widget.contact.name),
+            : Text(widget.contact.name), // Display the contact's name when not searching
         actions: [
           if (isSearching)
             IconButton(
               icon: Icon(Icons.close),
               onPressed: () {
                 setState(() {
-                  isSearching = false;
+                  isSearching = false; // Exit search mode
                   filteredMessages = allMessages; // Reset messages
                 });
               },
@@ -83,7 +87,7 @@ class _ContactInfoState extends State<ContactInfo> {
               icon: Icon(Icons.search),
               onPressed: () {
                 setState(() {
-                  isSearching = true; // Enable search mode
+                  isSearching = true; // Enter search mode
                 });
               },
             ),
@@ -92,35 +96,39 @@ class _ContactInfoState extends State<ContactInfo> {
       body: filteredMessages.isNotEmpty
           ? MediaQuery.removePadding(
               context: context,
-              removeTop: true,
+              removeTop: true, // Remove default top padding
               child: ListView.builder(
                 controller: _scrollController, // Attach ScrollController
-                reverse: true, // Show most recent message first
+                reverse: true, // Show the newest messages at the top
                 shrinkWrap: true,
-                itemCount: filteredMessages.length,
+                itemCount: filteredMessages.length, // Number of messages to display
                 itemBuilder: (context, index) {
-                  final message = filteredMessages[index];
+                  final message = filteredMessages[index]; // Get the message
                   return MsgCardUI(
-                    message: message,
-                    subtitle: "Tap to decrypt",
+                    message: message, // Display message details
+                    subtitle: "Tap to decrypt", // Instruction to the user
                     onTap: () async {
+                      // Prompt the user to enter a keyword for decryption
                       String? keyword =
                           await KeywordDialog.getKeyword(context, "Decrypt");
                       if (keyword != null && keyword.isNotEmpty) {
+                        // Decrypt the message using the entered keyword
                         String decryptedBody =
                             CypherFFI().runCypher(message.body, keyword, 'd');
+                        // Display the decrypted message
                         displaydialog(context, message.title, decryptedBody);
                       }
                     },
-                    onSend: () => _sendMessage(message),
+                    onSend: () => _sendMessage(message), // Option to share the message
                   );
                 },
               ),
             )
           : EmptyStateUI(
-              icon: IconsUI(type: IconType.mail),
-              message: 'No messages found.\nAdd a new message.',
+              icon: IconsUI(type: IconType.mail), // Display a mail icon
+              message: 'No messages found.\nAdd a new message.', // Message to user when list is empty
             ),
+      // Button to add a new message
       floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage),
     );
   }
@@ -131,9 +139,10 @@ class _ContactInfoState extends State<ContactInfo> {
       if (query.isEmpty) {
         filteredMessages = allMessages; // Reset messages if query is empty
       } else {
+        // Filter messages by checking if the query matches the title or body
         filteredMessages = allMessages.where((message) {
-          final title = message.title.toLowerCase();
-          final body = message.body.toLowerCase();
+          final title = message.title.toLowerCase(); // Message title
+          final body = message.body.toLowerCase(); // Message body
           return title.contains(query.toLowerCase()) ||
               body.contains(query.toLowerCase());
         }).toList();
@@ -144,9 +153,9 @@ class _ContactInfoState extends State<ContactInfo> {
   /// Adds a new message and refreshes the UI
   void _addNewMessage(MessageModel newMessage) {
     setState(() {
-      widget.contact.addMessage(newMessage);
-      widget.contact.save();
-      allMessages = widget.contact.messages.reversed.toList(); // Refresh and reverse
+      widget.contact.addMessage(newMessage); // Add the new message to the contact
+      widget.contact.save(); // Save the updated contact data
+      allMessages = widget.contact.messages.reversed.toList(); // Refresh and reverse the message list
       filteredMessages = allMessages;
 
       // Scroll to the top to show the latest message
@@ -172,7 +181,7 @@ class _ContactInfoState extends State<ContactInfo> {
     // Use shareXFiles to share the file
     await Share.shareXFiles(
       [XFile(zkFile.path)], // Create an XFile object from the file path
-      text: 'Encrypted message from ${widget.contact.name}', // Additional text
+      text: 'Encrypted message from ${widget.contact.name}', // Additional text for the shared file
     );
   }
 }
