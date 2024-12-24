@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 
+import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/services/HiveService.dart';
 import 'package:cypheron/widgets/search/SearchField.dart';
 import 'package:cypheron/ui/screensUI/MobileContactsUI.dart';
@@ -96,7 +97,15 @@ class _MobileContactsState extends State<MobileContacts> {
                             displayName: contactData['displayName'], // Contact name.
                             phoneNumber: contactData['phoneNumber'], // Contact number.
                             onTap: (Contact selectedContact) {
-                              Navigator.pop(context, selectedContact); // Return selected contact.
+                              String contactName = selectedContact.displayName ?? 'No Name';
+                              String contactPhone = (selectedContact.phones?.isNotEmpty ?? false)
+                                  ? selectedContact.phones!.first.value ?? 'No Phone'
+                                  : 'No Phone';
+                              ContactModel newContact = ContactModel(
+                                name: contactName,
+                                phoneNumber: contactPhone,
+                              );
+                              Navigator.pop(context, newContact); // Return selected contact.
                             },
                           );
                         },

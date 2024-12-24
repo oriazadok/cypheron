@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:cypheron/screens/creation/NewContact.dart';
 import 'package:cypheron/screens/creation/MobileContacts.dart';
 import 'package:cypheron/models/ContactModel.dart';
@@ -37,26 +36,19 @@ class ContactMenu extends StatelessWidget {
           text: 'Import from Mobile',
           onTap: () async {
             Navigator.pop(context);
-            final Contact? contact = await Navigator.push(
+            final ContactModel? newContact = await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => MobileContacts()),
             );
-            if (contact != null) {
-              String contactName = contact.displayName ?? 'No Name';
-              String contactPhone = (contact.phones?.isNotEmpty ?? false)
-                  ? contact.phones!.first.value ?? 'No Phone'
-                  : 'No Phone';
-
-              ContactModel newContact = ContactModel(
-                name: contactName,
-                phoneNumber: contactPhone,
-              );
-
+            
+            if (newContact != null) {
               onAddContact(newContact);
             }
+
           },
         ),
       ],
     );
   }
+
 }
