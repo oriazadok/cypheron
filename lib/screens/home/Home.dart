@@ -72,8 +72,8 @@ class _HomeState extends State<Home> {
           actions: [
             // Search icon to toggle search mode.
             if (!isSearching)
-              IconButton(
-                icon: const Icon(Icons.search),
+              IconsUI(
+                type: IconType.search,
                 onPressed: () {
                   setState(() {
                     isSearching = true; // Enter search mode.
@@ -82,8 +82,8 @@ class _HomeState extends State<Home> {
               ),
             // Close icon to exit search mode.
             if (isSearching)
-              IconButton(
-                icon: const Icon(Icons.close),
+              IconsUI(
+                type: IconType.close,
                 onPressed: () {
                   setState(() {
                     isSearching = false; // Exit search mode.
