@@ -88,9 +88,11 @@ class _MobileContactsState extends State<MobileContacts> {
                         },
                       ),
                     )
-                  : FittedTextUI(
-                      text: 'No contacts found. Swipe down to refresh.',
-                      type: TextType.err,
+                  : Center( // Center the message when no contacts are found
+                      child: FittedTextUI(
+                        text: 'No contacts found. Swipe down to refresh.',
+                        type: TextType.err,
+                      ),
                     ),
             ),
           ),
