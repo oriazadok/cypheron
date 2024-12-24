@@ -174,14 +174,20 @@ class _ContactInfoState extends State<ContactInfo> {
   }
 
   Future<void> _sendMessage(MessageModel message) async {
+    // Get a temporary directory
     Directory tempDir = await getTemporaryDirectory();
+    // Define the file path and name
     String filePath = '${tempDir.path}/${message.title}.zk';
+    // Create a new file
     File zkFile = File(filePath);
+    // Write the encrypted message to the file
     await zkFile.writeAsString(message.body, encoding: utf8);
 
-    await Share.shareFiles(
-      [zkFile.path],
-      text: 'Encrypted message from ${widget.contact.name}',
+    // Use shareXFiles to share the file
+    await Share.shareXFiles(
+      [XFile(zkFile.path)], // Create an XFile object from the file path
+      text: 'Encrypted message from ${widget.contact.name}', // Additional text
     );
   }
+
 }
