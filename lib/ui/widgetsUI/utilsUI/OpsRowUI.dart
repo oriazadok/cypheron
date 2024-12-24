@@ -11,11 +11,11 @@ class OpsRowUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
+      bottom: 16,
+      left: 16,
+      right: 16,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
           color: Colors.grey[900], // Dark background color

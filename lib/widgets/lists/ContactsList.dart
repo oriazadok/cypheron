@@ -1,99 +1,75 @@
 import 'package:flutter/material.dart';
-
 import 'package:cypheron/models/ContactModel.dart';
-
-import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart';  // Button widget for adding contacts
 import 'package:cypheron/ui/widgetsUI/cardsUI/ContactCardUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/LeadingUI.dart';
-import 'package:cypheron/ui/widgetsUI/utilsUI/OpsRowUI.dart';
-
-import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
+import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart';
 
 
-/// A widget that displays a list of contacts with a clean UI.
-class ContactList extends StatefulWidget {
+class ContactList extends StatelessWidget {
   final List<ContactModel> contactList; // List of contacts to display
-  final Function(ContactModel) onDelete; // Callback to delete a contact
-  final Function() onLongPress; // Callback to update long-press state externally
+  final Function(ContactModel) onTap; // Callback for deleting a contact
+  final Function(ContactModel) onLongPress; // Callback for long-press behavior
+  final ContactModel? selectedContact; // The currently selected contact
 
   const ContactList({
     Key? key,
     required this.contactList,
-    required this.onDelete,
+    required this.onTap,
     required this.onLongPress,
+    this.selectedContact,
   }) : super(key: key);
 
   @override
-  _ContactListState createState() => _ContactListState();
-}
-
-class _ContactListState extends State<ContactList> {
-
-  ContactModel? selectedContact;
-
-  @override
   Widget build(BuildContext context) {
-
-    if (widget.contactList.isEmpty) 
-      return EmptyStateUI(icon: IconsUI(type: IconType.contacts_outlined), message: 'No contacts found.\nAdd a new contact.');
+    if (contactList.isEmpty) {
+      return EmptyStateUI(
+        icon: IconsUI(type: IconType.contacts_outlined),
+        message: 'No contacts found.\nAdd a new contact.',
+      );
+    }
 
     return Stack(
       children: [
         ListView.builder(
-          itemCount: widget.contactList.length,
+          itemCount: contactList.length,
           itemBuilder: (context, index) {
-            final contact = widget.contactList[index];
-
-            return ContactCardUI(
-              leading: LeadingUI(type: IconType.person),
-              title: contact.name,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ContactInfo(contact: contact),
-                  ),
-                );
-              },
-              onLongPress: () {
-                if(selectedContact == null) {
-                  setState(() {
-                    selectedContact = contact; // Set the selected contact
-                    widget.onLongPress();
-                  });
-                }
-              },
+            final contact = contactList[index];
+            final isSelected = selectedContact == contact;
+            return GestureDetector(
+          
+              child: Container(
+                decoration: isSelected
+                  ? BoxDecoration(
+                      color: Colors.purple.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.purple, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.withOpacity(0.2),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    )
+                  : null, // No additional UI features for non-selected contacts
+                      
+                child: ContactCardUI(
+                  leading: LeadingUI(type: IconType.person),
+                  title: contact.name,
+                  onTap: () {
+                    if (selectedContact == null) {
+                      onTap(contact);
+                    }
+                  },
+                  onLongPress: () {
+                    onLongPress(contact); // Trigger long-press callback
+                  },
+                ),
+              ),
             );
           },
         ),
-
-        // Row of options displayed when a contact is selected
-        if (selectedContact != null)
-          OpsRowUI(
-            options: [
-              IconsUI(
-                type: IconType.delete,
-                onPressed: () {
-                  widget.onDelete(selectedContact!); // Trigger delete action
-                  setState(() {
-                    selectedContact = null; // Reset selection
-                    widget.onLongPress();
-                  });
-                },
-              ),
-              
-              IconButton(
-                icon: Icon(Icons.close, color: Colors.grey),
-                onPressed: () {
-                  setState(() {
-                    selectedContact = null; // Reset selection
-                  });
-                  widget.onLongPress();
-                },
-              ),
-            ],
-          ),
       ],
     );
   }

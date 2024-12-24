@@ -5,11 +5,11 @@ import 'package:cypheron/ui/generalUI/GradientBackgroundUI.dart';
 class HomeUI extends StatefulWidget {
 
   final bool isSaving;
-  final Widget contactList;
+  final List<Widget> children;
 
   HomeUI({
     required this.isSaving,
-    required this.contactList,
+    required this.children,
   });
 
   @override
@@ -30,8 +30,10 @@ class _HomeUIState extends State<HomeUI> {
               ),
             // Display list of contacts if available
             Expanded(
-              child: widget.contactList,
+              child: widget.children[0],
             ),
+            if(widget.children.length > 1)
+              widget.children[1],
           ],
         ),
     );
