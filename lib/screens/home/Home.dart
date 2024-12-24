@@ -17,9 +17,9 @@ import 'package:cypheron/widgets/buttons/AddContactButton.dart';
 import 'package:cypheron/screens/welcome/Welcome.dart';
 import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
 
-
+/// The main Home screen for the app, displaying user contacts.
 class Home extends StatefulWidget {
-  final UserModel? user;
+  final UserModel? user; // Represents the currently logged-in user.
 
   Home({required this.user});
 
@@ -28,81 +28,88 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<ContactModel> contactList = [];
-  List<ContactModel> filteredContactList = [];
-  bool isSaving = false;
-  ContactModel? selectedContact;
-  bool isSearching = false; // Tracks if search mode is active
-  String searchQuery = '';
+  List<ContactModel> contactList = []; // Stores all contacts.
+  List<ContactModel> filteredContactList = []; // Stores filtered contacts based on search.
+  bool isSaving = false; // Tracks if a save operation is in progress.
+  ContactModel? selectedContact; // Tracks the currently selected contact.
+  bool isSearching = false; // Tracks if the user is in search mode.
+  String searchQuery = ''; // Stores the current search query.
 
   @override
   void initState() {
     super.initState();
     if (widget.user != null) {
-      _loadContactsByIds(widget.user!.contactIds);
+      _loadContactsByIds(widget.user!.contactIds); // Load contacts for the logged-in user.
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Reset search mode when returning to the Home screen
+    // Reset search mode when returning to the Home screen.
     if (!isSearching) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          isSearching = false; // Exit search mode
-          searchQuery = ''; // Clear search query
-          filteredContactList = List.from(contactList); // Reset list
+          isSearching = false; // Exit search mode.
+          searchQuery = ''; // Clear search query.
+          filteredContactList = List.from(contactList); // Reset to the full contact list.
         });
       });
     }
+
     return WillPopScope(
-      onWillPop: _handleBackButton,
+      onWillPop: _handleBackButton, // Handles back button behavior.
       child: Scaffold(
         appBar: AppBar(
+          // Displays a search bar or the app title based on `isSearching`.
           title: isSearching
             ? SearchField(
                 onChanged: (value) {
-                  _filterContacts(value); // Filter contacts as the user types
+                  _filterContacts(value); // Updates the filtered contacts.
                 },
               )
-            : const Text("Cypheron"),
+            : const Text("Cypheron"), // Default app title.
 
           actions: [
+            // Search icon to toggle search mode.
             if (!isSearching)
               IconButton(
                 icon: const Icon(Icons.search),
                 onPressed: () {
                   setState(() {
-                    isSearching = true; // Enter search mode
+                    isSearching = true; // Enter search mode.
                   });
                 },
               ),
+            // Close icon to exit search mode.
             if (isSearching)
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () {
                   setState(() {
-                    isSearching = false; // Exit search mode
-                    searchQuery = ''; // Clear search query
-                    filteredContactList = List.from(contactList); // Reset list
+                    isSearching = false; // Exit search mode.
+                    searchQuery = ''; // Clear search query.
+                    filteredContactList = List.from(contactList); // Reset list.
                   });
                 },
               ),
+            // Logout icon, visible only when not in search mode or contact selection.
             if (selectedContact == null && !isSearching)
               IconsUI(
                 type: IconType.logout,
                 onPressed: () async {
-                  await _confirmLogout(); // Show confirmation dialog for logout
+                  await _confirmLogout(); // Logout confirmation dialog.
                 },
               ),
           ],
         ),
         body: HomeUI(
-          isSaving: isSaving,
+          isSaving: isSaving, // Passes the save state to the UI.
           children: [
+            // Displays the contact list.
             ContactList(
-              contactList: filteredContactList,
+              contactList: filteredContactList, // Shows filtered or all contacts.
               onTap: (ContactModel contact) {
+                // Navigates to contact details when tapped.
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -111,24 +118,27 @@ class _HomeState extends State<Home> {
                 );
               },
               onLongPress: (ContactModel contact) {
+                // Handles long-press to select a contact.
                 isSearching = false;
                 setState(() {
-                  selectedContact = contact; // Enter deletion mode
+                  selectedContact = contact; // Enter deletion mode.
                 });
               },
-              selectedContact: selectedContact,
+              selectedContact: selectedContact, // Highlights the selected contact.
             ),
+            // Displays a row of options (like delete) when a contact is selected.
             if (selectedContact != null)
               OpsRowUI(
                 options: [
                   IconsUI(
                     type: IconType.delete,
-                    onPressed: () => _deleteContact(selectedContact!),
+                    onPressed: () => _deleteContact(selectedContact!), // Deletes the contact.
                   )
                 ],
               )
           ],
         ),
+        // Floating action button for adding a new contact.
         floatingActionButton: selectedContact == null
             ? AddContactButton(onAddContact: _addNewContact)
             : null,
@@ -136,79 +146,83 @@ class _HomeState extends State<Home> {
     );
   }
 
-  /// Handles the back button to either cancel deletion mode or show the exit confirmation dialog
+  /// Handles back button to cancel deletion mode, exit search, or show logout dialog.
   Future<bool> _handleBackButton() async {
     if (selectedContact != null) {
       setState(() {
-        selectedContact = null;
+        selectedContact = null; // Deselect contact.
       });
-      return false; // Do not exit the app
+      return false; // Prevent app exit.
     }
 
     if (isSearching) {
       setState(() {
-        isSearching = false;
-        searchQuery = ''; // Clear search query
-        filteredContactList = List.from(contactList); // Reset list
+        isSearching = false; // Exit search mode.
+        searchQuery = ''; // Clear search query.
+        filteredContactList = List.from(contactList); // Reset list.
       });
-      return false; // Do not exit the app
+      return false; // Prevent app exit.
     }
 
-    return await _confirmLogout();
+    return await _confirmLogout(); // Show logout confirmation.
   }
 
-  /// Filters contacts based on the search query
+  /// Filters contacts based on the user's search query.
   void _filterContacts(String query) {
     setState(() {
-      searchQuery = query;
+      searchQuery = query; // Updates the search query.
       filteredContactList = contactList
           .where((contact) =>
-              contact.name.toLowerCase().contains(query.toLowerCase()))
+              contact.name.toLowerCase().contains(query.toLowerCase())) // Filters contacts.
           .toList();
     });
   }
 
-  /// Shows a confirmation dialog before logging out
+  /// Shows a confirmation dialog before logging out.
   Future<bool> _confirmLogout() async {
     final shouldLogOut = await showDialog<bool>(
       context: context,
       builder: (context) => ExitConfirmationDialog(
         onConfirm: () async {
-          Navigator.of(context).pop(true);
+          Navigator.of(context).pop(true); // Confirms logout.
         },
       ),
     );
 
     if (shouldLogOut == true) {
-      await _logOut(context); // Log out if confirmed
+      await _logOut(context); // Logs out the user.
     }
 
     return shouldLogOut ?? false;
   }
 
+  /// Logs the user out and navigates to the Welcome screen.
   Future<void> _logOut(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signOut(); // Firebase logout.
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => Welcome()),
+        MaterialPageRoute(builder: (context) => Welcome()), // Redirect to Welcome screen.
         (route) => false,
       );
     } catch (e) {
+      // Shows an error message if logout fails.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error signing out: $e')),
       );
     }
   }
 
+  /// Loads contacts from Hive storage based on user-provided IDs.
   void _loadContactsByIds(List<String> contactIds) async {
     List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
     setState(() {
-      contactList = loadedContacts;
-      filteredContactList = loadedContacts; // Initialize filtered list
+      contactList = loadedContacts; // Updates the contact list.
+      filteredContactList = loadedContacts; // Initializes the filtered list.
     });
   }
 
+  /// Adds a new contact and saves it to Hive storage.
   void _addNewContact(ContactModel newContact) {
     if (contactList.any((contact) =>
         contact.name.toLowerCase() == newContact.name.toLowerCase() &&
@@ -220,19 +234,19 @@ class _HomeState extends State<Home> {
     }
 
     setState(() {
-      contactList.add(newContact);
-      filteredContactList = List.from(contactList); // Update filtered list
-      isSaving = true;
+      contactList.add(newContact); // Adds the contact locally.
+      filteredContactList = List.from(contactList); // Updates the filtered list.
+      isSaving = true; // Indicates a save operation.
     });
 
     HiveService.saveContact(widget.user!, newContact).then((success) {
       if (success) {
         setState(() {
-          isSaving = false;
+          isSaving = false; // Save completed.
         });
       } else {
         setState(() {
-          contactList.remove(newContact);
+          contactList.remove(newContact); // Reverts the change on failure.
           filteredContactList = List.from(contactList);
           isSaving = false;
         });
@@ -243,17 +257,18 @@ class _HomeState extends State<Home> {
     });
   }
 
+  /// Deletes a selected contact and updates the list.
   void _deleteContact(ContactModel contactToDelete) {
     setState(() {
-      contactList.remove(contactToDelete);
-      filteredContactList = List.from(contactList); // Update filtered list
-      selectedContact = null;
+      contactList.remove(contactToDelete); // Removes the contact locally.
+      filteredContactList = List.from(contactList); // Updates the filtered list.
+      selectedContact = null; // Clears the selected contact.
     });
 
     HiveService.deleteContact(widget.user!, contactToDelete).then((success) {
       if (!success) {
         setState(() {
-          contactList.add(contactToDelete);
+          contactList.add(contactToDelete); // Reverts the change on failure.
           filteredContactList = List.from(contactList);
         });
         ScaffoldMessenger.of(context).showSnackBar(
