@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication for user sign-in
-import 'package:cypheron/services/HiveService.dart'; // Service for managing Hive-based local database
-import 'package:cypheron/models/UserModel.dart'; // User model for handling user data structure
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI wrapper for authentication screens
 import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // Form UI widget structure
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Custom widget for styled text
@@ -48,24 +46,18 @@ class _SignInState extends State<SignIn> {
                   isLoading = true; // Show loading indicator
                 });
 
-                String? uid = await _signInFB();
-                if (uid != null) {
-                  UserModel? signInSuccessful = await signInHive(uid);
-                  if (signInSuccessful != null) {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Home(uid: uid, user: signInSuccessful)),
-                      (route) => false,
-                    );
-                  } else {
-                    setState(() {
-                      errorMessage = 'Invalid email or password';
-                      isLoading = false; // Hide loading indicator
-                    });
-                  }
+                User? user = await _signInFB();
+                if (user != null) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Home(userCredential: user,)),
+                    (route) => false,
+                  );
+                  
                 } else {
                   setState(() {
+                    errorMessage = 'Invalid email or password';
                     isLoading = false; // Hide loading indicator
                   });
                 }
@@ -87,7 +79,7 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  Future<String?> _signInFB() async {
+  Future<User?> _signInFB() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
@@ -97,7 +89,7 @@ class _SignInState extends State<SignIn> {
         email: email,
         password: password,
       );
-      return userCredential.user!.uid;
+      return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         setState(() {
@@ -125,8 +117,4 @@ class _SignInState extends State<SignIn> {
     }
   }
 
-  Future<UserModel?> signInHive(String? uid) async {
-    UserModel? user = await HiveService.getUserByUid(uid);
-    return user;
-  }
 }

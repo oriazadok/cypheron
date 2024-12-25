@@ -20,16 +20,16 @@ import 'package:cypheron/screens/Contact_info/ContactInfo.dart';
 
 /// The main Home screen for the app, displaying user contacts.
 class Home extends StatefulWidget {
-  final String uid;
-  final UserModel? user; // Represents the currently logged-in user.
+  final User userCredential;
 
-  Home({required this.uid, required this.user});
+  Home({ required this.userCredential });
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home>  with WidgetsBindingObserver{
+  UserModel? user; // Represents the currently logged-in user.
   List<ContactModel> contactList = []; // Stores all contacts.
   List<ContactModel> filteredContactList = []; // Stores filtered contacts based on search.
   bool isSaving = false; // Tracks if a save operation is in progress.
@@ -42,11 +42,12 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addObserver(this); // Start observing lifecycle changes.
     _sessionStartTime = DateTime.now(); // Start the session timer.
 
-    if (widget.user != null) {
-      _loadContactsByIds(widget.user!.contactIds); // Load contacts for the logged-in user.
+    if (this.user != null) {
+      _loadContactsByIds(this.user!.contactIds); // Load contacts for the logged-in user.
     }
   }
 
@@ -68,71 +69,49 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    // Reset search mode when returning to the Home screen.
-    if (!isSearching) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          isSearching = false; // Exit search mode.
-          searchQuery = ''; // Clear search query.
-          filteredContactList = List.from(contactList); // Reset to the full contact list.
-        });
-      });
-    }
+    return FutureBuilder(
+      future:  _initUser(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show a loading indicator while waiting for initialization
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError) {
+          // Handle initialization errors
+          return Scaffold(
+            body: Center(
+              child: Text("An error occurred during initialization: ${snapshot.error}"),
+            ),
+          );
+        } else {
+          // Render the main UI once initialization is complete
+          return _buildMainContent();
+        }
+      },
+    );
+  }
 
+  Widget _buildMainContent() {
     return WillPopScope(
-      onWillPop: _handleBackButton, // Handles back button behavior.
+      onWillPop: _handleBackButton,
       child: Scaffold(
         appBar: AppBar(
-          // Displays a search bar or the app title based on `isSearching`.
           title: isSearching
-            ? SearchField(
-                onChanged: (value) {
-                  _filterContacts(value); // Updates the filtered contacts.
-                },
-              )
-            : const Text("Cypheron"), // Default app title.
-
-          actions: [
-            // Search icon to toggle search mode.
-            if (!isSearching)
-              IconsUI(
-                type: IconType.search,
-                onPressed: () {
-                  setState(() {
-                    isSearching = true; // Enter search mode.
-                  });
-                },
-              ),
-            // Close icon to exit search mode.
-            if (isSearching)
-              IconsUI(
-                type: IconType.close,
-                onPressed: () {
-                  setState(() {
-                    isSearching = false; // Exit search mode.
-                    searchQuery = ''; // Clear search query.
-                    filteredContactList = List.from(contactList); // Reset list.
-                  });
-                },
-              ),
-            // Logout icon, visible only when not in search mode or contact selection.
-            if (selectedContact == null && !isSearching)
-              IconsUI(
-                type: IconType.logout,
-                onPressed: () async {
-                  await _confirmLogout(); // Logout confirmation dialog.
-                },
-              ),
-          ],
+              ? SearchField(
+                  onChanged: (value) {
+                    _filterContacts(value);
+                  },
+                )
+              : const Text("Cypheron"),
+          actions: _buildAppBarActions(),
         ),
         body: HomeUI(
-          isSaving: isSaving, // Passes the save state to the UI.
+          isSaving: isSaving,
           children: [
-            // Displays the contact list.
             ContactList(
-              contactList: filteredContactList, // Shows filtered or all contacts.
+              contactList: filteredContactList,
               onTap: (ContactModel contact) {
-                // Navigates to contact details when tapped.
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -141,32 +120,117 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
                 );
               },
               onLongPress: (ContactModel contact) {
-                // Handles long-press to select a contact.
                 isSearching = false;
                 setState(() {
-                  selectedContact = contact; // Enter deletion mode.
+                  selectedContact = contact;
                 });
               },
-              selectedContact: selectedContact, // Highlights the selected contact.
+              selectedContact: selectedContact,
             ),
-            // Displays a row of options (like delete) when a contact is selected.
             if (selectedContact != null)
               OpsRowUI(
                 options: [
                   IconsUI(
                     type: IconType.delete,
-                    onPressed: () => _deleteContact(selectedContact!), // Deletes the contact.
+                    onPressed: () => _deleteContact(selectedContact!),
                   )
                 ],
-              )
+              ),
           ],
         ),
-        // Floating action button for adding a new contact.
         floatingActionButton: selectedContact == null
             ? AddContactButton(onAddContact: _addNewContact)
             : null,
       ),
     );
+  }
+
+  List<Widget> _buildAppBarActions() {
+    if (!isSearching) {
+      return [
+        IconsUI(
+          type: IconType.search,
+          onPressed: () {
+            setState(() {
+              isSearching = true;
+            });
+          },
+        ),
+        if (selectedContact == null)
+          IconsUI(
+            type: IconType.logout,
+            onPressed: () async {
+              await _confirmLogout();
+            },
+          ),
+      ];
+    } else {
+      return [
+        IconsUI(
+          type: IconType.close,
+          onPressed: () {
+            setState(() {
+              isSearching = false;
+              searchQuery = '';
+              filteredContactList = List.from(contactList);
+            });
+          },
+        ),
+      ];
+    }
+  }
+
+  Future<void> _initUser() async {
+
+    await _saveUserToFirestore();
+
+    // Try to sign in in hive 
+    UserModel? user = await HiveService.getUserByUid(widget.userCredential.uid);
+    if (user != null) {
+      this.user = user;
+      return;
+    }
+
+    // Try to sign up in hive 
+    UserModel newUser = UserModel(
+      userId: widget.userCredential.uid,
+      email: widget.userCredential.email!,
+    );
+
+    bool isAdded = await HiveService.addUser(newUser);
+    if (isAdded) {
+      this.user = newUser;
+    } 
+  }
+
+        // _saveUserToFirestore()
+
+  // Save user details to Firestore only if it’s the user's first time
+  Future<void> _saveUserToFirestore() async {
+    try {
+      // Check if the user's document already exists
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userCredential.uid).get();
+
+      if (!userDoc.exists) {
+        // Document does not exist, save user details
+        await FirebaseFirestore.instance.collection('users').doc(widget.userCredential.uid).set({
+          "uid": widget.userCredential.uid,
+          "email": widget.userCredential.email,
+          "signUpDate": DateTime.now().toIso8601String(),
+          "analyticsData": {
+            "totalTimeSpent": 0, // No time spent yet
+            "lastActive": null,  // User has not been active yet
+            "sessions": []       // No sessions recorded yet
+          },
+        });
+        print("User document created for UID: ${widget.userCredential.uid}");
+      } else {
+        // Document already exists, no action needed
+        print("User document already exists for UID: ${widget.userCredential.uid}");
+      }
+    } catch (e) {
+      print("Error checking or saving user document: $e");
+    }
   }
 
   void _updateAnalyticsData() async {
@@ -179,7 +243,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
     final durationInMinutes = durationInSeconds / 60.0;
 
     // Reference the user's Firestore document
-    final doc = FirebaseFirestore.instance.collection('users').doc(widget.uid);
+    final doc = FirebaseFirestore.instance.collection('users').doc(widget.userCredential.uid);
     final snapshot = await doc.get();
 
     if (snapshot.exists) {
@@ -206,8 +270,6 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
     // Reset session start time
     _sessionStartTime = null;
   }
-
-
 
   /// Handles back button to cancel deletion mode, exit search, or show logout dialog.
   Future<bool> _handleBackButton() async {
@@ -302,7 +364,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
       isSaving = true; // Indicates a save operation.
     });
 
-    HiveService.saveContact(widget.user!, newContact).then((success) {
+    HiveService.saveContact(this.user!, newContact).then((success) {
       if (success) {
         setState(() {
           isSaving = false; // Save completed.
@@ -328,7 +390,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
       selectedContact = null; // Clears the selected contact.
     });
 
-    HiveService.deleteContact(widget.user!, contactToDelete).then((success) {
+    HiveService.deleteContact(this.user!, contactToDelete).then((success) {
       if (!success) {
         setState(() {
           contactList.add(contactToDelete); // Reverts the change on failure.

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "335099232085-5iobkdrl0vd8sahrer201915flhbkp9v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.klidok.cypheron",
+            "certificate_hash": "ad600abbfbcb8b02e3513ddaf6d0d9dcc0df31f1"
+          }
+        },
+        {
           "client_id": "335099232085-o6fghtelqc0sclntg6d63d40r0ruj9ol.apps.googleusercontent.com",
           "client_type": 3
         }

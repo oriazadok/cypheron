@@ -5,18 +5,10 @@ import 'package:cypheron/ui/generalUI/GradientBackgroundUI.dart';
 /// Welcome screen with an improved dark-themed UI.
 class WelcomeUI extends StatelessWidget {
 
-  final Widget logo;
-  final Widget text;
-  final Widget signIn;
-  final Widget signUp;
+  final List<Widget> children;
 
   /// Constructor for the FittedText widget.
-  WelcomeUI({
-    required this.logo,
-    required this.text,
-    required this.signIn,
-    required this.signUp,
-  });
+  WelcomeUI({ required this.children });
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +22,20 @@ class WelcomeUI extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // App logo with an animation effect.
-                this.logo,
+                children[0],
                 SizedBox(height: 30),
 
-                this.text,
+                children[1],
                 SizedBox(height: 40),
 
-                this.signIn,
+                children[2],
                 SizedBox(height: 20),
 
                 // Sign Up button with similar styling.
-                this.signUp,
+                children[3],
+                SizedBox(height: 20),
+
+                children[4],
               ],
             ),
           ),

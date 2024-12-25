@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore database
-
-import 'package:cypheron/services/HiveService.dart'; // Hive database service for local storage
-import 'package:cypheron/models/UserModel.dart'; // User model for structuring user data
 
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // Custom UI for authentication screens
 import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // Custom UI for form layouts
@@ -29,104 +25,86 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Main authentication UI
-          AuthUI(
-            form: FormUI(
-              title: 'Sign Up',
-              inputFields: [
-                GenericFormField(
-                  fieldType: FieldType.email,
-                  controller: _emailController,
-                ),
-                GenericFormField(
-                  fieldType: FieldType.password,
-                  controller: _passwordController,
-                ),
-                if (errorMessage != '')
-                  FittedTextUI(
-                    text: errorMessage,
-                    type: typeMessage,
+      body: Center( 
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Ensure the column takes only the required space
+          children: [
+            // Main authentication UI
+            AuthUI(
+              form: FormUI(
+                title: 'Sign Up',
+                inputFields: [
+                  GenericFormField(
+                    fieldType: FieldType.email,
+                    controller: _emailController,
                   ),
-              ],
-              onClick: () async {
-                setState(() {
-                  isLoading = true; // Show loading indicator
-                });
+                  GenericFormField(
+                    fieldType: FieldType.password,
+                    controller: _passwordController,
+                  ),
+                  if (errorMessage != '')
+                    FittedTextUI(
+                      text: errorMessage,
+                      type: typeMessage,
+                    ),
+                ],
+                onClick: () async {
+                  setState(() {
+                    isLoading = true; // Show loading indicator
+                  });
 
-                String? uid = await _signUpFB();
-                if (uid != null) {
-                  UserModel? signUpSuccessful = await _signUpHive(uid);
-                  if (signUpSuccessful != null) {
+                  User? user = await _signUpFB();
+                  if (user != null) {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Home(uid: uid, user: signUpSuccessful),
+                        builder: (context) => Home(userCredential: user),
                       ),
                     );
                   } else {
                     setState(() {
-                      errorMessage = 'Failed to save user locally.';
-                      typeMessage = TextType.err;
                       isLoading = false; // Hide loading indicator
                     });
                   }
-                } else {
-                  setState(() {
-                    isLoading = false; // Hide loading indicator
-                  });
-                }
-              },
-              buttonText: 'Sign Up',
-            ),
-          ),
-
-          // Loading indicator overlay
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5), // Semi-transparent background
-              child: Center(
-                child: CircularProgressIndicator(), // Circular loading spinner
+                },
+                buttonText: 'Sign Up',
               ),
             ),
-        ],
+
+            // Loading indicator overlay
+            if (isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.5), // Semi-transparent background
+                child: Center(
+                  child: CircularProgressIndicator(), // Circular loading spinner
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   /// Firebase sign-up process
-  Future<String?> _signUpFB() async {
+  Future<User?> _signUpFB() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
     try {
       // Create a new user in Firebase Authentication
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       // Save user data to Firestore
-      String uid = userCredential.user!.uid;
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        "uid": uid,
-        "email": email,
-        "signUpDate": DateTime.now().toIso8601String(),
-        "analyticsData": {
-          "totalTimeSpent": 0, // No time spent yet
-          "lastActive": null,  // User has not been active yet
-          "sessions": []       // No sessions recorded yet
-        },
-      });
+      User? user = userCredential.user;
 
-      return uid; // Return UID if successful
+      return user; // Return UID if successful
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         setState(() {
-          errorMessage =
-              'The password provided is too weak.\nPassword should be at least 6 characters.';
+          errorMessage = 'The password provided is too weak.\nPassword should be at least 6 characters.';
           typeMessage = TextType.warning;
         });
       } else if (e.code == 'email-already-in-use') {
@@ -148,18 +126,4 @@ class _SignUpState extends State<SignUp> {
     return null; // Return null if an error occurs
   }
 
-  /// Save user data locally in Hive
-  Future<UserModel?> _signUpHive(String? uid) async {
-    UserModel newUser = UserModel(
-      userId: uid!,
-      email: _emailController.text,
-    );
-
-    bool isAdded = await HiveService.addUser(newUser);
-    if (isAdded) {
-      return newUser;
-    } else {
-      return null;
-    }
-  }
 }
