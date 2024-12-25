@@ -46,9 +46,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
     WidgetsBinding.instance.addObserver(this); // Start observing lifecycle changes.
     _sessionStartTime = DateTime.now(); // Start the session timer.
 
-    if (this.user != null) {
-      _loadContactsByIds(this.user!.contactIds); // Load contacts for the logged-in user.
-    }
+    _initUser();
   }
 
   @override
@@ -69,30 +67,6 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future:  _initUser(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Show a loading indicator while waiting for initialization
-          return Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        } else if (snapshot.hasError) {
-          // Handle initialization errors
-          return Scaffold(
-            body: Center(
-              child: Text("An error occurred during initialization: ${snapshot.error}"),
-            ),
-          );
-        } else {
-          // Render the main UI once initialization is complete
-          return _buildMainContent();
-        }
-      },
-    );
-  }
-
-  Widget _buildMainContent() {
     return WillPopScope(
       onWillPop: _handleBackButton,
       child: Scaffold(
@@ -188,22 +162,23 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
     UserModel? user = await HiveService.getUserByUid(widget.userCredential.uid);
     if (user != null) {
       this.user = user;
-      return;
+    } else {
+      // Try to sign up in hive 
+      UserModel newUser = UserModel(
+        userId: widget.userCredential.uid,
+        email: widget.userCredential.email!,
+      );
+
+      bool isAdded = await HiveService.addUser(newUser);
+      if (isAdded) {
+        this.user = newUser;
+      } 
     }
 
-    // Try to sign up in hive 
-    UserModel newUser = UserModel(
-      userId: widget.userCredential.uid,
-      email: widget.userCredential.email!,
-    );
-
-    bool isAdded = await HiveService.addUser(newUser);
-    if (isAdded) {
-      this.user = newUser;
-    } 
+    if (this.user != null) {
+      await _loadContactsByIds(this.user!.contactIds); // Load contacts for the logged-in user.
+    }
   }
-
-        // _saveUserToFirestore()
 
   // Save user details to Firestore only if it’s the user's first time
   Future<void> _saveUserToFirestore() async {
@@ -339,7 +314,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
   }
 
   /// Loads contacts from Hive storage based on user-provided IDs.
-  void _loadContactsByIds(List<String> contactIds) async {
+  Future<void> _loadContactsByIds(List<String> contactIds) async {
     List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
     setState(() {
       contactList = loadedContacts; // Updates the contact list.
