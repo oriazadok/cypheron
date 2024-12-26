@@ -62,7 +62,17 @@ class GenericFormField extends StatelessWidget {
         return _buildTextFormField(
           labelText: labelText.isEmpty ? 'Text to encrypt' : labelText,
           maxLines: 5,
-          validator: (value) => _validateNotEmpty(value, 'This field cannot be empty'),
+          validator: (value) {
+            // Combine multiple validators
+            String? result = _validateNotEmpty(value, 'This field cannot be empty');
+            if (result != null) return result;
+
+            result = _validateAllowedCharacters(value, context);
+            if (result != null) return result;
+
+            // Add more validators as needed
+            return null; // All validations passed
+          },
         );
       case FieldType.text:
       default:
@@ -97,14 +107,59 @@ class GenericFormField extends StatelessWidget {
     if (value == null || value.isEmpty) {
       return errorMessage;
     }
+
     return null;
   }
+
+  void showErrorDialog(BuildContext context, String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Validation Error'),
+        content: Text(errorMessage),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  String? _validateAllowedCharacters(String? value, BuildContext context) {
+    if (value == null || value.isEmpty) return null; // Skip if empty (handled by another validator)
+
+    final regex = RegExp(r'^[\t\n\x20-\x7E]*$');
+    if (!regex.hasMatch(value)) {
+      // Show the error dialog
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showErrorDialog(
+          context,
+          'Message content can only include the following characters:\n'
+          'Letters: A-Z, a-z\n'
+          'Digits: 0-9\n'
+          'Symbols: !"#\$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\n'
+          'Spaces, Tab, and Newline.',
+        );
+      });
+
+      return ''; // Return a placeholder error (or null to avoid the default error text)
+    }
+
+    return null; // Validation passed
+  }
+
 
   /// Validates an email format.
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
     }
+    
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(value)) {
       return 'Please enter a valid email address';
