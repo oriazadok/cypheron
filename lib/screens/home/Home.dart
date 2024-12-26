@@ -156,8 +156,6 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
 
   Future<void> _initUser() async {
 
-    await _saveUserToFirestore();
-
     // Try to sign in in hive 
     UserModel? user = await HiveService.getUserByUid(widget.userCredential.uid);
     if (user != null) {
@@ -167,6 +165,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
       UserModel newUser = UserModel(
         userId: widget.userCredential.uid,
         email: widget.userCredential.email!,
+        contactIds: [],
       );
 
       bool isAdded = await HiveService.addUser(newUser);
@@ -180,34 +179,6 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
     }
   }
 
-  // Save user details to Firestore only if it’s the user's first time
-  Future<void> _saveUserToFirestore() async {
-    try {
-      // Check if the user's document already exists
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userCredential.uid).get();
-
-      if (!userDoc.exists) {
-        // Document does not exist, save user details
-        await FirebaseFirestore.instance.collection('users').doc(widget.userCredential.uid).set({
-          "uid": widget.userCredential.uid,
-          "email": widget.userCredential.email,
-          "signUpDate": DateTime.now().toIso8601String(),
-          "contactIds": [], // Initialize empty contacts
-          "analyticsData": {
-            "totalTimeSpent": 0, 
-            "lastActive": null,  
-            "sessions": []       
-          },
-        });
-        print("User document created for UID: ${widget.userCredential.uid}");
-      } else {
-        // Document already exists, no action needed
-        print("User document already exists for UID: ${widget.userCredential.uid}");
-      }
-    } catch (e) {
-      print("Error checking or saving user document: $e");
-    }
-  }
 
   void _updateAnalyticsData() async {
     if (_sessionStartTime == null) return;

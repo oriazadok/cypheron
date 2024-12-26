@@ -38,6 +38,9 @@ class FireBaseService {
       // Sign in to Firebase with the Google credentials
       UserCredential userCredential = await _auth.signInWithCredential(credential);
       User? user = userCredential.user;
+      if(user != null) {
+        await createUser(user);
+      }
 
       return user;
     } catch (e) {
@@ -73,17 +76,28 @@ class FireBaseService {
 
   /// create document for the user 
   static Future<void> createUser(User user) async {
-    await _firestore.collection('users').doc(user.uid).set({
-      "uid": user.uid,
-      "email": user.email,
-      "contactIds": [],
-      "signUpDate": DateTime.now().toIso8601String(),
-      "analyticsData": {
-        "totalTimeSpent": 0,
-        "lastActive": null,
-        "sessions": []
-      },
-    });
+
+    try {
+      // Check if the user's document already exists
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        // Document does not exist, save user details
+        await _firestore.collection('users').doc(user.uid).set({
+          "uid": user.uid,
+          "email": user.email,
+          "contactIds": [],
+          "signUpDate": DateTime.now().toIso8601String(),
+          "analyticsData": {
+            "totalTimeSpent": 0,
+            "lastActive": null,
+            "sessions": []
+          },
+        });
+      }
+    } catch (e) {
+      print("Error checking or saving user document: $e");
+    }
   }
 
   /// Firebase sign-in process using email and password
@@ -102,6 +116,9 @@ class FireBaseService {
       throw Exception("An unexpected error occurred: $e");
     }
   }
+
+
+
 
 
 
