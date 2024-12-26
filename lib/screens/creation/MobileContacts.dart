@@ -33,6 +33,9 @@ class _MobileContactsState extends State<MobileContacts> {
   void initState() {
     super.initState();
     loadContactsFromHive(); // Load contacts when the screen initializes.
+    if(allContacts.isEmpty) {
+      refreshContacts();
+    }
   }
 
   @override
@@ -86,38 +89,47 @@ class _MobileContactsState extends State<MobileContacts> {
           Expanded(
             child: MobileContactsUI(
               isFetching: isFetching, // Displays loading indicator if fetching.
-              child: filteredContacts.isNotEmpty
-                  ? RefreshIndicator(
+              child: RefreshIndicator(
                       onRefresh: refreshContacts, // Pull-to-refresh behavior.
-                      child: ListView.builder(
-                        itemCount: filteredContacts.length, // Number of contacts.
-                        itemBuilder: (context, index) {
-                          final contactData = filteredContacts[index];
-                          return MobilecontactcardUI(
-                            displayName: contactData['displayName'], // Contact name.
-                            phoneNumber: contactData['phoneNumber'], // Contact number.
-                            onTap: (Contact selectedContact) {
-                              String contactName = selectedContact.displayName ?? 'No Name';
-                              String contactPhone = (selectedContact.phones?.isNotEmpty ?? false)
-                                  ? selectedContact.phones!.first.value ?? 'No Phone'
-                                  : 'No Phone';
-                              ContactModel newContact = ContactModel(
-                                name: contactName,
-                                phoneNumber: contactPhone,
-                              );
-                              Navigator.pop(context, newContact); // Return selected contact.
-                            },
-                          );
-                        },
-                      ),
+                      child: filteredContacts.isNotEmpty
+                        ? ListView.builder(
+                          itemCount: filteredContacts.length, // Number of contacts.
+                          itemBuilder: (context, index) {
+                            final contactData = filteredContacts[index];
+                            return MobilecontactcardUI(
+                              displayName: contactData['displayName'], // Contact name.
+                              phoneNumber: contactData['phoneNumber'], // Contact number.
+                              onTap: (Contact selectedContact) {
+                                String contactName = selectedContact.displayName ?? 'No Name';
+                                String contactPhone = (selectedContact.phones?.isNotEmpty ?? false)
+                                    ? selectedContact.phones!.first.value ?? 'No Phone'
+                                    : 'No Phone';
+                                ContactModel newContact = ContactModel(
+                                  name: contactName,
+                                  phoneNumber: contactPhone,
+                                );
+                                Navigator.pop(context, newContact); // Return selected contact.
+                              },
+                            );
+                          },
+                        )
+                      : ! isSearching
+
+                        ? SingleChildScrollView(
+                            physics: AlwaysScrollableScrollPhysics(), // Ensures pull-to-refresh works.
+                            child: Container(
+                              height: MediaQuery.of(context).size.height, // Ensures full height for vertical centering.
+                              alignment: Alignment.center, // Centers the content vertically and horizontally.
+                              child: FittedTextUI(
+                                text: 'No contacts found. Swipe down to refresh.',
+                                type: TextType.msg_title,
+                              ),
+                            ),
+                          )
+
+                        : SizedBox.shrink()
                     )
-                  : Center(
-                      /// Message displayed when no contacts are found.
-                      child: FittedTextUI(
-                        text: 'No contacts found. Swipe down to refresh.',
-                        type: TextType.err,
-                      ),
-                    ),
+                
             ),
           ),
         ],
@@ -154,6 +166,7 @@ class _MobileContactsState extends State<MobileContacts> {
   /// Refreshes the contact list by clearing the cache and reloading.
   Future<void> refreshContacts() async {
     setState(() {
+      isSearching = false;
       isFetching = true; // Display loading indicator during refresh.
     });
     await HiveService.clearCachedContacts(); // Clear existing cached contacts.
