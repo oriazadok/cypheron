@@ -38,9 +38,10 @@ class _ContactInfoState extends State<ContactInfo> {
   void initState() {
     super.initState();
     // Initialize all messages and sort them by timestamp (newest first)
-    allMessages = widget.contact.messages
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    allMessages = widget.contact.messages;
     filteredMessages = allMessages;
+
+    print("allMessages: $allMessages");
 
     // Automatically scroll to the most recent message
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -94,35 +95,27 @@ class _ContactInfoState extends State<ContactInfo> {
         ],
       ),
       body: filteredMessages.isNotEmpty
-          ? MediaQuery.removePadding(
-              context: context,
-              removeTop: true, // Remove default top padding
-              child: ListView.builder(
-                controller: _scrollController, // Attach ScrollController
-                reverse: true, // Show the newest messages at the top
-                shrinkWrap: true,
-                itemCount: filteredMessages.length, // Number of messages to display
-                itemBuilder: (context, index) {
-                  final message = filteredMessages[index]; // Get the message
-                  return MsgCardUI(
-                    message: message, // Display message details
-                    subtitle: "Tap to decrypt", // Instruction to the user
-                    onTap: () async {
-                      // Prompt the user to enter a keyword for decryption
-                      String? keyword =
-                          await KeywordDialog.getKeyword(context, "Decrypt");
-                      if (keyword != null && keyword.isNotEmpty) {
-                        // Decrypt the message using the entered keyword
-                        String decryptedBody =
-                            CypherFFI().runCypher(message.body, keyword, 'd');
-                        // Display the decrypted message
-                        displaydialog(context, message.title, decryptedBody);
-                      }
-                    },
-                    onSend: () => _sendMessage(message), // Option to share the message
-                  );
-                },
-              ),
+          ? ListView.builder(
+              controller: _scrollController, // Attach ScrollController
+              itemCount: filteredMessages.length, // Number of messages to display
+              itemBuilder: (context, index) {
+                final message = filteredMessages[index]; // Get the message
+                return MsgCardUI(
+                  message: message, // Display message details
+                  subtitle: "Tap to decrypt", // Instruction to the user
+                  onTap: () async {
+                    // Prompt the user to enter a keyword for decryption
+                    String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
+                    if (keyword != null && keyword.isNotEmpty) {
+                      // Decrypt the message using the entered keyword
+                      String decryptedBody = CypherFFI().runCypher(message.body, keyword, 'd');
+                      // Display the decrypted message
+                      displaydialog(context, message.title, decryptedBody);
+                    }
+                  },
+                  onSend: () => _sendMessage(message), // Option to share the message
+                );
+              },
             )
           : EmptyStateUI(
               icon: IconsUI(type: IconType.mail), // Display a mail icon
@@ -155,7 +148,7 @@ class _ContactInfoState extends State<ContactInfo> {
     setState(() {
       widget.contact.addMessage(newMessage); // Add the new message to the contact
       widget.contact.save(); // Save the updated contact data
-      allMessages = widget.contact.messages.reversed.toList(); // Refresh and reverse the message list
+      allMessages = widget.contact.messages; // Refresh and reverse the message list
       filteredMessages = allMessages;
 
       // Scroll to the top to show the latest message

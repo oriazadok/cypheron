@@ -31,7 +31,7 @@ class ContactModel extends HiveObject {
   // Method to add a new message
   void addMessage(MessageModel newMessage) {
     messages.add(newMessage);
-    messages.sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Sort by timestamp descending
+    messages.sort((a, b) => a.timestamp.compareTo(b.timestamp)); // Sort by timestamp descending
     save();
   }
 
