@@ -8,6 +8,7 @@ import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 
+import 'package:cypheron/ui/widgetsUI/utilsUI/OpsRowUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/EmptyStateUI.dart';
 import 'package:cypheron/ui/widgetsUI/cardsUI/MsgCardUI.dart';
@@ -33,6 +34,7 @@ class _ContactInfoState extends State<ContactInfo> {
   List<MessageModel> filteredMessages = []; // Messages filtered based on search
   final ScrollController _scrollController = ScrollController(); // For controlling scrolling
   bool isSearching = false; // Indicates if search mode is active
+  MessageModel? selectedMessage; // Track the selected message
 
   @override
   void initState() {
@@ -40,8 +42,6 @@ class _ContactInfoState extends State<ContactInfo> {
     // Initialize all messages and sort them by timestamp (newest first)
     allMessages = widget.contact.messages;
     filteredMessages = allMessages;
-
-    print("allMessages: $allMessages");
 
     // Automatically scroll to the most recent message
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -60,69 +60,115 @@ class _ContactInfoState extends State<ContactInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // App bar with dynamic title and search functionality
-      appBar: AppBar(
-        automaticallyImplyLeading: !isSearching, // Show default back button if not searching
-        title: isSearching
-            ? SearchField(
-                onChanged: (query) {
-                  _filterMessages(query); // Filter messages as the user types
+    return WillPopScope(
+      onWillPop: () async {
+        if (selectedMessage != null) {
+          setState(() {
+            selectedMessage = null; // Deselect the message instead of going back.
+          });
+          return false; // Prevent navigating back.
+        }
+        return true; // Allow navigating back.
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: !isSearching,
+          title: isSearching
+              ? SearchField(
+                  onChanged: (query) => _filterMessages(query),
+                  hintText: 'Search Messages',
+                )
+              : Text(widget.contact.name),
+          actions: [
+            if (isSearching)
+              IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  setState(() {
+                    isSearching = false;
+                    filteredMessages = allMessages;
+                  });
                 },
-                hintText: 'Search Messages', // Placeholder text for the search field
               )
-            : Text(widget.contact.name), // Display the contact's name when not searching
-        actions: [
-          if (isSearching)
-            IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () {
-                setState(() {
-                  isSearching = false; // Exit search mode
-                  filteredMessages = allMessages; // Reset messages
-                });
-              },
-            )
-          else
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                setState(() {
-                  isSearching = true; // Enter search mode
-                });
-              },
-            ),
-        ],
+            else
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  setState(() {
+                    isSearching = true;
+                  });
+                },
+              ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            filteredMessages.isNotEmpty
+                ? ListView.builder(
+                    controller: _scrollController,
+                    itemCount: filteredMessages.length,
+                    itemBuilder: (context, index) {
+                      final message = filteredMessages[index];
+                      final isSelected = selectedMessage == message;
+                      return GestureDetector(
+
+                        onLongPress: () {
+                          setState(() {
+                            selectedMessage = message;
+                          });
+                        },
+                        child: Container(
+                          decoration: isSelected
+                            ? BoxDecoration(
+                                color: Colors.purple.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.purple, width: 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.purple.withOpacity(0.2),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              )
+                            : null,
+                          child: MsgCardUI(
+                            message: message,
+                            subtitle: "Tap to decrypt",
+                            onTap: () async {
+                              String? keyword =
+                                  await KeywordDialog.getKeyword(context, "Decrypt");
+                              if (keyword != null && keyword.isNotEmpty) {
+                                String decryptedBody =
+                                    CypherFFI().runCypher(message.body, keyword, 'd');
+                                displaydialog(context, message.title, decryptedBody);
+                              }
+                            },
+                            onSend: () => _sendMessage(message),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : EmptyStateUI(
+                    icon: IconsUI(type: IconType.mail),
+                    message: 'No messages found.\nAdd a new message.',
+                  ),
+            if (selectedMessage != null)
+              OpsRowUI(
+                options: [
+                  IconsUI(
+                    type: IconType.delete,
+                    onPressed: () => _deleteMessage(selectedMessage!),
+                  ),
+                ],
+              ),
+          ],
+        ),
+        floatingActionButton: selectedMessage == null
+            ? AddMessageButton(onAddMessage: _addNewMessage)
+            : null,
       ),
-      body: filteredMessages.isNotEmpty
-          ? ListView.builder(
-              controller: _scrollController, // Attach ScrollController
-              itemCount: filteredMessages.length, // Number of messages to display
-              itemBuilder: (context, index) {
-                final message = filteredMessages[index]; // Get the message
-                return MsgCardUI(
-                  message: message, // Display message details
-                  subtitle: "Tap to decrypt", // Instruction to the user
-                  onTap: () async {
-                    // Prompt the user to enter a keyword for decryption
-                    String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
-                    if (keyword != null && keyword.isNotEmpty) {
-                      // Decrypt the message using the entered keyword
-                      String decryptedBody = CypherFFI().runCypher(message.body, keyword, 'd');
-                      // Display the decrypted message
-                      displaydialog(context, message.title, decryptedBody);
-                    }
-                  },
-                  onSend: () => _sendMessage(message), // Option to share the message
-                );
-              },
-            )
-          : EmptyStateUI(
-              icon: IconsUI(type: IconType.mail), // Display a mail icon
-              message: 'No messages found.\nAdd a new message.', // Message to user when list is empty
-            ),
-      // Button to add a new message
-      floatingActionButton: AddMessageButton(onAddMessage: _addNewMessage),
     );
   }
 
@@ -160,6 +206,17 @@ class _ContactInfoState extends State<ContactInfo> {
     });
   }
 
+  void _deleteMessage(MessageModel messageToDelete) {
+    setState(() {
+      allMessages.remove(messageToDelete);
+      filteredMessages = allMessages;
+      widget.contact.messages = allMessages;
+      widget.contact.save();
+      selectedMessage = null;
+    });
+
+  }
+
   /// Sends a message file using the share_plus package
   Future<void> _sendMessage(MessageModel message) async {
     // Get a temporary directory
@@ -177,4 +234,5 @@ class _ContactInfoState extends State<ContactInfo> {
       text: 'Encrypted message from ${widget.contact.name}', // Additional text for the shared file
     );
   }
+
 }
