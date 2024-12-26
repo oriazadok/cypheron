@@ -192,10 +192,11 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
           "uid": widget.userCredential.uid,
           "email": widget.userCredential.email,
           "signUpDate": DateTime.now().toIso8601String(),
+          "contactIds": [], // Initialize empty contacts
           "analyticsData": {
-            "totalTimeSpent": 0, // No time spent yet
-            "lastActive": null,  // User has not been active yet
-            "sessions": []       // No sessions recorded yet
+            "totalTimeSpent": 0, 
+            "lastActive": null,  
+            "sessions": []       
           },
         });
         print("User document created for UID: ${widget.userCredential.uid}");

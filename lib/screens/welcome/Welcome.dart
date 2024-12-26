@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
+import 'package:cypheron/services/FireBaseService.dart';
 
 import 'package:cypheron/ui/screensUI/WelcomeUI.dart'; // Custom UI for the Welcome screen layout.
-
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart'; // Utility widget for displaying icons.
 import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart'; // Provides generic text styles.
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Widget for dynamically styled text.
@@ -60,7 +59,7 @@ class Welcome extends StatelessWidget {
               ),
             );
             
-            User? user = await _signInWithGoogle();
+            User? user = await FireBaseService.signInWithGoogle();
               
             if (user != null) {
               Navigator.pushReplacement(
@@ -81,37 +80,5 @@ class Welcome extends StatelessWidget {
     );
   }
 
-  // Google Sign-In
-  Future<User?> _signInWithGoogle() async {
-    try {
-      final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      if (googleUser == null) {
-        // Case when the user cancels the sign-in
-        return null;
-      }
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Sign in to Firebase with the Google credentials
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      User? user = userCredential.user;
-
-      return user;
-    } catch (e) {
-      // Catch and log any errors during the process
-      print("Error during Google Sign-In: $e");
-      return null;
-    }
-  }
+  
 }
