@@ -86,7 +86,22 @@ class FireBaseService {
     });
   }
 
-
+  /// Firebase sign-in process using email and password
+  static Future<User?> signIn(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase-specific exceptions
+      throw e; // Re-throw to handle it in the calling function
+    } catch (e) {
+      // Handle other exceptions
+      throw Exception("An unexpected error occurred: $e");
+    }
+  }
 
 
 

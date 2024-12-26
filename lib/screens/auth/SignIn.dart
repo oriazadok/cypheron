@@ -1,3 +1,4 @@
+import 'package:cypheron/services/FireBaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication for user sign-in
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI wrapper for authentication screens
@@ -84,12 +85,9 @@ class _SignInState extends State<SignIn> {
     String password = _passwordController.text.trim();
 
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
+      User? user = await FireBaseService.signIn(email, password);
+
+      return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         setState(() {
