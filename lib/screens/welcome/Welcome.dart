@@ -50,6 +50,16 @@ class Welcome extends StatelessWidget {
           ),
           label: const Text("Sign in with Google"),
           onPressed: () async {
+
+            // Show the loading spinner
+            showDialog(
+              context: context,
+              barrierDismissible: false, // Prevent closing the dialog while loading
+              builder: (context) => Center(
+                child: CircularProgressIndicator(), // Spinner
+              ),
+            );
+            
             User? user = await _signInWithGoogle();
               
             if (user != null) {
