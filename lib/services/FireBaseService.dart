@@ -9,7 +9,7 @@ import 'package:cypheron/models/MessageModel.dart';
 
 class FireBaseService {
   static final FirebaseAuth _auth = FirebaseAuth.instance; // FirebaseAuth instance
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // -------------------------- User Operations --------------------------
 
@@ -48,12 +48,35 @@ class FireBaseService {
   }
 
 
+  /// Firebase sign-up process using email and password
+  static Future<User?> signUp(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-  Future<void> createUser(UserModel user) async {
-    await _firestore.collection('users').doc(user.userId).set({
-      "uid": user.userId,
+      User? user = userCredential.user;
+      if(user != null) {
+        await createUser(user);
+      }
+
+      return user;
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase-specific exceptions here if needed
+      throw e; // Re-throw the exception to handle it in the calling function
+    } catch (e) {
+      // Handle any other exceptions here
+      throw Exception("An unexpected error occurred: $e");
+    }
+  }
+
+  /// create document for the user 
+  static Future<void> createUser(User user) async {
+    await _firestore.collection('users').doc(user.uid).set({
+      "uid": user.uid,
       "email": user.email,
-      "contactIds": user.contactIds,
+      "contactIds": [],
       "signUpDate": DateTime.now().toIso8601String(),
       "analyticsData": {
         "totalTimeSpent": 0,
@@ -62,6 +85,13 @@ class FireBaseService {
       },
     });
   }
+
+
+
+
+
+
+
 
   Future<UserModel?> getUser(String userId) async {
     final userDoc = await _firestore.collection('users').doc(userId).get();

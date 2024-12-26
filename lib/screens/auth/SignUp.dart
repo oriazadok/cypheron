@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cypheron/services/FireBaseService.dart';
+
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
 
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // Custom UI for authentication screens
@@ -92,13 +94,7 @@ class _SignUpState extends State<SignUp> {
 
     try {
       // Create a new user in Firebase Authentication
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Save user data to Firestore
-      User? user = userCredential.user;
+      User? user = await FireBaseService.signUp(email, password);
 
       return user; // Return UID if successful
     } on FirebaseAuthException catch (e) {
