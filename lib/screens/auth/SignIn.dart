@@ -1,11 +1,15 @@
-import 'package:cypheron/services/FireBaseService.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cypheron/services/FireBaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication for user sign-in
+
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI wrapper for authentication screens
 import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // Form UI widget structure
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Custom widget for styled text
 import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart'; // Generic text styles for consistency
+
 import 'package:cypheron/widgets/form_elements/GenericFormField.dart'; // Input field widget for forms
+
 import 'package:cypheron/screens/home/Home.dart'; // Home screen to navigate to after successful sign-in
 
 class SignIn extends StatefulWidget {
@@ -17,65 +21,55 @@ class _SignInState extends State<SignIn> {
   // Controllers for capturing and managing the text entered in email and password fields
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-
   String errorMessage = ''; // Variable to store error messages
-  bool isLoading = false; // Tracks whether the app is performing a sign-in operation
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Main authentication UI
-          AuthUI(
-            form: FormUI(
-              title: 'Sign In',
-              inputFields: [
-                GenericFormField(
-                  fieldType: FieldType.email,
-                  controller: _emailController,
-                ),
-                GenericFormField(
-                  fieldType: FieldType.password,
-                  controller: _passwordController,
-                ),
-                if (errorMessage != '')
-                  FittedTextUI(text: errorMessage, type: TextType.err),
-              ],
-              onClick: () async {
-                setState(() {
-                  isLoading = true; // Show loading indicator
-                });
-
-                User? user = await _signInFB();
-                if (user != null) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Home(userCredential: user,)),
-                    (route) => false,
-                  );
-                  
-                } else {
-                  setState(() {
-                    errorMessage = 'Invalid email or password';
-                    isLoading = false; // Hide loading indicator
-                  });
-                }
-              },
-              buttonText: 'Sign In',
+      body: AuthUI(
+        form: FormUI(
+          title: 'Sign In',
+          inputFields: [
+            GenericFormField(
+              fieldType: FieldType.email,
+              controller: _emailController,
             ),
-          ),
+            GenericFormField(
+              fieldType: FieldType.password,
+              controller: _passwordController,
+            ),
+            if (errorMessage != '')
+              FittedTextUI(text: errorMessage, type: TextType.err),
+          ],
+          onClick: () async {
 
-          // Loading indicator
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5), // Semi-transparent background
-              child: Center(
-                child: CircularProgressIndicator(), // Loading spinner
+            showDialog(
+              context: context,
+              barrierDismissible: false, // Prevent closing the dialog while loading
+              builder: (context) => Center(
+                child: CircularProgressIndicator(), // Spinner
               ),
-            ),
-        ],
+            );
+
+            User? user;
+            try {
+              user = await _signInFB();
+            } finally {
+              // Dismiss the dialog after the Firebase operation is complete
+              Navigator.pop(context);
+            }
+
+            if (user != null) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Home(userCredential: user!)),
+                (route) => false,
+              );
+            }
+          },
+          buttonText: 'Sign In',
+        ),
       ),
     );
   }
@@ -99,7 +93,7 @@ class _SignInState extends State<SignIn> {
         });
       } else if (e.code == 'invalid-credential') {
         setState(() {
-          errorMessage = 'Invalid credentials. Please check your input.';
+          errorMessage = 'Incorrect email or password';
         });
       } else {
         setState(() {
