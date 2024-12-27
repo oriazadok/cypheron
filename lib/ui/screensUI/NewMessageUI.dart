@@ -24,13 +24,17 @@ class __NewmessageUIState extends State<NewmessageUI> {
 
   @override
   Widget build(BuildContext context) {
-    return FormUI(
-      title: "New Message",
-      inputFields: widget.inputFields,
-      onClick: () {
-        widget.onClick();
-      },
-      buttonText: widget.buttonText,
+    return Center(
+      child: SingleChildScrollView( 
+        child: FormUI(
+          title: "New Message",
+          inputFields: widget.inputFields,
+          onClick: () {
+            widget.onClick();
+          },
+          buttonText: widget.buttonText,
+        ),
+      ),
     );
   }
 
