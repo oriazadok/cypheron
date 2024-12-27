@@ -1,10 +1,10 @@
-import 'package:cypheron/services/FireBaseService.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cypheron/services/FireBaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore database
 
 import 'package:cypheron/services/HiveService.dart';
-
 import 'package:cypheron/models/UserModel.dart';
 import 'package:cypheron/models/ContactModel.dart';
 

@@ -64,11 +64,12 @@ class Welcome extends StatelessWidget {
             User? user = await FireBaseService.signInWithGoogle();
               
             if (user != null) {
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Home(userCredential: user),
                 ),
+                (route) => false,
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
