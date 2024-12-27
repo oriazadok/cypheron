@@ -117,6 +117,39 @@ class FireBaseService {
     }
   }
 
+  // Save a contact to Firebase with messages as a subcollection
+  static Future<bool> saveContactToFirebase(String userId, ContactModel contact) async {
+    try {
+      // Step 1: Add the contact ID to the user's contactIds array
+      final userRef = _firestore.collection('users').doc(userId);
+      await userRef.update({
+        'contactIds': FieldValue.arrayUnion([contact.id]),
+      });
+
+      // Step 2: Create or update the contact document
+      final contactRef = userRef.collection('contacts').doc(contact.id);
+      await contactRef.set({
+        'id': contact.id,
+        'name': contact.name,
+        'phoneNumber': contact.phoneNumber,
+      });
+
+      // // Step 3: Save messages as a subcollection under the contact document
+      // final messagesRef = contactRef.collection('messages');
+      // for (var message in contact.messages) {
+      //   await messagesRef.doc().set({
+      //     'title': message.title,
+      //     'body': message.body,
+      //     'timestamp': message.timestamp.toIso8601String(),
+      //   });
+      // }
+
+      return true; // Success
+    } catch (e) {
+      print("Error saving contact to Firebase: $e");
+      return false; // Failure
+    }
+  }
 
 
 

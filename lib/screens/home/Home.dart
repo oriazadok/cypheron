@@ -1,10 +1,12 @@
+import 'package:cypheron/services/FireBaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore database
 
+import 'package:cypheron/services/HiveService.dart';
+
 import 'package:cypheron/models/UserModel.dart';
 import 'package:cypheron/models/ContactModel.dart';
-import 'package:cypheron/services/HiveService.dart';
 
 import 'package:cypheron/ui/screensUI/HomeUI.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
@@ -180,6 +182,8 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
   }
 
 
+
+
   void _updateAnalyticsData() async {
     if (_sessionStartTime == null) return;
 
@@ -297,8 +301,8 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
   /// Adds a new contact and saves it to Hive storage.
   void _addNewContact(ContactModel newContact) {
     if (contactList.any((contact) =>
-        contact.name.toLowerCase() == newContact.name.toLowerCase() &&
-        contact.phoneNumber == newContact.phoneNumber)) {
+      contact.name.toLowerCase() == newContact.name.toLowerCase() &&
+      contact.phoneNumber == newContact.phoneNumber)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Contact already exists.')),
       );
@@ -313,8 +317,18 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
 
     HiveService.saveContact(this.user!, newContact).then((success) {
       if (success) {
-        setState(() {
-          isSaving = false; // Save completed.
+        // Save the contact to Firebase
+        FireBaseService.saveContactToFirebase(widget.userCredential.uid, newContact).then((firebaseSuccess) {
+          if (! firebaseSuccess) {
+            
+            // Handle Firebase save failure
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to save contact to Cloud.')),
+            );
+          }
+          setState(() {
+            isSaving = false; // Save completed.
+          });
         });
       } else {
         setState(() {
