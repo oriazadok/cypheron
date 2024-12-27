@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cypheron/services/FireBaseService.dart';
 
+import 'package:cypheron/services/FireBaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
 
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // Custom UI for authentication screens
@@ -22,66 +22,57 @@ class _SignUpState extends State<SignUp> {
 
   String errorMessage = ''; // Variable to display error messages
   late TextType typeMessage; // Type of error message
-  bool isLoading = false; // Tracks whether the app is performing a sign-up operation
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center( 
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Ensure the column takes only the required space
-          children: [
-            // Main authentication UI
-            AuthUI(
-              form: FormUI(
-                title: 'Sign Up',
-                inputFields: [
-                  GenericFormField(
-                    fieldType: FieldType.email,
-                    controller: _emailController,
-                  ),
-                  GenericFormField(
-                    fieldType: FieldType.password,
-                    controller: _passwordController,
-                  ),
-                  if (errorMessage != '')
-                    FittedTextUI(
-                      text: errorMessage,
-                      type: typeMessage,
-                    ),
-                ],
-                onClick: () async {
-                  setState(() {
-                    isLoading = true; // Show loading indicator
-                  });
-
-                  User? user = await _signUpFB();
-                  if (user != null) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Home(userCredential: user),
-                      ),
-                    );
-                  } else {
-                    setState(() {
-                      isLoading = false; // Hide loading indicator
-                    });
-                  }
-                },
-                buttonText: 'Sign Up',
-              ),
+      body: AuthUI(
+        form: FormUI(
+          title: 'Sign Up',
+          inputFields: [
+            GenericFormField(
+              fieldType: FieldType.email,
+              controller: _emailController,
+            ),
+            GenericFormField(
+              fieldType: FieldType.password,
+              controller: _passwordController,
             ),
 
-            // Loading indicator overlay
-            if (isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.5), // Semi-transparent background
-                child: Center(
-                  child: CircularProgressIndicator(), // Circular loading spinner
-                ),
+            if (errorMessage != '')
+              FittedTextUI(
+                text: errorMessage,
+                type: typeMessage,
               ),
           ],
+          onClick: () async {
+
+            showDialog(
+              context: context,
+              barrierDismissible: false, // Prevent closing the dialog while loading
+              builder: (context) => Center(
+                child: CircularProgressIndicator(), // Spinner
+              ),
+            );
+
+            User? user;
+            try {
+              user = await _signUpFB();
+            } finally {
+              // Dismiss the dialog after the Firebase operation is complete
+              Navigator.pop(context);
+            }
+            
+            if (user != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Home(userCredential: user!),
+                ),
+              );
+            }
+          },
+          buttonText: 'Sign Up',
         ),
       ),
     );

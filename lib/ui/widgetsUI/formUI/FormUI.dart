@@ -28,37 +28,34 @@ class _FormUIState extends State<FormUI> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(32.0),
       child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Form title
-                FittedTextUI(
-                  text: widget.title,
-                  type: TextType.title,
-                ),
-                SizedBox(height: 20),
-                
-                // Input fields
-                ..._buildInputFieldsWithSpacing(),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Form title
+              FittedTextUI(
+                text: widget.title,
+                type: TextType.title,
+              ),
+              SizedBox(height: 20),
+              
+              // Input fields
+              ..._buildInputFieldsWithSpacing(),
 
-                SizedBox(height: 10),
-                // Action button with validation check
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      widget.onClick();
-                    }
-                  },
-                  child: Text(widget.buttonText),
-                ),
-              ],
-            ),
+              SizedBox(height: 10),
+              // Action button with validation check
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    widget.onClick();
+                  }
+                },
+                child: Text(widget.buttonText),
+              ),
+            ],
           ),
         ),
       ),
