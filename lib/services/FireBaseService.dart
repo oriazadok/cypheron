@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:cypheron/models/UserModel.dart';
+// import 'package:cypheron/models/UserModel.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 
@@ -117,6 +117,22 @@ class FireBaseService {
     }
   }
 
+  
+
+
+
+  // Future<void> updateUserContacts(String userId, List<String> contactIds) async {
+  //   await _firestore.collection('users').doc(userId).update({
+  //     "contactIds": contactIds,
+  //   });
+  // }
+
+  // Future<void> deleteUser(String userId) async {
+  //   await _firestore.collection('users').doc(userId).delete();
+  // }
+
+  // -------------------------- Contact Operations --------------------------
+
   // Save a contact to Firebase with messages as a subcollection
   static Future<bool> saveContactToFirebase(String userId, ContactModel contact) async {
     try {
@@ -151,50 +167,35 @@ class FireBaseService {
     }
   }
 
+  // Delete a contact from Firebase with messages as a subcollection
+  static Future<bool> deleteContactFromFirebase(String userId, ContactModel contact) async {
+    try {
+      // Reference to the user's document
+      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
 
+      // Reference to the contact document
+      final contactRef = userRef.collection('contacts').doc(contact.id);
 
+      // Step 1: Delete the contact document
+      await contactRef.delete();
 
+      // Step 2: Remove the contact ID from the contactIds array
+      await userRef.update({
+        'contactIds': FieldValue.arrayRemove([contact.id]),
+      });
 
-
-
-
-  Future<UserModel?> getUser(String userId) async {
-    final userDoc = await _firestore.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      final data = userDoc.data();
-      return UserModel(
-        userId: data?['uid'],
-        email: data?['email'],
-        contactIds: List<String>.from(data?['contactIds'] ?? []),
-      );
+      return true; // Deletion successful
+    } catch (e) {
+      print("Error deleting contact from Firebase: $e");
+      return false; // Deletion failed
     }
-    return null;
   }
 
-  Future<void> updateUserContacts(String userId, List<String> contactIds) async {
-    await _firestore.collection('users').doc(userId).update({
-      "contactIds": contactIds,
-    });
-  }
 
-  Future<void> deleteUser(String userId) async {
-    await _firestore.collection('users').doc(userId).delete();
-  }
 
-  // -------------------------- Contact Operations --------------------------
+  
 
-  Future<void> addContact(ContactModel contact, String userId) async {
-    await _firestore.collection('contacts').doc(contact.id).set({
-      "id": contact.id,
-      "name": contact.name,
-      "phoneNumber": contact.phoneNumber,
-      "userId": userId,
-    });
 
-    await _firestore.collection('users').doc(userId).update({
-      "contactIds": FieldValue.arrayUnion([contact.id]),
-    });
-  }
 
   Future<List<ContactModel>> getContacts(String userId) async {
     final contactDocs = await _firestore

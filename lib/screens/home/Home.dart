@@ -351,16 +351,42 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
       selectedContact = null; // Clears the selected contact.
     });
 
-    HiveService.deleteContact(this.user!, contactToDelete).then((success) {
-      if (!success) {
+     // Delete the contact from Hive
+    HiveService.deleteContact(this.user!, contactToDelete).then((hiveSuccess) {
+      if (hiveSuccess) {
+        // Proceed to delete the contact from Firebase
+        FireBaseService.deleteContactFromFirebase(widget.userCredential.uid, contactToDelete).then((firebaseSuccess) {
+          if (firebaseSuccess) {
+            setState(() {
+              isSaving = false; // Deletion completed.
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Contact deleted successfully!')),
+            );
+          } else {
+            // Handle Firebase deletion failure
+            setState(() {
+              contactList.add(contactToDelete); // Revert local deletion.
+              filteredContactList = List.from(contactList);
+              isSaving = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to delete contact from Firebase.')),
+            );
+          }
+        });
+      } else {
+        // Handle Hive deletion failure
         setState(() {
-          contactList.add(contactToDelete); // Reverts the change on failure.
+          contactList.add(contactToDelete); // Revert local deletion.
           filteredContactList = List.from(contactList);
+          isSaving = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to delete contact.')),
+          const SnackBar(content: Text('Failed to delete contact locally.')),
         );
       }
     });
+
   }
 }
