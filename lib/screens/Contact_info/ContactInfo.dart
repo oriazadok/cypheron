@@ -65,15 +65,7 @@ class _ContactInfoState extends State<ContactInfo> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        if (selectedMessage != null) {
-          setState(() {
-            selectedMessage = null; // Deselect the message instead of going back.
-          });
-          return false; // Prevent navigating back.
-        }
-        return true; // Allow navigating back.
-      },
+      onWillPop: _handleBackButton,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: !isSearching,
@@ -108,56 +100,55 @@ class _ContactInfoState extends State<ContactInfo> {
         body: Stack(
           children: [
             filteredMessages.isNotEmpty
-                ? ListView.builder(
-                    controller: _scrollController,
-                    itemCount: filteredMessages.length,
-                    itemBuilder: (context, index) {
-                      final message = filteredMessages[index];
-                      final isSelected = selectedMessage == message;
-                      return GestureDetector(
+              ? ListView.builder(
+                controller: _scrollController,
+                itemCount: filteredMessages.length,
+                itemBuilder: (context, index) {
+                  final message = filteredMessages[index];
+                  final isSelected = selectedMessage == message;
+                  return GestureDetector(
 
-                        onLongPress: () {
-                          setState(() {
-                            selectedMessage = message;
-                          });
-                        },
-                        child: Container(
-                          decoration: isSelected
-                            ? BoxDecoration(
-                                color: Colors.purple.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.purple, width: 2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.purple.withOpacity(0.2),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              )
-                            : null,
-                          child: MsgCardUI(
-                            message: message,
-                            subtitle: "Tap to decrypt",
-                            onTap: () async {
-                              String? keyword =
-                                  await KeywordDialog.getKeyword(context, "Decrypt");
-                              if (keyword != null && keyword.isNotEmpty) {
-                                String decryptedBody =
-                                    CypherFFI().runCypher(message.body, keyword, 'd');
-                                displaydialog(context, message.title, decryptedBody);
-                              }
-                            },
-                            onSend: () => _sendMessage(message),
-                          ),
-                        ),
-                      );
+                    onLongPress: () {
+                      setState(() {
+                        isSearching = false;
+                        selectedMessage = message;
+                      });
                     },
-                  )
-                : EmptyStateUI(
-                    icon: IconsUI(type: IconType.mail),
-                    message: 'No messages found.\nAdd a new message.',
-                  ),
+                    child: Container(
+                      decoration: isSelected
+                        ? BoxDecoration(
+                            color: Colors.purple.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.purple, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.purple.withOpacity(0.2),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          )
+                        : null,
+                      child: MsgCardUI(
+                        message: message,
+                        subtitle: "Tap to decrypt",
+                        onTap: () async {
+                          String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
+                          if (keyword != null && keyword.isNotEmpty) {
+                            String decryptedBody = CypherFFI().runCypher(message.body, keyword, 'd');
+                            displaydialog(context, message.title, decryptedBody);
+                          }
+                        },
+                        onSend: () => _sendMessage(message),
+                      ),
+                    ),
+                  );
+                },
+              )
+              : EmptyStateUI(
+                  icon: IconsUI(type: IconType.mail),
+                  message: 'No messages found.\nAdd a new message.',
+                ),
             if (selectedMessage != null)
               OpsRowUI(
                 options: [
@@ -174,6 +165,28 @@ class _ContactInfoState extends State<ContactInfo> {
             : null,
       ),
     );
+  }
+
+  /// Handles back button to cancel deletion mode, exit search, or show logout dialog.
+  Future<bool> _handleBackButton() async {
+    if (selectedMessage != null) {
+      setState(() {
+        selectedMessage = null; // Deselect contact.
+      });
+      return false; // Prevent app exit.
+    }
+
+    if (isSearching) {
+      setState(() {
+        isSearching = false; // Exit search mode.
+        // searchQuery = ''; // Clear search query.
+        filteredMessages = List.from(allMessages); // Reset list.
+      });
+      return false; // Prevent app exit.
+    }
+
+    return true;
+
   }
 
   /// Filters messages based on the search query
