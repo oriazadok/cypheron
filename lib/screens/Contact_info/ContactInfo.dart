@@ -4,6 +4,9 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cypheron/services/FireBaseService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:cypheron/services/ffi_service.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
@@ -20,9 +23,10 @@ import 'package:cypheron/widgets/search/SearchField.dart';
 
 /// Screen that displays detailed information about a contact
 class ContactInfo extends StatefulWidget {
+  final User user;
   final ContactModel contact; // The contact to display
 
-  ContactInfo({required this.contact});
+  ContactInfo({required this.user, required this.contact});
 
   @override
   _ContactInfoState createState() => _ContactInfoState();
@@ -203,6 +207,19 @@ class _ContactInfoState extends State<ContactInfo> {
           _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
         }
       });
+    });
+
+    // Save the new message to Firebase
+    FireBaseService.addMessageToFirebase(
+      widget.user.uid, // The ID of the user who owns the contact
+      widget.contact.id, // The ID of the contact
+      newMessage, // The message to add
+    ).then((success) {
+      if (!success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to save message to Firebase.')),
+        );
+      }
     });
   }
 

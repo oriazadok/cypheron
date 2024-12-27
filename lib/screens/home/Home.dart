@@ -91,7 +91,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ContactInfo(contact: contact),
+                    builder: (context) => ContactInfo(user: widget.userCredential, contact: contact),
                   ),
                 );
               },

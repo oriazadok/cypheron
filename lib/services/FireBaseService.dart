@@ -1,6 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // import 'package:cypheron/models/UserModel.dart';
@@ -8,6 +7,7 @@ import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 
 class FireBaseService {
+
   static final FirebaseAuth _auth = FirebaseAuth.instance; // FirebaseAuth instance
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -117,19 +117,6 @@ class FireBaseService {
     }
   }
 
-  
-
-
-
-  // Future<void> updateUserContacts(String userId, List<String> contactIds) async {
-  //   await _firestore.collection('users').doc(userId).update({
-  //     "contactIds": contactIds,
-  //   });
-  // }
-
-  // Future<void> deleteUser(String userId) async {
-  //   await _firestore.collection('users').doc(userId).delete();
-  // }
 
   // -------------------------- Contact Operations --------------------------
 
@@ -192,56 +179,34 @@ class FireBaseService {
   }
 
 
-
-  
-
-
-
-  Future<List<ContactModel>> getContacts(String userId) async {
-    final contactDocs = await _firestore
-        .collection('contacts')
-        .where('userId', isEqualTo: userId)
-        .get();
-
-    return contactDocs.docs.map((doc) {
-      final data = doc.data();
-      return ContactModel(
-        id: data['id'],
-        name: data['name'],
-        phoneNumber: data['phoneNumber'],
-        messages: [], // Messages will be loaded separately
-      );
-    }).toList();
-  }
-
-  Future<void> updateContact(ContactModel contact) async {
-    await _firestore.collection('contacts').doc(contact.id).update({
-      "name": contact.name,
-      "phoneNumber": contact.phoneNumber,
-    });
-  }
-
-  Future<void> deleteContact(String contactId, String userId) async {
-    await _firestore.collection('contacts').doc(contactId).delete();
-
-    await _firestore.collection('users').doc(userId).update({
-      "contactIds": FieldValue.arrayRemove([contactId]),
-    });
-  }
-
   // -------------------------- Message Operations --------------------------
 
-  Future<void> addMessage(String contactId, MessageModel message) async {
-    await _firestore
-        .collection('contacts')
-        .doc(contactId)
-        .collection('messages')
-        .add({
-      "title": message.title,
-      "body": message.body,
-      "timestamp": message.timestamp.toIso8601String(),
-    });
-  }
+   /// Adds a message to Firestore for a specific contact
+    static Future<bool> addMessageToFirebase(String userId, String contactId, MessageModel message) async {
+      try {
+        // Reference to the messages subcollection under the contact
+        final messageRef = _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('contacts')
+            .doc(contactId)
+            .collection('messages')
+            .doc(); // Generate a unique ID for the message
+
+        // Save the message document
+        await messageRef.set({
+          'title': message.title,
+          'body': message.body,
+          'timestamp': message.timestamp.toIso8601String(),
+        });
+
+        return true; // Success
+      } catch (e) {
+        print("Error saving message to Firebase: $e");
+        return false; // Failure
+      }
+    }
+  
 
   Future<List<MessageModel>> getMessages(String contactId) async {
     final messageDocs = await _firestore
