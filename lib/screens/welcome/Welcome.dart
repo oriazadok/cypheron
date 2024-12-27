@@ -53,6 +53,7 @@ class Welcome extends StatelessWidget {
 
         NavButtonUI(
           label: 'Sign In with Google', // Button label for Sign In with Google.
+          isColor: true,
           onTap: () async {
 
             // Show the loading spinner
@@ -101,17 +102,6 @@ class Welcome extends StatelessWidget {
             }
           },
         ),
-
-        // ElevatedButton.icon(
-        //   icon: Image.asset(
-        //     'assets/icons/google_icon.png', // Add a Google logo asset
-        //     height: 24.0,
-        //   ),
-        //   label: const Text("Sign in with Google"),
-        //   onPressed: () async {
-
-        //   },
-        // ),
       ],
     );
   }
