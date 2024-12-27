@@ -33,22 +33,24 @@ class Welcome extends StatelessWidget {
         // Navigation button for the "Sign In" screen.
         NavButtonUI(
           label: 'Sign In', // Button label for Sign In.
-          destination: SignIn(), // Navigates to the SignIn screen.
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignIn()),
+          ),
         ),
 
         // Navigation button for the "Sign Up" screen.
         NavButtonUI(
           label: 'Sign Up', // Button label for Sign Up.
-          destination: SignUp(), // Navigates to the SignUp screen.
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignUp()),
+          ),
         ),
 
-        ElevatedButton.icon(
-          icon: Image.asset(
-            'assets/icons/google_icon.png', // Add a Google logo asset
-            height: 24.0,
-          ),
-          label: const Text("Sign in with Google"),
-          onPressed: () async {
+        NavButtonUI(
+          label: 'Sign In with Google', // Button label for Sign In with Google.
+          onTap: () async {
 
             // Show the loading spinner
             showDialog(
@@ -75,10 +77,18 @@ class Welcome extends StatelessWidget {
             }
           },
         ),
+
+        // ElevatedButton.icon(
+        //   icon: Image.asset(
+        //     'assets/icons/google_icon.png', // Add a Google logo asset
+        //     height: 24.0,
+        //   ),
+        //   label: const Text("Sign in with Google"),
+        //   onPressed: () async {
+
+        //   },
+        // ),
       ],
-      
     );
   }
-
-  
 }
