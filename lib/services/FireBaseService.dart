@@ -181,70 +181,51 @@ class FireBaseService {
 
   // -------------------------- Message Operations --------------------------
 
-   /// Adds a message to Firestore for a specific contact
-    static Future<bool> addMessageToFirebase(String userId, String contactId, MessageModel message) async {
-      try {
-        // Reference to the messages subcollection under the contact
-        final messageRef = _firestore
-            .collection('users')
-            .doc(userId)
-            .collection('contacts')
-            .doc(contactId)
-            .collection('messages')
-            .doc(); // Generate a unique ID for the message
+  /// Adds a message to Firestore for a specific contact
+  static Future<bool> addMessageToFirebase(String userId, String contactId, MessageModel message) async {
+    try {
+      // Reference to the messages subcollection under the contact
+      final messageRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('contacts')
+          .doc(contactId)
+          .collection('messages')
+          .doc(message.id); // Generate a unique ID for the message
 
-        // Save the message document
-        await messageRef.set({
-          'title': message.title,
-          'body': message.body,
-          'timestamp': message.timestamp.toIso8601String(),
-        });
+      // Save the message document
+      await messageRef.set({
+        'id': message.id,
+        'title': message.title,
+        'body': message.body,
+        'timestamp': message.timestamp.toIso8601String(),
+      });
 
-        return true; // Success
-      } catch (e) {
-        print("Error saving message to Firebase: $e");
-        return false; // Failure
-      }
+      return true; // Success
+    } catch (e) {
+      print("Error saving message to Firebase: $e");
+      return false; // Failure
     }
-  
-
-  Future<List<MessageModel>> getMessages(String contactId) async {
-    final messageDocs = await _firestore
-        .collection('contacts')
-        .doc(contactId)
-        .collection('messages')
-        .orderBy('timestamp', descending: true)
-        .get();
-
-    return messageDocs.docs.map((doc) {
-      final data = doc.data();
-      return MessageModel(
-        title: data['title'],
-        body: data['body'],
-        timestamp: DateTime.parse(data['timestamp']),
-      );
-    }).toList();
   }
 
-  Future<void> updateMessage(String contactId, String messageId, MessageModel updatedMessage) async {
-    await _firestore
-        .collection('contacts')
-        .doc(contactId)
-        .collection('messages')
-        .doc(messageId)
-        .update({
-      "title": updatedMessage.title,
-      "body": updatedMessage.body,
-      "timestamp": updatedMessage.timestamp.toIso8601String(),
-    });
+  /// Deletes a message from Firestore for a specific contact
+  static Future<bool> deleteMessageFromFirebase(String userId, String contactId, String messageId) async {
+    try {
+      // Reference to the specific message document
+      final messageRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('contacts')
+          .doc(contactId)
+          .collection('messages')
+          .doc(messageId);
+
+      await messageRef.delete(); // Delete the message document
+      return true; // Deletion successful
+    } catch (e) {
+      print("Error deleting message from Firebase: $e");
+      return false; // Deletion failed
+    }
   }
 
-  Future<void> deleteMessage(String contactId, String messageId) async {
-    await _firestore
-        .collection('contacts')
-        .doc(contactId)
-        .collection('messages')
-        .doc(messageId)
-        .delete();
-  }
 }

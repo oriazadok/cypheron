@@ -232,6 +232,19 @@ class _ContactInfoState extends State<ContactInfo> {
       selectedMessage = null;
     });
 
+    // Delete the message from Firebase
+    FireBaseService.deleteMessageFromFirebase(
+      widget.user.uid,       // User ID to identify the user
+      widget.contact.id,   // Contact ID to locate the subcollection
+      messageToDelete.id,  // The unique ID of the message
+    ).then((success) {
+      if (!success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete message from Firebase.')),
+        );
+      }
+    });
+
   }
 
   /// Sends a message file using the share_plus package
