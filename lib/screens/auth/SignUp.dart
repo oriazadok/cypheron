@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/services/FireBaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
 
+import 'package:cypheron/services/HiveService.dart';
+import 'package:cypheron/models/UserModel.dart';
+
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // Custom UI for authentication screens
 import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // Custom UI for form layouts
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Custom widget for styled text
@@ -64,12 +67,22 @@ class _SignUpState extends State<SignUp> {
             }
             
             if (user != null) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Home(userCredential: user!),
-                ),
+              // Try to sign up in hive 
+              UserModel newUser = UserModel(
+                userId: user.uid,
+                email: user.email!,
+                contactIds: [],
               );
+
+              bool isAdded = await HiveService.addUser(newUser);
+              if (isAdded) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Home(user: user!, userModel: newUser,),
+                  ),
+                );
+              } 
             }
           },
           buttonText: 'Sign Up',

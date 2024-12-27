@@ -117,6 +117,10 @@ class FireBaseService {
     }
   }
 
+  /// Signs out the currently logged-in user
+  static Future<void> signOut() async {
+    await _auth.signOut();
+  }
 
   // -------------------------- Contact Operations --------------------------
 

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/services/FireBaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication for user sign-in
 
+import 'package:cypheron/services/HiveService.dart';
+import 'package:cypheron/models/UserModel.dart';
+
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI wrapper for authentication screens
 import 'package:cypheron/ui/widgetsUI/formUI/FormUI.dart'; // Form UI widget structure
 import 'package:cypheron/ui/widgetsUI/utilsUI/FittedTextUI.dart'; // Custom widget for styled text
@@ -60,13 +63,16 @@ class _SignInState extends State<SignIn> {
             }
 
             if (user != null) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => Home(userCredential: user!)
-                ),
-                (route) => false,
-              );
+              UserModel? userModel = await HiveService.getUserByUid(user.uid);
+                if (userModel != null) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Home(user: user!, userModel: userModel)
+                    ),
+                    (route) => false,
+                  );
+                } 
             }
           },
           buttonText: 'Sign In',

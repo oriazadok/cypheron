@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
 import 'package:cypheron/services/FireBaseService.dart';
 
+import 'package:cypheron/services/HiveService.dart';
+import 'package:cypheron/models/UserModel.dart';
+
 import 'package:cypheron/ui/screensUI/WelcomeUI.dart'; // Custom UI for the Welcome screen layout.
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart'; // Utility widget for displaying icons.
 import 'package:cypheron/ui/widgetsUI/utilsUI/GenericTextStyleUI.dart'; // Provides generic text styles.
@@ -64,13 +67,33 @@ class Welcome extends StatelessWidget {
             User? user = await FireBaseService.signInWithGoogle();
               
             if (user != null) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Home(userCredential: user),
-                ),
-                (route) => false,
-              );
+                UserModel? userModel = await HiveService.getUserByUid(user.uid);
+                if (userModel != null) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Home(user: user, userModel: userModel)
+                    ),
+                    (route) => false,
+                  );
+                } else {
+                  // Try to sign up in hive 
+                    UserModel newUser = UserModel(
+                      userId: user.uid,
+                      email: user.email!,
+                      contactIds: [],
+                    );
+
+                    bool isAdded = await HiveService.addUser(newUser);
+                    if (isAdded) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Home(user: user, userModel: newUser,),
+                        ),
+                      );
+                    } 
+                }
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Google Sign-In failed')),
