@@ -244,7 +244,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
   }
 
   /// Adds a new contact and saves it to Hive storage.
-  void _addNewContact(ContactModel newContact) {
+  void _addNewContact(ContactModel newContact) async {
     if (contactList.any((contact) =>
       contact.name.toLowerCase() == newContact.name.toLowerCase() &&
       contact.phoneNumber == newContact.phoneNumber)) {
@@ -254,83 +254,136 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
       return;
     }
 
+    // Temporarily add the contact to the list and show saving indicator
     setState(() {
       contactList.add(newContact); // Adds the contact locally.
       filteredContactList = List.from(contactList); // Updates the filtered list.
       isSaving = true; // Indicates a save operation.
     });
 
-    HiveService.saveContact(widget.userModel, newContact).then((success) {
-      if (success) {
-        // Save the contact to Firebase
-        FireBaseService.saveContactToFirebase(widget.user.uid, newContact).then((firebaseSuccess) {
-          if (! firebaseSuccess) {
-            
-            // Handle Firebase save failure
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Failed to save contact to Cloud.')),
-            );
-          }
+    try {
+      // Save the contact to Firebase
+      bool firebaseSuccess = await FireBaseService.saveContactToFirebase(widget.user.uid, newContact);
+
+      if (firebaseSuccess) {
+        // Save the contact to Hive
+        bool hiveSuccess = await HiveService.saveContact(widget.userModel, newContact);
+
+        if (hiveSuccess) {
+          // Both Firebase and Hive succeeded
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Contact saved successfully.')),
+          );
+        } else {
+          // Hive failed, revert Firebase save
+          await FireBaseService.deleteContactFromFirebase(widget.user.uid, newContact);
+
           setState(() {
-            isSaving = false; // Save completed.
+            contactList.remove(newContact);
+            filteredContactList = List.from(contactList);
           });
-        });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Failed to save contact locally. Reverted.')),
+          );
+        }
       } else {
+        // Firebase failed
         setState(() {
-          contactList.remove(newContact); // Reverts the change on failure.
+          contactList.remove(newContact);
           filteredContactList = List.from(contactList);
-          isSaving = false;
         });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save contact.')),
+          const SnackBar(content: Text('Failed to save contact to Cloud.')),
         );
       }
-    });
+    } catch (e) {
+      // Handle unexpected errors
+      print("Error adding contact: $e");
+      setState(() {
+        contactList.remove(newContact);
+        filteredContactList = List.from(contactList);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unexpected error: $e')),
+      );
+    } finally {
+      // Reset saving indicator
+      setState(() {
+        isSaving = false;
+      });
+    }
   }
 
   /// Deletes a selected contact and updates the list.
-  void _deleteContact(ContactModel contactToDelete) {
+  void _deleteContact(ContactModel contactToDelete) async {
     setState(() {
-      contactList.remove(contactToDelete); // Removes the contact locally.
-      filteredContactList = List.from(contactList); // Updates the filtered list.
-      selectedContact = null; // Clears the selected contact.
+      contactList.remove(contactToDelete); // Remove the contact locally from the list.
+      filteredContactList = List.from(contactList); // Update the filtered list.
+      selectedContact = null; // Clear the selected contact.
+      isSaving = true; // Indicate the deletion operation is in progress.
     });
 
-     // Delete the contact from Hive
-    HiveService.deleteContact(widget.userModel, contactToDelete).then((hiveSuccess) {
-      if (hiveSuccess) {
-        // Proceed to delete the contact from Firebase
-        FireBaseService.deleteContactFromFirebase(widget.user.uid, contactToDelete).then((firebaseSuccess) {
-          if (firebaseSuccess) {
-            setState(() {
-              isSaving = false; // Deletion completed.
-            });
-            
-          } else {
-            // Handle Firebase deletion failure
-            setState(() {
-              contactList.add(contactToDelete); // Revert local deletion.
-              filteredContactList = List.from(contactList);
-              isSaving = false;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Failed to delete contact from Cloud.')),
-            );
-          }
-        });
+    try {
+      // Delete the contact from Firebase
+      bool firebaseSuccess = await FireBaseService.deleteContactFromFirebase(widget.user.uid, contactToDelete);
+
+      if (firebaseSuccess) {
+        // Proceed to delete the contact from Hive
+        bool hiveSuccess = await HiveService.deleteContact(widget.userModel, contactToDelete);
+
+        if (hiveSuccess) {
+          // Both Firebase and Hive deletions succeeded
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Contact deleted successfully.')),
+          );
+        } else {
+          // Hive deletion failed; revert Firebase deletion
+          await FireBaseService.saveContactToFirebase(widget.user.uid, contactToDelete);
+
+          setState(() {
+            contactList.add(contactToDelete); // Revert local deletion.
+            filteredContactList = List.from(contactList);
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to delete contact from device. Reverted.'),
+            ),
+          );
+        }
       } else {
-        // Handle Hive deletion failure
+        // Firebase deletion failed; revert local deletion
         setState(() {
           contactList.add(contactToDelete); // Revert local deletion.
           filteredContactList = List.from(contactList);
-          isSaving = false;
         });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to delete contact from device.')),
+          const SnackBar(content: Text('Failed to delete contact from Cloud.')),
         );
       }
-    });
+    } catch (e) {
+      // Handle unexpected errors
+      print("Error deleting contact: $e");
 
+      setState(() {
+        contactList.add(contactToDelete); // Revert local deletion.
+        filteredContactList = List.from(contactList);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unexpected error: $e')),
+      );
+    } finally {
+      // Reset saving indicator
+      setState(() {
+        isSaving = false;
+      });
+    }
   }
 
   void _updateAnalyticsData() async {
