@@ -2,7 +2,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// import 'package:cypheron/models/UserModel.dart';
+import 'package:cypheron/services/HiveService.dart';
+
+import 'package:cypheron/models/UserModel.dart';
 import 'package:cypheron/models/ContactModel.dart';
 import 'package:cypheron/models/MessageModel.dart';
 
@@ -117,6 +119,78 @@ class FireBaseService {
     }
   }
 
+  /// Fetch and mount user data into Hive
+  static Future<UserModel?> fetchAndMountUserData(String userId) async {
+    try {
+
+      // Fetch user profile
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        // Save user to Hive
+        UserModel user = UserModel(
+          userId: userData['uid'],
+          email: userData['email'],
+          contactIds: List<String>.from([]),
+        );
+
+        await HiveService.addUser(user);
+      }
+
+      // Fetch user's contacts
+      QuerySnapshot contactSnapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('contacts')
+          .get();
+      
+      for (var contactDoc in contactSnapshot.docs) {
+        Map<String, dynamic> contactData = contactDoc.data() as Map<String, dynamic>;
+
+        QuerySnapshot messageSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('contacts')
+          .doc(contactData['id'])
+          .collection('messages')
+          .get();
+        
+        // Parse messages
+        List<MessageModel> messages = [];
+        for (var messageDoc in messageSnapshot.docs) {
+          Map<String, dynamic> messageData = messageDoc.data() as Map<String, dynamic>;
+
+          messages.add(MessageModel(
+            id: messageData['id'],
+            title: messageData['title'],
+            body: messageData['body'],
+            timestamp: DateTime.parse(messageData['timestamp']),
+          ));
+        }
+
+        // Save contact to Hive
+        ContactModel contact = ContactModel(
+          id: contactData['id'],
+          name: contactData['name'],
+          phoneNumber: contactData['phoneNumber'],
+          messages: messages,
+        );
+
+        UserModel? user = await HiveService.getUserByUid(userId);
+
+        await HiveService.saveContact(user!, contact);
+      }
+
+      print("Data successfully fetched and mounted to Hive.");
+      UserModel? user = await HiveService.getUserByUid(userId);
+      return user;
+    } catch (e) {
+      print("Error fetching and mounting data: $e");
+      return null;
+    }
+  }
+
   /// Signs out the currently logged-in user
   static Future<void> signOut() async {
     await _auth.signOut();
@@ -140,16 +214,6 @@ class FireBaseService {
         'name': contact.name,
         'phoneNumber': contact.phoneNumber,
       });
-
-      // // Step 3: Save messages as a subcollection under the contact document
-      // final messagesRef = contactRef.collection('messages');
-      // for (var message in contact.messages) {
-      //   await messagesRef.doc().set({
-      //     'title': message.title,
-      //     'body': message.body,
-      //     'timestamp': message.timestamp.toIso8601String(),
-      //   });
-      // }
 
       return true; // Success
     } catch (e) {

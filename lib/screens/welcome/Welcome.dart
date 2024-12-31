@@ -68,7 +68,7 @@ class Welcome extends StatelessWidget {
             User? user = await FireBaseService.signInWithGoogle();
               
             if (user != null) {
-                UserModel? userModel = await HiveService.getUserByUid(user.uid);
+                UserModel? userModel = await FireBaseService.fetchAndMountUserData(user.uid);
                 if (userModel != null) {
                   Navigator.pushAndRemoveUntil(
                     context,

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cypheron/services/FireBaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication for user sign-in
 
-import 'package:cypheron/services/HiveService.dart';
 import 'package:cypheron/models/UserModel.dart';
 
 import 'package:cypheron/ui/screensUI/AuthUI.dart'; // UI wrapper for authentication screens
@@ -63,7 +62,9 @@ class _SignInState extends State<SignIn> {
             }
 
             if (user != null) {
-              UserModel? userModel = await HiveService.getUserByUid(user.uid);
+
+              UserModel? userModel = await FireBaseService.fetchAndMountUserData(user.uid);
+
                 if (userModel != null) {
                   Navigator.pushAndRemoveUntil(
                     context,
