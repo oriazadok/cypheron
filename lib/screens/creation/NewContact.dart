@@ -18,42 +18,46 @@ class NewContact extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Main body of the screen wrapped in a reusable `FormUI` widget.
-      body: FormUI(
-        title: 'New Contact', // Title displayed at the top of the form.
+      body: Center(
+        child: SingleChildScrollView( 
+          // Main body of the screen wrapped in a reusable `FormUI` widget.
+          child: FormUI(
+            title: 'New Contact', // Title displayed at the top of the form.
 
-        // Input fields for the form (Name and Phone).
-        inputFields: [
-          // Reusable form field for name input.
-          GenericFormField(
-            fieldType: FieldType.name,
-            controller: _nameController,
-          ),
-          // Reusable form field for phone input.
-          GenericFormField(
-            fieldType: FieldType.phone,
-            controller: _phoneController,
-          ),
-        ],
-        
-        // Callback function triggered when the "Add Contact" button is clicked.
-        onClick: () {
-          // Retrieve the input values from the text controllers.
-          String name = _nameController.text;
-          String phone = _phoneController.text;
-
-          // Ensure both fields are filled before proceeding.
-          if (name.isNotEmpty && phone.isNotEmpty) {
-            // Create a new `ContactModel` instance with the entered data.
-            ContactModel newContact = ContactModel(name: name, phoneNumber: phone);
+            // Input fields for the form (Name and Phone).
+            inputFields: [
+              // Reusable form field for name input.
+              GenericFormField(
+                fieldType: FieldType.name,
+                controller: _nameController,
+              ),
+              // Reusable form field for phone input.
+              GenericFormField(
+                fieldType: FieldType.phone,
+                controller: _phoneController,
+              ),
+            ],
             
-            // Navigate back to the previous screen and return the new contact as a result.
-            Navigator.pop(context, newContact);
-          }
-        },
+            // Callback function triggered when the "Add Contact" button is clicked.
+            onClick: () {
+              // Retrieve the input values from the text controllers.
+              String name = _nameController.text;
+              String phone = _phoneController.text;
 
-        // Text displayed on the form submission button.
-        buttonText: 'Add Contact',
+              // Ensure both fields are filled before proceeding.
+              if (name.isNotEmpty && phone.isNotEmpty) {
+                // Create a new `ContactModel` instance with the entered data.
+                ContactModel newContact = ContactModel(name: name, phoneNumber: phone);
+                
+                // Navigate back to the previous screen and return the new contact as a result.
+                Navigator.pop(context, newContact);
+              }
+            },
+
+            // Text displayed on the form submission button.
+            buttonText: 'Add Contact',
+          ),
+        ),
       ),
     );
   }
