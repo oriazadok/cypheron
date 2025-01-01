@@ -195,12 +195,10 @@ class _ContactInfoState extends State<ContactInfo> {
       if (query.isEmpty) {
         filteredMessages = allMessages; // Reset messages if query is empty
       } else {
-        // Filter messages by checking if the query matches the title or body
+        // Filter messages by checking if the query matches the title
         filteredMessages = allMessages.where((message) {
           final title = message.title.toLowerCase(); // Message title
-          final body = message.body.toLowerCase(); // Message body
-          return title.contains(query.toLowerCase()) ||
-              body.contains(query.toLowerCase());
+          return title.contains(query.toLowerCase());
         }).toList();
       }
     });
