@@ -20,6 +20,9 @@ class FireBaseService {
     try {
       final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+      // Sign out to force account selection
+      await _googleSignIn.signOut();
+
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
