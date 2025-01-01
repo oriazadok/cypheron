@@ -174,12 +174,16 @@ class FireBaseService {
           id: contactData['id'],
           name: contactData['name'],
           phoneNumber: contactData['phoneNumber'],
-          messages: messages,
         );
 
         UserModel? user = await HiveService.getUserByUid(userId);
 
         await HiveService.saveContact(user!, contact);
+        
+        for (MessageModel message in messages) {
+          contact.addMessage(message);
+        }
+
       }
 
       print("Data successfully fetched and mounted to Hive.");
