@@ -206,15 +206,17 @@ class _ContactInfoState extends State<ContactInfo> {
     });
   }
 
-  /// Adds a new message and refreshes the UI
-  void _addNewMessage(MessageModel newMessage) {
+  /// Adds a new message and ensures consistency between Firebase and Hive
+  void _addNewMessage(MessageModel newMessage) async {
+    // Step 1: Add the message locally (this internally calls `save()`)
+    widget.contact.addMessage(newMessage); // Add the message to the contact locally
+
+    // Update the message list in the UI
     setState(() {
-      widget.contact.addMessage(newMessage); // Add the new message to the contact
-      widget.contact.save(); // Save the updated contact data
-      allMessages = widget.contact.messages; // Refresh and reverse the message list
+      allMessages = widget.contact.messages; // Refresh the message list
       filteredMessages = allMessages;
 
-      // Scroll to the top to show the latest message
+      // Scroll to the latest message
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -222,43 +224,111 @@ class _ContactInfoState extends State<ContactInfo> {
       });
     });
 
-    // Save the new message to Firebase
-    FireBaseService.addMessageToFirebase(
-      widget.user.uid, // The ID of the user who owns the contact
-      widget.contact.id, // The ID of the contact
-      newMessage, // The message to add
-    ).then((success) {
-      if (!success) {
+    try {
+      // Step 2: Save the new message to Firebase
+      bool firebaseSuccess = await FireBaseService.addMessageToFirebase(
+        widget.user.uid,
+        widget.contact.id,
+        newMessage,
+      );
+
+      if (!firebaseSuccess) {
+        // Step 3: Firebase save failed, revert the local changes
+        widget.contact.messages.remove(newMessage);
+        widget.contact.save(); // Save the reverted contact locally
+
+        setState(() {
+          allMessages = widget.contact.messages; // Refresh the message list
+          filteredMessages = allMessages;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to save message to Firebase.')),
         );
+
+        return;
       }
-    });
+
+      // Step 4: Success, notify the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Message saved successfully.')),
+      );
+    } catch (e) {
+      // Step 5: Handle unexpected errors
+      print("Error adding message: $e");
+
+      widget.contact.messages.remove(newMessage); // Revert local change
+      widget.contact.save();
+
+      setState(() {
+        allMessages = widget.contact.messages; // Refresh the message list
+        filteredMessages = allMessages;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unexpected error: $e')),
+      );
+    }
   }
 
-  void _deleteMessage(MessageModel messageToDelete) {
+  void _deleteMessage(MessageModel messageToDelete) async {
+    // Temporarily remove the message from the local list and update the UI
     setState(() {
       allMessages.remove(messageToDelete);
       filteredMessages = allMessages;
       widget.contact.messages = allMessages;
-      widget.contact.save();
+      widget.contact.save(); // Save the updated contact locally
       selectedMessage = null;
     });
 
-    // Delete the message from Firebase
-    FireBaseService.deleteMessageFromFirebase(
-      widget.user.uid,       // User ID to identify the user
-      widget.contact.id,   // Contact ID to locate the subcollection
-      messageToDelete.id,  // The unique ID of the message
-    ).then((success) {
-      if (!success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to delete message from Firebase.')),
-        );
-      }
-    });
+    try {
+      // Step 1: Delete the message from Firebase
+      bool firebaseSuccess = await FireBaseService.deleteMessageFromFirebase(
+        widget.user.uid,       // User ID to identify the user
+        widget.contact.id,     // Contact ID to locate the subcollection
+        messageToDelete.id,    // The unique ID of the message
+      );
 
+      if (!firebaseSuccess) {
+        // Step 2a: Firebase deletion failed, revert the local deletion
+        widget.contact.messages.add(messageToDelete); // Re-add the message locally
+        widget.contact.save(); // Save the reverted contact locally
+
+        setState(() {
+          allMessages = widget.contact.messages; // Refresh the message list
+          filteredMessages = allMessages;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete message from Firebase. Reverted locally.')),
+        );
+
+        return;
+      }
+
+      // Step 2b: Firebase succeeded, confirm local deletion is successful
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Message deleted successfully.')),
+      );
+    } catch (e) {
+      // Step 3: Handle unexpected errors
+      print("Error deleting message: $e");
+
+      // Revert the local deletion in case of an error
+      widget.contact.messages.add(messageToDelete); // Re-add the message locally
+      widget.contact.save(); // Save the reverted contact locally
+
+      setState(() {
+        allMessages = widget.contact.messages; // Refresh the message list
+        filteredMessages = allMessages;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unexpected error: $e')),
+      );
+    }
   }
+
 
   /// Sends a message file using the share_plus package
   Future<void> _sendMessage(MessageModel message) async {
