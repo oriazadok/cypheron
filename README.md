@@ -1,67 +1,60 @@
+# Welcome to Cypheron
 
-# Cypheron
+Cypheron is a secure and user-friendly app designed to help you send and receive encrypted messages. It's a tool for anyone who values privacy in their communication.
 
-Cypheron is a secure messaging Flutter application that allows users to create encrypted messages, send them via WhatsApp, or decrypt files received through other apps. Using a custom C++ encryption algorithm integrated with Flutter's FFI, Cypheron provides secure communication channels with a focus on user privacy and ease of use.
+## Key Features
 
-## Features
+- **Secure Messaging**: Send messages that only the recipient can decrypt and read.
+- **Easy-to-Use Interface**: Designed for simplicity, so anyone can use it without technical expertise.
+- **File Encryption**: Encrypt and decrypt files effortlessly, ensuring your sensitive data remains private.
+- **Contact Management**: Organize and manage your contacts directly within the app.
 
-- **User Authentication**: Cypheron supports user sign-up and sign-in functionality.
-- **Contact Management**: Users can manually add contacts or access their phone contacts, storing them in the app for messaging.
-- **Message Encryption and Decryption**: Messages can be encrypted using a user-defined key and sent to contacts, or decrypted upon reception.
-- **File Sharing Support**: Cypheron can be opened from other apps using the 'Open with' option for files with `.zk` extension.
-- **Hive Database**: For efficient local storage of user data and messages.
-- **Flutter FFI Integration**: Cypheron’s encryption mechanism is powered by a C++ library connected through Dart FFI for seamless encryption and decryption.
+---
 
-## Project Structure
+## How It Works
 
-- **lib**: Contains the main application logic, UI screens, FFI integration, and widgets.
-  - **auth**: Screens and logic for authentication (SignUp and SignIn).
-  - **models**: Models like `UserModel` and `ContactModel` to manage user and contact data.
-  - **services**: Contains `HiveService` for data storage and `ffi_service` for encryption/decryption functions.
-  - **widgets**: Components like `ContactList` and buttons for user interaction.
-- **android**: Android-specific configurations, including FFI setup and file handling for Android intents.
+### 1. Create a Message
+Write your message or select a file you want to send securely. You can choose a title for your message for easy identification later.
 
-## Getting Started
+<img src="images/new_msg.jpg" alt="Create a Message" width="200" height="500">
 
-### Prerequisites
+### 2. Encrypt
+Use a secure key to lock your message or file. This ensures that only the person with the correct key can access the content.
 
-- Flutter SDK
-- Dart SDK
-- Android SDK (for Android builds)
-- C++ compiler (for building the native library)
+<img src="images/encrypt.jpg" alt="Encrypt a Message" width="200" height="500">
 
-### Installation
+### 3. Send
+Share the encrypted message or file via your preferred platform, such as WhatsApp, email, or any other messaging app.
 
-1. Clone the repository and navigate to the project root.
-2. Run `flutter pub get` to install dependencies.
-3. Set up an emulator or connect a physical device.
-4. For debug build: `flutter run`.
-5. For a release build, use `flutter build apk --release`.
+<img src="images/send.jpg" alt="Send a Message" width="200" height="500">
 
-### Configuring the Android App Icon
+### 4. Decrypt
+The recipient can unlock the encrypted message using the same key you used to encrypt it. The decryption process is simple and quick.
+<div style="display: flex; margin: 20px; gap: 20px;">
+  <img src="images/decrypt.jpg" alt="Decrypt a Message" width="200" height="500">
+  <img src="images/decrypted.jpg" alt="Decrypted Message" width="200" height="500">
+</div>
+---
 
-1. Place the app icon in `assets/icon.png`.
-2. Update `flutter_launcher_icons.yaml` with the icon path.
-3. Run `flutter pub run flutter_launcher_icons:main`.
+## Why Choose Cypheron?
 
-## Building the APK
+- **Privacy First**: Your messages are encrypted, meaning only you and your recipient can access the content.
+- **Control Over Data**: Keep your private messages safe, even if shared over public channels.
+- **No Technical Knowledge Required**: Cypheron is designed for everyone, regardless of their tech background.
 
-Use the following command to create a release APK:
-
-```bash
-flutter build apk --release
-```
-
-The APK will be located in the `build/app/outputs/flutter-apk` folder.
-
-## Running the App
-
-To test the app on a connected device in release mode:
-
-```bash
-flutter install --release
-```
+---
 
 ## License
 
-This project is licensed under the MIT License.
+Cypheron is proprietary software. The code, design, and all associated intellectual property are owned by the creator. You are not permitted to use, modify, or distribute the code without explicit written permission from the owner.
+
+
+---
+
+## Contact Us
+
+If you have any questions, feedback, or need support, feel free to reach out.
+
+---
+
+Enjoy a safer way to communicate with Cypheron!
