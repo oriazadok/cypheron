@@ -45,4 +45,7 @@ app.*.map.json
 # Ignore the jniLibs folder
 android/app/src/main/jniLibs/
 
+android/app/google-services.json
+
+
 /toDo
