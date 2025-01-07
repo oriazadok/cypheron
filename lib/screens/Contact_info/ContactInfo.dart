@@ -241,16 +241,16 @@ class _ContactInfoState extends State<ContactInfo> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save message to Firebase.')),
+          const SnackBar(content: Text('Failed to save message to Cloud.')),
         );
 
         return;
       }
 
       // Step 4: Success, notify the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Message saved successfully.')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Message saved successfully.')),
+      // );
     } catch (e) {
       // Step 5: Handle unexpected errors
       print("Error adding message: $e");
@@ -298,16 +298,16 @@ class _ContactInfoState extends State<ContactInfo> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to delete message from Firebase. Reverted locally.')),
+          const SnackBar(content: Text('Failed to delete message from Cloud. Reverted locally.')),
         );
 
         return;
       }
 
       // Step 2b: Firebase succeeded, confirm local deletion is successful
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Message deleted successfully.')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Message deleted successfully.')),
+      // );
     } catch (e) {
       // Step 3: Handle unexpected errors
       print("Error deleting message: $e");

@@ -271,9 +271,9 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
 
         if (hiveSuccess) {
           // Both Firebase and Hive succeeded
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Contact saved successfully.')),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text('Contact saved successfully.')),
+          // );
         } else {
           // Hive failed, revert Firebase save
           await FireBaseService.deleteContactFromFirebase(widget.user.uid, newContact);
@@ -337,9 +337,9 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
 
         if (hiveSuccess) {
           // Both Firebase and Hive deletions succeeded
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Contact deleted successfully.')),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text('Contact deleted successfully.')),
+          // );
         } else {
           // Hive deletion failed; revert Firebase deletion
           await FireBaseService.saveContactToFirebase(widget.user.uid, contactToDelete);
