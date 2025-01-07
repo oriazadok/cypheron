@@ -46,21 +46,36 @@ class _DecryptorState extends State<Decryptor> {
           ? Center(
               child: CircularProgressIndicator(), // Show loading while message is null
             )
-          : MsgCardUI(
-              message: message!, // Safely use the `message` object
-              subtitle: "Tap to decrypt",
-              onTap: () async {
-                // Show dialog to get the decryption keyword
-                String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
+          : Column(
+            children: [
+              MsgCardUI(
+                message: message!, // Safely use the `message` object
+                subtitle: "Tap to decrypt",
+                onTap: () async {
+                  // Show dialog to get the decryption keyword
+                  String? keyword = await KeywordDialog.getKeyword(context, "Decrypt");
 
-                if (keyword != null && keyword.isNotEmpty) {
-                  // Decrypt the message body using the provided keyword
-                  String decryptedBody = CypherFFI().runCypher(message!.body, keyword, 'd');
-                  // Display the decrypted message in a dialog
-                  displaydialog(context, message!.title, decryptedBody);
-                }
-              },
-            ),
+                  if (keyword != null && keyword.isNotEmpty) {
+                    // Decrypt the message body using the provided keyword
+                    String decryptedBody = CypherFFI().runCypher(message!.body, keyword, 'd');
+                    // Display the decrypted message in a dialog
+                    displaydialog(context, message!.title, decryptedBody);
+                  }
+                },
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  'Note: The file name displayed here may differ from the original file name you saw before opening the file in Cypheron.',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          )
+          
+          
     );
   }
 
