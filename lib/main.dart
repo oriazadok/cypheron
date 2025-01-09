@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'; // Import Flutter's Material Design library for UI components
 import 'package:flutter/services.dart'; // Import to use MethodChannel for platform-specific communication
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'services/HiveService.dart'; // Import a local service for managing the Hive database
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase core for initialization
@@ -8,6 +9,8 @@ import 'ui/generalUI/theme.dart'; // Import theme configuration for the app's ge
 
 import 'screens/welcome/Welcome.dart'; // Import the Welcome screen
 import 'screens/decrypt/Decryptor.dart'; // Import the Decryptor screen
+import 'screens/license/LicenseAgreementScreen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure that Flutter is properly initialized before any bindings
@@ -27,23 +30,54 @@ class _MyAppState extends State<MyApp> {
   // Define a platform channel to communicate with native code for shared files
   String? sharedFilePath; // Store the path of a shared file (if any)
 
+  bool hasAgreed = false; // **Change 1:** Track the user's consent status
+  bool isLoading = true; // Flag to indicate whether consent check is in progress
+
   @override
   void initState() {
     super.initState();
+     _checkUserConsent(); // **Change 2:** Check consent on initialization
     _getInitialSharedFile(); // Check if there is a shared file on app start
+  }
+
+  Future<void> _checkUserConsent() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      hasAgreed = prefs.getBool('license_approved') ?? false;
+      isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+
+    if (isLoading) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(), // Show a loading spinner
+          ),
+        ),
+      );
+    }
+
+    if (!hasAgreed) {
+      return MaterialApp(
+        theme: ThemeData.light(), // Default light theme
+        darkTheme: getDarkTheme(), // Custom dark theme
+        themeMode: ThemeMode.dark, // Set the app to use dark mode
+        home: LicenseAgreementScreen(onAgree: () => setState(() => hasAgreed = true)),
+      );
+    }
+
     return MaterialApp(
       title: 'Cypheron', // App title
       theme: ThemeData.light(), // Default light theme
       darkTheme: getDarkTheme(), // Custom dark theme
       themeMode: ThemeMode.dark, // Set the app to use dark mode
-      home: sharedFilePath != null 
-          ? Decryptor(initialFilePath: sharedFilePath) 
-          : Welcome(), 
-      // Show the Decryptor screen if a shared file exists; otherwise, show the Welcome screen
+      home: sharedFilePath != null
+          ? Decryptor(initialFilePath: sharedFilePath)
+          : Welcome(),
     );
   }
 

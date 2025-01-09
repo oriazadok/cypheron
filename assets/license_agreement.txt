@@ -1,0 +1,64 @@
+Cypheron License Agreement
+
+1. Introduction
+
+Welcome to Cypheron! By using this app, you agree to the terms and conditions outlined in this License Agreement. If you do not agree to these terms, please do not use the app.
+
+Cypheron is a secure communication application designed to encrypt and decrypt messages. It uses advanced encryption techniques to ensure your privacy. This license governs the use of Cypheron, including any updates or enhancements.
+
+2. Grant of License
+
+We grant you a limited, non-exclusive, non-transferable license to use Cypheron solely for personal or professional communication. You may not:
+
+    - Reverse engineer, decompile, or disassemble the app.
+    - Modify or distribute the app without our explicit permission.
+    - Use the app for any unlawful or harmful purposes.
+
+3. Usage Restrictions
+
+When using Cypheron, you agree to the following:
+
+    - You will not share or distribute encrypted content without the recipient’s consent.
+    - You will not use the app to transmit illegal, defamatory, or harmful content.
+    - You are responsible for safeguarding your encryption keys.
+    - You are responsible for ensuring that your use of Cypheron complies with local laws and regulations.
+
+4. Data Handling
+
+Cypheron values your privacy and security. Here’s how we handle your data:
+
+    Encrypted Messages: Encrypted messages are saved in the cloud and associated with the relevant contacts.
+    Contacts: Contacts you add to the app are saved in the cloud to ensure seamless access across devices.
+    Keys: Cypheron does not save or store your encryption keys. It is your responsibility to remember and securely manage your keys.
+    Third-Party Services: The app may use third-party cloud services for storage, authentication, and analytics. All data stored in the cloud is encrypted during transmission and at rest using industry-standard encryption protocols. By using the app, you agree to their terms of service and privacy policies.
+
+5. Disclaimer of Liability
+
+Cypheron is provided "as is," without warranties of any kind. We are not responsible for:
+
+    - Loss of data due to misuse, technical failures, or lost encryption keys.
+    - Unauthorized access caused by your failure to secure your device or keys.
+    - Any damages resulting from the app’s use.
+    - Compromised Encryption: While Cypheron employs advanced encryption techniques, no encryption system is entirely immune to attack. We are not responsible if someone successfully circumvents or cracks the encryption used within the app.
+    
+
+6. Intellectual Property
+
+Cypheron, including its logo, algorithms, and code, is our intellectual property. Unauthorized copying, distribution, or modification is strictly prohibited.
+
+7. Modifications and Termination
+
+We reserve the right to modify this agreement at any time. You will be notified of significant changes and required to accept the updated terms. We may suspend or terminate your access to Cypheron if you violate these terms.
+
+8. Governing Law
+
+This agreement is governed by the laws of the State of Israel. Any disputes arising under this agreement will be resolved exclusively in the courts located in Israel.
+
+9. Acceptance
+
+By clicking "I Agree," you confirm that you have read, understood, and agreed to the terms of this License Agreement. If you do not agree to the updated terms, you may withdraw your acceptance by ceasing to use the app and uninstalling it from your device.
+
+10. Contact Information
+
+If you have questions or concerns, please contact us at:
+Email: zadorik442@gmail.com
