@@ -21,13 +21,14 @@ class ContactModelAdapter extends TypeAdapter<ContactModel> {
       name: fields[1] as String,
       phoneNumber: fields[2] as String,
       messages: (fields[3] as List?)?.cast<MessageModel>(),
+      timestamp: fields[4] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ContactModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class ContactModelAdapter extends TypeAdapter<ContactModel> {
       ..writeByte(2)
       ..write(obj.phoneNumber)
       ..writeByte(3)
-      ..write(obj.messages);
+      ..write(obj.messages)
+      ..writeByte(4)
+      ..write(obj.timestamp);
   }
 
   @override

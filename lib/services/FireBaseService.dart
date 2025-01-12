@@ -177,6 +177,7 @@ class FireBaseService {
           id: contactData['id'],
           name: contactData['name'],
           phoneNumber: contactData['phoneNumber'],
+          timestamp: DateTime.parse(contactData['timestamp'])
         );
 
         UserModel? user = await HiveService.getUserByUid(userId);
@@ -220,6 +221,7 @@ class FireBaseService {
         'id': contact.id,
         'name': contact.name,
         'phoneNumber': contact.phoneNumber,
+        'timestamp': contact.timestamp.toIso8601String(),
       });
 
       return true; // Success

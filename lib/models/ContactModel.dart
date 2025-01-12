@@ -18,15 +18,20 @@ class ContactModel extends HiveObject {
   @HiveField(3)
   List<MessageModel> messages;  // List of messages
 
+  @HiveField(4)
+  final DateTime timestamp; // Timestamp field
+
   // Constructor to initialize the contact data
   ContactModel({
     String? id,
     required this.name,
     required this.phoneNumber,
     List<MessageModel>? messages,
+    DateTime? timestamp,
   }) : 
     id = id ?? Uuid().v4(),
-    messages = messages ?? [];  // Use a mutable list as the default
+    messages = messages ?? [],  // Use a mutable list as the default
+    timestamp = timestamp ?? DateTime.now();
 
   // Method to add a new message
   void addMessage(MessageModel newMessage) {

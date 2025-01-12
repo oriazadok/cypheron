@@ -134,6 +134,10 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
       isSaving = true;
     });
     List<ContactModel> loadedContacts = await HiveService.loadContactsByIds(contactIds);
+
+    // Sort the contacts list in ascending order (oldest first)
+    loadedContacts.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
     setState(() {
       contactList = loadedContacts; // Updates the contact list.
       filteredContactList = loadedContacts; // Initializes the filtered list.
