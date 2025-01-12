@@ -28,12 +28,11 @@ class _HomeUIState extends State<HomeUI> {
                 backgroundColor: Colors.grey[300], // Background of the indicator
                 color: Colors.deepPurpleAccent,   // Active progress bar color
               ),
+            
             // Display list of contacts if available
             Expanded(
               child: widget.children[0],
             ),
-            if(widget.children.length > 1)
-              widget.children[1],
           ],
         ),
     );

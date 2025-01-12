@@ -88,33 +88,37 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
         body: HomeUI(
           isSaving: isSaving,
           children: [
-            ContactList(
-              contactList: filteredContactList,
-              onTap: (ContactModel contact) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ContactInfo(user: widget.user, contact: contact),
+            Stack(
+              children: [
+                ContactList(
+                  contactList: filteredContactList,
+                  onTap: (ContactModel contact) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ContactInfo(user: widget.user, contact: contact),
+                      ),
+                    );
+                  },
+                  onLongPress: (ContactModel contact) {
+                    isSearching = false;
+                    setState(() {
+                      selectedContact = contact;
+                    });
+                  },
+                  selectedContact: selectedContact,
+                ),
+                if (selectedContact != null)
+                  OpsRowUI(
+                    options: [
+                      IconsUI(
+                        type: IconType.delete,
+                        onPressed: () => _deleteContact(selectedContact!),
+                      )
+                    ],
                   ),
-                );
-              },
-              onLongPress: (ContactModel contact) {
-                isSearching = false;
-                setState(() {
-                  selectedContact = contact;
-                });
-              },
-              selectedContact: selectedContact,
-            ),
-            if (selectedContact != null)
-              OpsRowUI(
-                options: [
-                  IconsUI(
-                    type: IconType.delete,
-                    onPressed: () => _deleteContact(selectedContact!),
-                  )
-                ],
-              ),
+              ],
+            )
           ],
         ),
         floatingActionButton: selectedContact == null
