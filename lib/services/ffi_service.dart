@@ -37,7 +37,7 @@ class CypherFFI {
       result = resultPtr.toDartString();
       calloc.free(resultPtr);  // Free the allocated memory for the result
     } else {
-      result = 'Error in cypher function';  // Handle any function failure
+      result = 'Cypher failed';  // Handle any function failure
     }
 
     // Free allocated memory for input and key pointers
