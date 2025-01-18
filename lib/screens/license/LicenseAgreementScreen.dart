@@ -4,7 +4,7 @@ import 'dart:async'; // For asynchronous operations
 import 'package:flutter/services.dart' show rootBundle; // To load license text
 
 class LicenseAgreementScreen extends StatefulWidget {
-  final VoidCallback onAgree; // Callback to notify parent when the user agrees
+  final VoidCallback onAgree;
 
   LicenseAgreementScreen({required this.onAgree});
 
@@ -14,7 +14,7 @@ class LicenseAgreementScreen extends StatefulWidget {
 
 class _LicenseAgreementScreenState extends State<LicenseAgreementScreen> {
   String licenseText = "";
-  bool canShowButtons = false; // Track whether the user can see the buttons
+  bool canShowButton = false;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -45,21 +45,42 @@ class _LicenseAgreementScreenState extends State<LicenseAgreementScreen> {
 
   void _proceed() async {
     await _saveUserConsent();
-    widget.onAgree(); // Notify the parent widget that the user agreed
+    widget.onAgree();
   }
 
   void _handleScroll() {
     if (_scrollController.hasClients) {
-      // Check if user has scrolled to the bottom
       final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.position.pixels;
-
       if (currentScroll >= maxScroll) {
         setState(() {
-          canShowButtons = true;
+          canShowButton = true;
         });
       }
     }
+  }
+
+  Widget _buildBulletPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("• ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                text.trim(),
+                style: TextStyle(fontSize: 16, height: 1.5),
+                textAlign: TextAlign.left,
+                softWrap: true,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -71,51 +92,66 @@ class _LicenseAgreementScreenState extends State<LicenseAgreementScreen> {
       ),
       body: licenseText.isEmpty
           ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: _scrollController,
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      licenseText,
-                      style: TextStyle(fontSize: 16.0),
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: licenseText.split('\n').map((line) {
+                              String trimmedLine = line.trim();
+                              if (trimmedLine.startsWith(RegExp(r'\d+\.'))) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Text(
+                                    trimmedLine,
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                );
+                              } else if (trimmedLine.startsWith('- ')) {
+                                return _buildBulletPoint(trimmedLine.substring(2));
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Text(
+                                    trimmedLine,
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                );
+                              }
+                            }).toList(),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                AnimatedOpacity(
-                  opacity: canShowButtons ? 1.0 : 0.0, // Buttons appear gradually
-                  duration: Duration(milliseconds: 300),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text("Agreement Required"),
-                              content: Text(
-                                  "You must accept the license agreement to use this app."),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: Text("OK"),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        child: Text("Disagree"),
+                  SizedBox(height: 16),
+                  AnimatedOpacity(
+                    opacity: canShowButton ? 1.0 : 0.0,
+                    duration: Duration(milliseconds: 300),
+                    child: ElevatedButton(
+                      onPressed: _proceed,
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                        textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      ElevatedButton(
-                        onPressed: _proceed,
-                        child: Text("Agree"),
-                      ),
-                    ],
+                      child: Text("I Agree"),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
     );
   }

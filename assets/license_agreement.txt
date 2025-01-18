@@ -27,10 +27,10 @@ When using Cypheron, you agree to the following:
 
 Cypheron values your privacy and security. Here’s how we handle your data:
 
-    Encrypted Messages: Encrypted messages are saved in the cloud and associated with the relevant contacts.
-    Contacts: Contacts you add to the app are saved in the cloud to ensure seamless access across devices.
-    Keys: Cypheron does not save or store your encryption keys. It is your responsibility to remember and securely manage your keys.
-    Third-Party Services: The app may use third-party cloud services for storage, authentication, and analytics. All data stored in the cloud is encrypted during transmission and at rest using industry-standard encryption protocols. By using the app, you agree to their terms of service and privacy policies.
+    - Encrypted Messages: Encrypted messages are saved in the cloud and associated with the relevant contacts.
+    - Contacts: Contacts you add to the app are saved in the cloud to ensure seamless access across devices.
+    - Keys: Cypheron does not save or store your encryption keys. It is your responsibility to remember and securely manage your keys.
+    - Third-Party Services: The app may use third-party cloud services for storage, authentication, and analytics. All data stored in the cloud is encrypted during transmission and at rest using industry-standard encryption protocols. By using the app, you agree to their terms of service and privacy policies.
 
 5. Disclaimer of Liability
 
