@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 
 /// Enum representing different types of `TextFormField`.
 enum FieldType {
@@ -33,11 +35,21 @@ class GenericFormField extends StatelessWidget {
         return _buildTextFormField(
           labelText: labelText.isEmpty ? 'Name' : labelText,
           keyboardType: TextInputType.name,
-          validator: (value) => _validateNotEmpty(value, 'Please enter your name'),
+          validator: (value) {
+            String? result = _validateNotEmpty(value, 'Please enter your name');
+            if (result != null) return result;
+
+            result = _validateAllowedCharacters(value, context);
+            if (result != null) return result;
+
+            // Add more validators as needed
+            return null; // All validations passed
+          } 
         );
       case FieldType.email:
         return _buildTextFormField(
           labelText: labelText.isEmpty ? 'Email' : labelText,
+          maxLength: 30,
           keyboardType: TextInputType.emailAddress,
           validator: (value) => _validateEmail(value),
         );
@@ -56,11 +68,22 @@ class GenericFormField extends StatelessWidget {
       case FieldType.title:
         return _buildTextFormField(
           labelText: labelText.isEmpty ? 'Title' : labelText,
-          validator: (value) => _validateNotEmpty(value, 'Please enter a message title'),
+          validator: (value) {
+            // Combine multiple validators
+            String? result = _validateNotEmpty(value, 'Please enter a message title');
+            if (result != null) return result;
+
+            result = _validateAllowedCharacters(value, context);
+            if (result != null) return result;
+
+            // Add more validators as needed
+            return null; // All validations passed
+          }
         );
       case FieldType.textBox:
         return _buildTextFormField(
           labelText: labelText.isEmpty ? 'Text to encrypt' : labelText,
+          maxLength: 2000,
           maxLines: 5,
           validator: (value) {
             // Combine multiple validators
@@ -89,6 +112,7 @@ class GenericFormField extends StatelessWidget {
     required String labelText,
     TextInputType? keyboardType,
     bool obscureText = false,
+    int maxLength = 25,
     int? maxLines = 1,
     String? Function(String?)? validator,
   }) {
@@ -98,6 +122,9 @@ class GenericFormField extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText: obscureText,
       maxLines: maxLines,
+      maxLength: maxLength,
+      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+      buildCounter: (context, {required int currentLength, required int? maxLength, required bool isFocused}) => null,
       validator: validator,
     );
   }
@@ -139,7 +166,7 @@ class GenericFormField extends StatelessWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showErrorDialog(
           context,
-          'Message content can only include the following characters:\n'
+          'Content can only include the following characters:\n'
           'Letters: A-Z, a-z\n'
           'Digits: 0-9\n'
           'Symbols: !"#\$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\n'

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 class KeywordDialog extends StatefulWidget {
@@ -67,6 +68,9 @@ class _KeywordDialogState extends State<KeywordDialog> {
       title: Text(widget.title),
       content: TextField(
         controller: keywordController,
+        maxLength: 20,
+        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+        buildCounter: (context, {required int currentLength, required int? maxLength, required bool isFocused}) => null,
         decoration: InputDecoration(
           labelText: 'Keyword',
           suffixIcon: IconsUI(
