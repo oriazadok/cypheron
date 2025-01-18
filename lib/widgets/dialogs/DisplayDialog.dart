@@ -11,6 +11,7 @@ Future<void> displaydialog(
   }) async {
     int remainingTime = duration.inSeconds;
     bool isActive = true; // Track if the dialog is still active
+    bool showTimer = decryptedBody != "Cypher failed"; // Hide timer if decryption failed
 
     // Show the dialog
     await showDialog(
@@ -19,16 +20,18 @@ Future<void> displaydialog(
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            // Start the countdown
-            Future.delayed(Duration(seconds: 1), () {
-              if (isActive && remainingTime > 0) {
-                setState(() {
-                  remainingTime--;
-                });
-              } else if (isActive && remainingTime == 0) {
-                Navigator.of(context).pop(); // Close the dialog when time runs out
-              }
-            });
+            // Start the countdown if needed
+            if (showTimer) {
+              Future.delayed(Duration(seconds: 1), () {
+                if (isActive && remainingTime > 0) {
+                  setState(() {
+                    remainingTime--;
+                  });
+                } else if (isActive && remainingTime == 0) {
+                  Navigator.of(context).pop(); // Close the dialog when time runs out
+                }
+              });
+            }
 
             return AlertDialog(
               title: Text(title),
@@ -39,11 +42,12 @@ Future<void> displaydialog(
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Display the timer on the left
-                    Text(
-                      "$remainingTime s",
-                      style: GenericTextStyleUI.getTextStyle(TextType.time),
-                    ),
+                    // Display the timer only if applicable
+                    if (showTimer)
+                      Text(
+                        "$remainingTime s",
+                        style: GenericTextStyleUI.getTextStyle(TextType.time),
+                      ),
                     Row(
                       children: [
                         // Copy button
@@ -76,4 +80,4 @@ Future<void> displaydialog(
     );
 
     isActive = false; // Ensure the timer stops after dialog is closed
-  }
+}
