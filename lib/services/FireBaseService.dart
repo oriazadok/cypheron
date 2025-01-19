@@ -231,29 +231,38 @@ class FireBaseService {
     }
   }
 
-  // Delete a contact from Firebase with messages as a subcollection
-  static Future<bool> deleteContactFromFirebase(String userId, ContactModel contact) async {
-    try {
-      // Reference to the user's document
-      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+  // Delete a contact from Firebase along with all its messages (subcollection)
+static Future<bool> deleteContactFromFirebase(String userId, ContactModel contact) async {
+  try {
+    // Reference to the user's document
+    final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
 
-      // Reference to the contact document
-      final contactRef = userRef.collection('contacts').doc(contact.id);
+    // Reference to the contact document
+    final contactRef = userRef.collection('contacts').doc(contact.id);
 
-      // Step 1: Delete the contact document
-      await contactRef.delete();
-
-      // Step 2: Remove the contact ID from the contactIds array
-      await userRef.update({
-        'contactIds': FieldValue.arrayRemove([contact.id]),
-      });
-
-      return true; // Deletion successful
-    } catch (e) {
-      print("Error deleting contact from Firebase: $e");
-      return false; // Deletion failed
+    // Step 1: Delete all messages in the subcollection
+    final messagesRef = contactRef.collection('messages');
+    final messagesSnapshot = await messagesRef.get();
+    
+    for (var doc in messagesSnapshot.docs) {
+      await doc.reference.delete(); // Delete each message document
     }
+
+    // Step 2: Delete the contact document
+    await contactRef.delete();
+
+    // Step 3: Remove the contact ID from the contactIds array
+    await userRef.update({
+      'contactIds': FieldValue.arrayRemove([contact.id]),
+    });
+
+    return true; // Deletion successful
+  } catch (e) {
+    print("Error deleting contact from Firebase: $e");
+    return false; // Deletion failed
   }
+}
+
 
 
   // -------------------------- Message Operations --------------------------
