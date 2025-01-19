@@ -226,6 +226,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
   /// Logs the user out and navigates to the Welcome screen.
   Future<void> _logOut(BuildContext context) async {
     try {
+      await _updateAnalyticsData(); // Ensure analytics data is updated before logout
       await FireBaseService.signOut(); // Firebase logout.
       Navigator.pushAndRemoveUntil(
         context,
@@ -394,7 +395,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver{
     }
   }
 
-  void _updateAnalyticsData() async {
+  Future<void> _updateAnalyticsData() async {
     if (_sessionStartTime == null) return;
 
     final sessionEndTime = DateTime.now(); // End of the current session
