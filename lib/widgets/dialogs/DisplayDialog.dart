@@ -56,8 +56,21 @@ Future<void> displaydialog(
                           onPressed: () {
                             Clipboard.setData(ClipboardData(text: decryptedBody)); // Copy to clipboard
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Copied to clipboard')),
+                              SnackBar(
+                                content: Text(
+                                  'Copied to clipboard',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                                ),
+                                backgroundColor: Colors.blueAccent, // Change background color
+                                behavior: SnackBarBehavior.floating, // Makes it float above content
+                                margin: EdgeInsets.all(20), // Add margin when floating
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10), // Rounded corners
+                                ),
+                                duration: Duration(seconds: 2), // Duration before disappearing
+                              ),
                             );
+
                           },
                         ),
                         // Close button
