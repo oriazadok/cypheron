@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cypheron/ui/widgetsUI/utilsUI/IconsUI.dart';
 
 class KeywordDialog extends StatefulWidget {
@@ -17,7 +18,6 @@ class KeywordDialog extends StatefulWidget {
   @override
   State<KeywordDialog> createState() => _KeywordDialogState();
 
-  /// Static method to show the dialog and return the entered keyword
   static Future<String?> showKeywordDialog(
     BuildContext context,
     String title,
@@ -62,15 +62,57 @@ class KeywordDialog extends StatefulWidget {
 }
 
 class _KeywordDialogState extends State<KeywordDialog> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form key for validation
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool obscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _showOneTimePopup();
+  }
+
+  /// Checks if the user has already seen the pop-up, if not, it shows it.
+  Future<void> _showOneTimePopup() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hasSeenPopup = prefs.getBool('hasSeenKeywordPopup') ?? false;
+
+    if (!hasSeenPopup) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showInfoDialog();
+      });
+      await prefs.setBool('hasSeenKeywordPopup', true);
+    }
+  }
+
+  /// Displays the information dialog explaining the importance of the keyword.
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Important Information'),
+        content: const Text(
+          'The keyword you enter will be used by both you and the recipient to encrypt and decrypt this current message.'
+          'The app does not store or recover the keyword, so it is essential to save it securely.'
+          'For enhanced security, use a strong yet memorable keyword.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the info dialog
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
       content: Form(
-        key: _formKey, // Wrap with Form to enable validation
+        key: _formKey,
         child: TextFormField(
           controller: widget.keywordController,
           maxLength: 20,
@@ -95,7 +137,6 @@ class _KeywordDialogState extends State<KeywordDialog> {
             result = _validateAllowedCharacters(value, context);
             if (result != null) return result;
 
-            // Add more validators as needed
             return null; // All validations passed
           },
         ),
@@ -105,12 +146,12 @@ class _KeywordDialogState extends State<KeywordDialog> {
           onPressed: () {
             Navigator.of(context).pop(); // Close dialog without returning data
           },
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              Navigator.of(context).pop(widget.keywordController.text); // Return valid input
+              Navigator.of(context).pop(widget.keywordController.text);
             }
           },
           child: Text(widget.type == "Encrypt" ? 'Encrypt' : 'Decrypt'),
@@ -119,12 +160,10 @@ class _KeywordDialogState extends State<KeywordDialog> {
     );
   }
 
-  /// Validates that a field is not empty.
   String? _validateNotEmpty(String? value, String errorMessage) {
     if (value == null || value.isEmpty) {
       return errorMessage;
     }
-
     return null;
   }
 
@@ -137,7 +176,7 @@ class _KeywordDialogState extends State<KeywordDialog> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the dialog
+              Navigator.pop(context);
             },
             child: const Text('OK'),
           ),
@@ -147,25 +186,24 @@ class _KeywordDialogState extends State<KeywordDialog> {
   }
 
   String? _validateAllowedCharacters(String? value, BuildContext context) {
-    if (value == null || value.isEmpty) return null; // Skip if empty (handled by another validator)
+    if (value == null || value.isEmpty) return null;
 
     final regex = RegExp(r'^[\t\n\x20-\x7E]*$');
     if (!regex.hasMatch(value)) {
-      // Show the error dialog
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showErrorDialog(
           context,
           'Content can only include the following characters:\n'
           'Letters: A-Z, a-z\n'
           'Digits: 0-9\n'
-          'Symbols: !"#\$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\n'
+          'Symbols: !"#\$%&\'()*+,-./:;<=>?@[\\]^_{|}~\n'
           'Spaces, Tab, and Newline.',
         );
       });
 
-      return ''; // Return a placeholder error (or null to avoid the default error text)
+      return ''; 
     }
 
-    return null; // Validation passed
+    return null; 
   }
 }
