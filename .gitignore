@@ -47,6 +47,7 @@ android/app/src/main/jniLibs/
 
 android/app/google-services.json
 
-
+lib/firebase_options.dart
+firebase.json
 /toDo
 /key.properties

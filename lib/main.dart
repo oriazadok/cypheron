@@ -4,18 +4,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'services/HiveService.dart'; // Import a local service for managing the Hive database
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase core for initialization
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 import 'ui/generalUI/theme.dart'; // Import theme configuration for the app's general UI
 
 import 'screens/welcome/Welcome.dart'; // Import the Welcome screen
 import 'screens/decrypt/Decryptor.dart'; // Import the Decryptor screen
 import 'screens/license/LicenseAgreementScreen.dart';
+import 'firebase_options.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure that Flutter is properly initialized before any bindings
   await HiveService.init(); // Initialize Hive (a lightweight and fast local database)
-  await Firebase.initializeApp(); // Initialize Firebase for the app
+  // await Firebase.initializeApp(); // Initialize Firebase for the app
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // 🔥 Enable Crashlytics reporting
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
 
   runApp(MyApp()); // Launch the app by running MyApp
 }

@@ -1,10 +1,8 @@
-plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services" // Firebase plugin
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'dev.flutter.flutter-gradle-plugin'
+apply plugin: 'com.google.firebase.crashlytics'
+
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
@@ -43,9 +41,11 @@ android {
     defaultConfig {
         applicationId = "com.klidok.cypheron"
         minSdkVersion = 23 // Updated to meet Firebase requirements
-        targetSdkVersion = 33
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
+        targetSdkVersion = 34
+        // versionCode = flutterVersionCode.toInteger()
+        // versionName = flutterVersionName
+        versionCode = 13
+        versionName = "1.1.9"
     }
 
     signingConfigs {
@@ -64,6 +64,12 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // ✅ Enable native crash reporting
+            firebaseCrashlytics {
+                nativeSymbolUploadEnabled true
+                unstrippedNativeLibsDir 'build/app/intermediates/merged_native_libs/release/out/lib'
+            }
         }
     }
 }
@@ -72,5 +78,4 @@ flutter {
     source = "../.."
 }
 
-// Apply the Google Services plugin at the end
 apply plugin: 'com.google.gms.google-services'
